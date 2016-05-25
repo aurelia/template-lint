@@ -1,0 +1,14 @@
+{
+  "name": "aurelia-template-lint",
+  "description": "sanity check of template html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MeirionHughes/aurelia-template-lint"
+  },
+  "license": "(Apache-2.0)",
+  "version": "0.1.0",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-typings": "^2.0.0"
+  }
+}
