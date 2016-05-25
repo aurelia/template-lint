@@ -2,10 +2,11 @@
 
 var gulp = require('gulp');
 var ts = require('gulp-typescript');
-var jasmine = require('gulp-jasmine');
 var shell = require('gulp-shell');
 var merge = require('merge2');
 var runSequence = require('run-sequence');
+var jasmine = require('gulp-jasmine');
+var plumber = require('gulp-plumber');
 
 var paths = {
     source : "source/",
@@ -31,7 +32,7 @@ gulp.task('compile', function () {
 	]);
 });
 
-gulp.task('compile-tests', function () {
+gulp.task('compile-tests', ['compile'], function () {
     var project = ts.createProject('tsconfig.json');
 
     var tsResult = gulp
@@ -44,16 +45,25 @@ gulp.task('compile-tests', function () {
     return tsResult.js.pipe(gulp.dest(paths.spec));
 });
 
-gulp.task('test', function() {
+gulp.task('test', ['compile-tests'], function() {
    return gulp.src('spec/*.js')
-      .pipe(jasmine());
+      .pipe(plumber())
+      .pipe(jasmine({verbose:true}));
 });
 
-gulp.task('watch', function () {
-    gulp.watch(paths.source + '**/*.ts',   ['compile', 'compile-tests']);
-    gulp.watch(paths.spec + '**/*.js',   ['test']);
+gulp.task('watch', ['compile-tests'], function () {
+    gulp.watch(paths.source + '**/*.ts',   ['compile-tests']);
+    gulp.watch(paths.spec + '**/*.js', [ 'flush', 'test']);
+});
+
+gulp.task('flush', function () {
+  for (var prop in require.cache) {
+    if (prop.indexOf("node_modules") === -1) {
+      delete require.cache[prop];
+    }
+  }
 });
 
 gulp.task('default', function() {
-   return runSequence('compile', 'compile-tests', 'test', 'watch');
+   return runSequence('compile', 'compile-tests', 'test');
 });

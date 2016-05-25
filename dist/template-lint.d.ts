@@ -1,4 +1,4 @@
 export declare class TemplateLint {
     constructor();
-    pass(): boolean;
+    hasSelfCloseTags(template: string): Promise<boolean>;
 }

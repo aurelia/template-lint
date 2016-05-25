@@ -1,13 +1,32 @@
 "use strict";
 
-import parse5 = require('parse5');
+import {SAXParser} from 'parse5';
+import {Readable} from 'stream';
 
 export class TemplateLint {
     constructor() {
     }
     
-    pass():boolean{
-        return true;
+    hasSelfCloseTags(template: string):Promise<boolean>{       
+
+        var parser: SAXParser = new SAXParser();    
+        var stream: Readable = new Readable();
+
+        stream.push(template);
+        stream.push(null);
+
+        var parser: SAXParser = new SAXParser();
+        
+        var hasSelfClose = false;
+                                         
+        parser.on('startTag', (name, attrs, selfClosing, location)=>{     
+            hasSelfClose = hasSelfClose || selfClosing;                 
+        });
+                      
+        var work = stream.pipe(parser);
+            
+        return new Promise<boolean>(function (resolve, reject) {
+            work.on("end",()=>{resolve(hasSelfClose);});
+        });  
     }
 }
-
