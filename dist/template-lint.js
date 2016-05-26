@@ -35,19 +35,26 @@ class Linter {
         this.rules = [new SelfCloseRule()];
     }
     lint(html) {
-        var parser = new parse5_1.SAXParser();
+        var parser = new parse5_1.SAXParser({ locationInfo: true });
         var stream = new stream_1.Readable();
         stream.push(html);
         stream.push(null);
-        var root = parse5.parseFragment(html);
-        var rule = new SelfCloseRule();
-        rule.init(parser, root);
+        var root = parse5.parseFragment(html, { locationInfo: true });
+        this.rules.forEach((rule) => {
+            rule.init(parser, root);
+        });
         var work = stream.pipe(parser);
         var completed = new Promise(function (resolve, reject) {
             work.on("end", () => { resolve(); });
         });
-        return rule.lint(completed)
-            .then(() => true, () => false);
+        var ruleTasks = [];
+        this.rules.forEach((rule) => {
+            var task = rule
+                .lint(completed)
+                .then(() => true);
+            ruleTasks.push(task);
+        });
+        return Promise.all(ruleTasks).then(() => true).catch(() => false);
     }
 }
 exports.Linter = Linter;

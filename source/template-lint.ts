@@ -28,7 +28,7 @@ export class SelfCloseRule extends Rule {
         this.parser = parser;
 
         this.result = true;
-        
+
         var self = this;
 
         parser.on('startTag', (name, attrs, selfClosing, location) => {
@@ -37,7 +37,7 @@ export class SelfCloseRule extends Rule {
     }
 
     lint(completed: Promise<void>): Promise<void> {
-        var self = this;        
+        var self = this;
         return completed
             .then(() => {
                 if (self.result == false)
@@ -55,17 +55,17 @@ export class Linter {
     }
 
     lint(html: string): Promise<boolean> {
-        var parser: SAXParser = new SAXParser();
+        var parser: SAXParser = new SAXParser({ locationInfo: true });
         var stream: Readable = new Readable();
 
         stream.push(html);
         stream.push(null);
 
-        var root = parse5.parseFragment(html);
+        var root = parse5.parseFragment(html, { locationInfo: true });
 
-        var rule = new SelfCloseRule();
-
-        rule.init(parser, root);
+        this.rules.forEach((rule) => {
+            rule.init(parser, root)
+        });
 
         var work = stream.pipe(parser);
 
@@ -73,8 +73,16 @@ export class Linter {
             work.on("end", () => { resolve(); });
         });
 
-        return rule.lint(completed)
-            .then(() =>true, () => false);
+        var ruleTasks = [];
+
+        this.rules.forEach((rule) => {
+            var task = rule
+                .lint(completed)
+                .then(() => true);
+            ruleTasks.push(task);
+        });
+        
+        return Promise.all(ruleTasks).then(()=>true).catch(()=>false);       
     }
 }
 
