@@ -7,7 +7,7 @@ import {Readable} from 'stream';
 /**
 * Abstract Lint Rule 
 */
-export abstract class Rule {
+abstract class Rule {
     public name: string;
     public description: string;
 
@@ -19,7 +19,7 @@ export abstract class Rule {
 /**
  * Rule to ensure non-void elements do not self-close
  */
-export class SelfCloseRule extends Rule {
+class SelfCloseRule extends Rule {
     private parser: SAXParser;
 
     public result: boolean;
@@ -47,7 +47,7 @@ export class SelfCloseRule extends Rule {
 /**
  *  Rule to ensure root element is the template element
  */
-export class TemplateRootRule extends Rule {
+class TemplateRootRule extends Rule {
     private parser: SAXParser;
 
     public result: boolean;
@@ -68,7 +68,7 @@ export class TemplateRootRule extends Rule {
     }
 }
 
-export class Linter {
+class Linter {
 
     private rules: Array<Rule>;
 
@@ -112,3 +112,4 @@ export class Linter {
     }
 }
 
+export { Linter };

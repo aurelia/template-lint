@@ -7,7 +7,6 @@ const stream_1 = require('stream');
 */
 class Rule {
 }
-exports.Rule = Rule;
 /**
  * Rule to ensure non-void elements do not self-close
  */
@@ -29,7 +28,6 @@ class SelfCloseRule extends Rule {
         });
     }
 }
-exports.SelfCloseRule = SelfCloseRule;
 /**
  *  Rule to ensure root element is the template element
  */
@@ -47,8 +45,7 @@ class TemplateRootRule extends Rule {
         });
     }
 }
-exports.TemplateRootRule = TemplateRootRule;
-class Linter {
+export class Linter {
     constructor() {
         this.rules = [
             new TemplateRootRule(),
