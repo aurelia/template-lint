@@ -9,7 +9,7 @@ class Rule {
 }
 exports.Rule = Rule;
 /**
- * Lint Rule to ensure non-void elements do not self-close
+ * Rule to ensure non-void elements do not self-close
  */
 class SelfCloseRule extends Rule {
     init(parser, root) {
@@ -30,9 +30,30 @@ class SelfCloseRule extends Rule {
     }
 }
 exports.SelfCloseRule = SelfCloseRule;
+/**
+ *  Rule to ensure root element is the template element
+ */
+class TemplateRootRule extends Rule {
+    init(parser, root) {
+        this.parser = parser;
+        this.result = root.nodeName == 'template';
+    }
+    lint(completed) {
+        var self = this;
+        return completed
+            .then(() => {
+            if (self.result == false)
+                throw "failed";
+        });
+    }
+}
+exports.TemplateRootRule = TemplateRootRule;
 class Linter {
     constructor() {
-        this.rules = [new SelfCloseRule()];
+        this.rules = [
+            new TemplateRootRule(),
+            new SelfCloseRule()
+        ];
     }
     lint(html) {
         var parser = new parse5_1.SAXParser({ locationInfo: true });
@@ -41,7 +62,7 @@ class Linter {
         stream.push(null);
         var root = parse5.parseFragment(html, { locationInfo: true });
         this.rules.forEach((rule) => {
-            rule.init(parser, root);
+            rule.init(parser, root.childNodes[0]);
         });
         var work = stream.pipe(parser);
         var completed = new Promise(function (resolve, reject) {

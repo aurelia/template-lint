@@ -10,6 +10,14 @@ describe("Linter", () => {
             done();
         });
     });
+    it("can reject improper template", (done) => {
+        var linter = new template_lint_1.Linter();
+        linter.lint('<tempe></tempjlate>')
+            .then((result) => {
+            expect(result).toBe(false);
+            done();
+        });
+    });
     it("can reject self-closed template", (done) => {
         var linter = new template_lint_1.Linter();
         linter.lint('<template/>')

@@ -9,9 +9,18 @@ export declare abstract class Rule {
     abstract lint(completed: Promise<void>): Promise<void>;
 }
 /**
- * Lint Rule to ensure non-void elements do not self-close
+ * Rule to ensure non-void elements do not self-close
  */
 export declare class SelfCloseRule extends Rule {
+    private parser;
+    result: boolean;
+    init(parser: SAXParser, root: ASTNode): void;
+    lint(completed: Promise<void>): Promise<void>;
+}
+/**
+ *  Rule to ensure root element is the template element
+ */
+export declare class TemplateRootRule extends Rule {
     private parser;
     result: boolean;
     init(parser: SAXParser, root: ASTNode): void;
