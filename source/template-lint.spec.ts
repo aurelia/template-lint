@@ -1,13 +1,25 @@
 /// <reference path="template-lint.ts" />
-import {TemplateLint} from '../dist/template-lint';
+import {Linter} from '../dist/template-lint';
 
-describe("Template Lint", () => {
+describe("Linter", () => {
+  
+  it("can resolve proper template", (done) => {
 
-  it("can ignore proper template", (done) => {
+    var linter: Linter = new Linter();
 
-    var lint: TemplateLint = new TemplateLint();
+    linter.lint('<template></template>')
+      .then(
+      (result) => {
+        expect(result).toBe(true);
+        done();
+      });
+  });
 
-    lint.hasSelfCloseTags('<template></template>')
+  it("can reject self-closed template", (done) => {
+
+    var linter: Linter = new Linter();
+
+    linter.lint('<template/>')
       .then(
       (result) => {
         expect(result).toBe(false);
@@ -15,26 +27,14 @@ describe("Template Lint", () => {
       });
   });
 
-  it("can detect self-closed template", (done) => {
+  it("can reject self-closed custom-element", (done) => {
 
-    var lint: TemplateLint = new TemplateLint();
+    var linter: Linter = new Linter();
 
-    lint.hasSelfCloseTags('<template/>')
+    linter.lint('<template><custom-element/></template>')
       .then(
       (result) => {
-        expect(result).toBe(true);
-        done();
-      });
-  });
-
-  it("can detect self-closed custom-element", (done) => {
-
-    var lint: TemplateLint = new TemplateLint();
-
-    lint.hasSelfCloseTags('<template><custom-element/></template>')
-      .then(
-      (result) => {
-        expect(result).toBe(true);
+        expect(result).toBe(false);
         done();
       });
   });

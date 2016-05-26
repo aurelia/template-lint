@@ -1,43 +1,80 @@
 "use strict";
 
-import {SAXParser} from 'parse5';
+import {SAXParser, TreeAdapter, ASTNode} from 'parse5';
+import * as parse5 from 'parse5';
 import {Readable} from 'stream';
 
-class Rule
-{
-    beforeParse(parser:SAXParser)
-    {
-    } 
-    
-    afterParse()
-    {    
-    }
-} 
+/**
+* Abstract Lint Rule 
+*/
+export abstract class Rule {
+    public name: string;
+    public description: string;
 
-export class TemplateLint {
-    constructor() {
-    }
-    
-    hasSelfCloseTags(template: string):Promise<boolean>{       
+    abstract init(parse: SAXParser, root: ASTNode);
 
-        var parser: SAXParser = new SAXParser();    
-        var stream: Readable = new Readable();
+    abstract lint(completed: Promise<void>): Promise<void>;
+}
 
-        stream.push(template);
-        stream.push(null);
+/**
+ * Lint Rule to ensure non-void elements do not self-close
+ */
+export class SelfCloseRule extends Rule {
+    private parser: SAXParser;
 
-        var parser: SAXParser = new SAXParser();
+    public result: boolean;
+
+    init(parser: SAXParser, root: ASTNode) {
+        this.parser = parser;
+
+        this.result = true;
         
-        var hasSelfClose = false;
-                                         
-        parser.on('startTag', (name, attrs, selfClosing, location)=>{     
-            hasSelfClose = hasSelfClose || selfClosing;                 
+        var self = this;
+
+        parser.on('startTag', (name, attrs, selfClosing, location) => {
+            self.result = self.result && (!selfClosing);
         });
-                      
-        var work = stream.pipe(parser);
-            
-        return new Promise<boolean>(function (resolve, reject) {
-            work.on("end",()=>{resolve(hasSelfClose);});
-        });  
+    }
+
+    lint(completed: Promise<void>): Promise<void> {
+        var self = this;        
+        return completed
+            .then(() => {
+                if (self.result == false)
+                    throw "failed";
+            });
     }
 }
+
+export class Linter {
+
+    private rules: Array<Rule>;
+
+    constructor() {
+        this.rules = [new SelfCloseRule()];
+    }
+
+    lint(html: string): Promise<boolean> {
+        var parser: SAXParser = new SAXParser();
+        var stream: Readable = new Readable();
+
+        stream.push(html);
+        stream.push(null);
+
+        var root = parse5.parseFragment(html);
+
+        var rule = new SelfCloseRule();
+
+        rule.init(parser, root);
+
+        var work = stream.pipe(parser);
+
+        var completed = new Promise<void>(function (resolve, reject) {
+            work.on("end", () => { resolve(); });
+        });
+
+        return rule.lint(completed)
+            .then(() =>true, () => false);
+    }
+}
+

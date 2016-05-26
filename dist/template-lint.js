@@ -1,31 +1,55 @@
 "use strict";
 const parse5_1 = require('parse5');
+const parse5 = require('parse5');
 const stream_1 = require('stream');
+/**
+* Abstract Lint Rule
+*/
 class Rule {
-    beforeParse(parser) {
+}
+exports.Rule = Rule;
+/**
+ * Lint Rule to ensure non-void elements do not self-close
+ */
+class SelfCloseRule extends Rule {
+    init(parser, root) {
+        this.parser = parser;
+        this.result = true;
+        var self = this;
+        parser.on('startTag', (name, attrs, selfClosing, location) => {
+            self.result = self.result && (!selfClosing);
+        });
     }
-    afterParse() {
+    lint(completed) {
+        var self = this;
+        return completed
+            .then(() => {
+            if (self.result == false)
+                throw "failed";
+        });
     }
 }
-class TemplateLint {
+exports.SelfCloseRule = SelfCloseRule;
+class Linter {
     constructor() {
+        this.rules = [new SelfCloseRule()];
     }
-    hasSelfCloseTags(template) {
+    lint(html) {
         var parser = new parse5_1.SAXParser();
         var stream = new stream_1.Readable();
-        stream.push(template);
+        stream.push(html);
         stream.push(null);
-        var parser = new parse5_1.SAXParser();
-        var hasSelfClose = false;
-        parser.on('startTag', (name, attrs, selfClosing, location) => {
-            hasSelfClose = hasSelfClose || selfClosing;
-        });
+        var root = parse5.parseFragment(html);
+        var rule = new SelfCloseRule();
+        rule.init(parser, root);
         var work = stream.pipe(parser);
-        return new Promise(function (resolve, reject) {
-            work.on("end", () => { resolve(hasSelfClose); });
+        var completed = new Promise(function (resolve, reject) {
+            work.on("end", () => { resolve(); });
         });
+        return rule.lint(completed)
+            .then(() => true, () => false);
     }
 }
-exports.TemplateLint = TemplateLint;
+exports.Linter = Linter;
 
 //# sourceMappingURL=template-lint.js.map

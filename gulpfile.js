@@ -56,9 +56,10 @@ gulp.task('test', ['compile-tests'], function() {
       .pipe(jasmine({verbose:true}));
 });
 
-gulp.task('watch', ['compile-tests'], function () {
-    gulp.watch(paths.source + '**/*.ts',   ['compile-tests']);
-    gulp.watch(paths.spec + '**/*.js', [ 'flush', 'test']);
+gulp.task('watch', ['test'], function () {
+    
+    gulp.watch(paths.source + '**/*.ts', ['test']);
+        
 });
 
 gulp.task('flush', function () {
