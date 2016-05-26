@@ -7,6 +7,7 @@ var merge = require('merge2');
 var runSequence = require('run-sequence');
 var jasmine = require('gulp-jasmine');
 var plumber = require('gulp-plumber');
+var sourcemap = require('gulp-sourcemaps');
 
 var paths = {
     source : "source/",
@@ -17,32 +18,36 @@ var paths = {
 gulp.task('compile', function () {
     var project = ts.createProject('tsconfig.json');
 
-    var tsResult = gulp
+    var tsResult = gulp        
         .src([
             '!' + paths.source + '**/*spec.ts',
             paths.source + '**/*.ts',
             'typings/index.d.ts'
         ])
-        .pipe(ts(project));
-        
+        .pipe(sourcemap.init())
+        .pipe(ts(project));        
         
     return merge([
 		tsResult.dts.pipe(gulp.dest(paths.output)),
-		tsResult.js.pipe(gulp.dest(paths.output))
+		tsResult.js
+            .pipe(sourcemap.write('.', {sourceRoot: '../source'}))   
+            .pipe(gulp.dest(paths.output))
 	]);
 });
 
 gulp.task('compile-tests', ['compile'], function () {
     var project = ts.createProject('tsconfig.json');
 
-    var tsResult = gulp
-        .src([
+    var tsResult = gulp.src([
             paths.source + '**/*spec.ts',
             'typings/index.d.ts'
         ])
+        .pipe(sourcemap.init())
         .pipe(ts(project));        
         
-    return tsResult.js.pipe(gulp.dest(paths.spec));
+    return tsResult.js
+        .pipe(sourcemap.write('.',  {sourceRoot: '../source'}))
+        .pipe(gulp.dest(paths.spec));
 });
 
 gulp.task('test', ['compile-tests'], function() {

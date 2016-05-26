@@ -3,6 +3,17 @@
 import {SAXParser} from 'parse5';
 import {Readable} from 'stream';
 
+class Rule
+{
+    beforeParse(parser:SAXParser)
+    {
+    } 
+    
+    afterParse()
+    {    
+    }
+} 
+
 export class TemplateLint {
     constructor() {
     }

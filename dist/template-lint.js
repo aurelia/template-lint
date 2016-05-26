@@ -1,6 +1,12 @@
 "use strict";
 const parse5_1 = require('parse5');
 const stream_1 = require('stream');
+class Rule {
+    beforeParse(parser) {
+    }
+    afterParse() {
+    }
+}
 class TemplateLint {
     constructor() {
     }
@@ -21,3 +27,5 @@ class TemplateLint {
     }
 }
 exports.TemplateLint = TemplateLint;
+
+//# sourceMappingURL=template-lint.js.map
