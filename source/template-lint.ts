@@ -7,119 +7,169 @@ import {Readable} from 'stream';
 /**
 * Abstract Lint Rule 
 */
-abstract class Rule {
+export abstract class Rule {
     public name: string;
     public description: string;
-    abstract init(parse: SAXParser, root: ASTNode);
-    abstract lint(completed: Promise<void>): Promise<void>;
+    public errors: string[];
+    abstract init(parser: SAXParser)
 }
 
 /**
  * Rule to ensure non-void elements do not self-close
  */
-class SelfCloseRule extends Rule {
-    private parser: SAXParser;
-    public result: boolean;
-    init(parser: SAXParser, root: ASTNode) {
-        this.parser = parser;
-        this.result = true;
-        var self = this;
+export class SelfCloseRule extends Rule {
+    public name: string;
+    public description: string;
+    public errors: string[];
 
-        parser.on('startTag', (name, attrs, selfClosing, location) => {
-            self.result = self.result && (!selfClosing);
-        });
-    }
-    lint(completed: Promise<void>): Promise<void> {
+    init(parser: SAXParser) {
+
+        const voidTags = [
+            'area', 'base', 'br', 'col', 'embed', 'hr',
+            'img', 'input', 'keygen', 'link', 'meta',
+            'param', 'source', 'track', 'wbr'];
+
         var self = this;
-        return completed
-            .then(() => {
-                if (self.result == false)
-                    throw "failed";
-            });
+        self.errors = [];
+        parser.on('startTag', (name, attrs, selfClosing, location) => {
+            if (selfClosing) {
+                if (voidTags.indexOf(name) < 0) {
+                    let error = "self-closing element [line: " + location.line + "]";
+                    self.errors.push(error);
+                }
+            }
+        });
     }
 }
 
 /**
  *  Rule to ensure root element is the template element
  */
-class TemplateRootRule extends Rule {
-    private parser: SAXParser;
+export class TemplateRule extends Rule {
+    public name: string;
+    public description: string;
+    public errors: string[];
 
-    public result: boolean;
-    public error: string;
-
-    init(parser: SAXParser, root: ASTNode) {
-        this.parser = parser;
-
-        this.result = root.nodeName == 'template';
-    }
-
-    lint(completed: Promise<void>): Promise<void> {
+    init(parser: SAXParser) {
         var self = this;
-        return (this.result) ? Promise.resolve() : Promise.reject(this.error);
+        self.errors = [];
+        
+        var isRoot = true;
+        var found = 0;
+        
+                
+        parser.on('startTag', (name, attrs, selfClosing, location) => {            
+            
+            if (isRoot) 
+            {
+                isRoot = false;
+                
+                if (name != 'template')                {
+                    let error = "root element is not template [line: " + location.line + "]";
+                    self.errors.push(error);  
+                    return;                    
+                }             
+            }
+            
+            if (name = 'template')            
+            {                
+                if(found > 0)
+                { 
+                    let error = "another template element found [line: " + location.line + "]";
+                    self.errors.push(error); 
+                }                
+                                                
+                found += 1;                
+            }
+        });
     }
 }
 
 /**
- *  Rule to ensure a require element is well formed
+ *  Rule to ensure root element is the template element
  */
-class RequireRule extends Rule {
-    private parser: SAXParser;
-    public result: boolean;
-    init(parser: SAXParser, root: ASTNode) {
-        this.parser = parser;
-        this.result = true;
+export class RouterRule extends Rule {
+    public name: string;
+    public description: string;
+    public errors: string[];
+
+    init(parser: SAXParser) {
         var self = this;
+        self.errors = [];
 
-        parser.on('startTag', (name, attrs, selfClosing, location) => {
-            if (name != 'require')
-                return;
-
-            var fromAttr = attrs.find((x) => {
-                return (<any>x).name == 'from'
-            });
-
-            if (!fromAttr) {
-                self.result = false;
-                return;
+        
+        var capture = false;
+        var stack = [];      
+     
+        parser.on('startTag', (name, attrs, selfClosing, location) => {            
+            
+            if(capture)
+            {
+                 let error = "tags within router-view are illegal [line: " + location.line + "]";
+                 self.errors.push(error);
             }
-
-            self.result = true;
+            
+            if(name == 'router-view')     
+                capture = true;
         });
-    }
-    lint(completed: Promise<void>): Promise<void> {
-        var self = this;
-        return completed
-            .then(() => {
-                if (self.result == false)
-                    throw "failed";
-            });
+        
+        parser.on('endTag', (name, location) => {           
+            if(name == 'router-view')     
+                capture = false;
+        });
     }
 }
 
-class Linter {
+/**
+ *  Rule to ensure require element is well formed
+ */
+export class RequireRule extends Rule {
+    public name: string;
+    public description: string;
+    public errors: string[];
+
+    init(parser: SAXParser) {
+        var self = this;
+        self.errors = [];
+      
+        parser.on('startTag', (name, attrs, selfClosing, location) => {            
+            
+            if(name != 'require')
+                return;
+                
+            let result = attrs.find(x=>(<any>x).name == 'from');   
+            
+            if(!result)
+            {
+                 let error = "require tag is missing from attribute [line: " + location.line + "]";
+                 self.errors.push(error);
+            }
+        });
+    }
+}
+
+export class Linter {
 
     private rules: Array<Rule>;
 
-    constructor() {
-        this.rules = [
-            new TemplateRootRule(),
-            new SelfCloseRule(),
-            new RequireRule()
-        ];
+    constructor(rules?: Rule[]) {
+        if (!rules)
+            rules = [
+                new SelfCloseRule()
+            ];
+        this.rules = rules;
     }
-
-    lint(html: string): Promise<boolean> {
+    
+    lint(html: string): Promise<string[]> {
         var parser: SAXParser = new SAXParser({ locationInfo: true });
+
         var stream: Readable = new Readable();
 
         stream.push(html);
         stream.push(null);
 
-        var root = parse5.parseFragment(html, { locationInfo: true });
-
         this.rules.forEach((rule) => {
-            rule.init(parser, root.childNodes[0])
+            rule.init(parser)
         });
 
         var work = stream.pipe(parser);
@@ -131,14 +181,21 @@ class Linter {
         var ruleTasks = [];
 
         this.rules.forEach((rule) => {
-            var task = rule
-                .lint(completed)
-                .then(() => true);
+            let task = completed.then(() => {
+                return rule.errors
+            });
             ruleTasks.push(task);
         });
 
-        return Promise.all(ruleTasks).then(() => true).catch(() => false);
+        return Promise.all(ruleTasks).then(results => {
+
+            var all = []
+
+            results.forEach(parts => {
+                all = all.concat(parts);
+            });
+
+            return all;
+        });
     }
 }
-
-export { Linter };

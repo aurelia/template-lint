@@ -1,79 +1,117 @@
 /// <reference path="template-lint.ts" />
-import {Linter} from '../dist/template-lint';
+import {
+  Linter, 
+  SelfCloseRule, 
+  TemplateRule, 
+  RouterRule,
+  RequireRule} from '../dist/template-lint';
 
-describe("Linter", () => {
-  
-  it("can resolve proper template", (done) => {
+describe("SelfClose Rule", () => {
 
-    var linter: Linter = new Linter();
+  var linter: Linter = new Linter([
+    new SelfCloseRule()
+  ]);
 
-    linter.lint('<template></template>')
-      .then(
-      (result) => {
-        expect(result).toBe(true);
-        done();
-      });
-  });
-  
-  it("can reject improper template", (done) => {
-
-    var linter: Linter = new Linter();
-
-    linter.lint('<tempe></tempjlate>')
-      .then(
-      (result) => {
-        expect(result).toBe(false);
-        done();
-      });
-  });
-  
-  it("can resolve well formed require ", (done) => {
-
-    var linter: Linter = new Linter();
-
-    linter.lint('<template><require from="something"></require></template>')
-      .then(
-      (result) => {
-        expect(result).toBe(true);
-        done();
-      });
-  });
-  
-   it("can reject ill formed require ", (done) => {
-
-    var linter: Linter = new Linter();
-
-    linter.lint('<template><require fmor="something"></require></template>')
-      .then(
-      (result) => {
-        expect(result).toBe(false);
-        done();
-      });
-  });
-  
-
-  it("can reject self-closed template", (done) => {
-
-    var linter: Linter = new Linter();
-
+  it("will reject self-closed template", (done) => {
     linter.lint('<template/>')
-      .then(
-      (result) => {
-        expect(result).toBe(false);
+      .then((errors) => {
+        expect(errors.length).toBeGreaterThan(0);
         done();
       });
   });
 
-  it("can reject self-closed custom-element", (done) => {
+  it("will reject self-closed non-void", (done) => {
+    linter.lint('<template><div/></template>')
+      .then((errors) => {
+        expect(errors.length).toBeGreaterThan(0);
+        done();
+      });
+  });
 
-    var linter: Linter = new Linter();
-
+  it("will reject self-closed custom-element", (done) => {
     linter.lint('<template><custom-element/></template>')
-      .then(
-      (result) => {
-        expect(result).toBe(false);
+      .then((errors) => {
+        expect(errors.length).toBeGreaterThan(0);
+        done();
+      });
+  });
+
+  it("will allow self-closed void elements", (done) => {
+
+    linter.lint('<template><br/></template>')
+      .then((errors) => {
+        expect(errors.length).toBe(0);
         done();
       });
   });
 });
 
+
+
+
+
+describe("Template Rule", () => {
+
+  var linter: Linter = new Linter([
+    new TemplateRule()
+  ]);
+  
+  it("will accept template root element", (done) => {
+    linter.lint('<temslat></temslat>')
+      .then((errors) => {
+        expect(errors.length).toBeGreaterThan(0);
+        done();
+      });
+  });
+  
+  it("will reject non-template root element", (done) => {
+    linter.lint('<template></template>')
+      .then((errors) => {
+        expect(errors.length).toBe(0);
+        done();
+      });
+  });
+  
+  it("will reject more than one template", (done) => {
+    linter.lint('<template></template><template></template>')
+      .then((errors) => {
+        expect(errors.length).toBeGreaterThan(0);
+        done();
+      });
+  });
+});
+
+
+
+describe("Router Rule", () => {
+
+  var linter: Linter = new Linter([
+    new RouterRule()
+  ]);
+  
+  
+  it("will reject router-view with tag contents", (done) => {
+    linter.lint('<template><router-view><br/></router-view></template>')
+      .then((errors) => {
+        expect(errors.length).toBeGreaterThan(0);
+        done();
+      });
+  });
+});
+
+
+describe("Require Rule", () => {
+
+  var linter: Linter = new Linter([
+    new RequireRule()
+  ]);
+  
+  
+  it("will reject require elements without a from attribute", (done) => {
+    linter.lint('<template><require fgh="something"></require></template>')
+      .then((errors) => {
+        expect(errors.length).toBeGreaterThan(0);
+        done();
+      });
+  });
+});
