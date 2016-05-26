@@ -10,9 +10,7 @@ import {Readable} from 'stream';
 abstract class Rule {
     public name: string;
     public description: string;
-
     abstract init(parse: SAXParser, root: ASTNode);
-
     abstract lint(completed: Promise<void>): Promise<void>;
 }
 
@@ -21,9 +19,7 @@ abstract class Rule {
  */
 class SelfCloseRule extends Rule {
     private parser: SAXParser;
-
     public result: boolean;
-
     init(parser: SAXParser, root: ASTNode) {
         this.parser = parser;
         this.result = true;
@@ -33,7 +29,6 @@ class SelfCloseRule extends Rule {
             self.result = self.result && (!selfClosing);
         });
     }
-
     lint(completed: Promise<void>): Promise<void> {
         var self = this;
         return completed
@@ -51,13 +46,47 @@ class TemplateRootRule extends Rule {
     private parser: SAXParser;
 
     public result: boolean;
+    public error: string;
 
     init(parser: SAXParser, root: ASTNode) {
         this.parser = parser;
-        
+
         this.result = root.nodeName == 'template';
     }
 
+    lint(completed: Promise<void>): Promise<void> {
+        var self = this;
+        return (this.result) ? Promise.resolve() : Promise.reject(this.error);
+    }
+}
+
+/**
+ *  Rule to ensure a require element is well formed
+ */
+class RequireRule extends Rule {
+    private parser: SAXParser;
+    public result: boolean;
+    init(parser: SAXParser, root: ASTNode) {
+        this.parser = parser;
+        this.result = true;
+        var self = this;
+
+        parser.on('startTag', (name, attrs, selfClosing, location) => {
+            if (name != 'require')
+                return;
+
+            var fromAttr = attrs.find((x) => {
+                return (<any>x).name == 'from'
+            });
+
+            if (!fromAttr) {
+                self.result = false;
+                return;
+            }
+
+            self.result = true;
+        });
+    }
     lint(completed: Promise<void>): Promise<void> {
         var self = this;
         return completed
@@ -75,8 +104,9 @@ class Linter {
     constructor() {
         this.rules = [
             new TemplateRootRule(),
-            new SelfCloseRule()
-            ];
+            new SelfCloseRule(),
+            new RequireRule()
+        ];
     }
 
     lint(html: string): Promise<boolean> {
@@ -87,7 +117,6 @@ class Linter {
         stream.push(null);
 
         var root = parse5.parseFragment(html, { locationInfo: true });
-
 
         this.rules.forEach((rule) => {
             rule.init(parser, root.childNodes[0])
@@ -107,8 +136,8 @@ class Linter {
                 .then(() => true);
             ruleTasks.push(task);
         });
-        
-        return Promise.all(ruleTasks).then(()=>true).catch(()=>false);       
+
+        return Promise.all(ruleTasks).then(() => true).catch(() => false);
     }
 }
 

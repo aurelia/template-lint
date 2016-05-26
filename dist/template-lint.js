@@ -38,6 +38,31 @@ class TemplateRootRule extends Rule {
     }
     lint(completed) {
         var self = this;
+        return (this.result) ? Promise.resolve() : Promise.reject(this.error);
+    }
+}
+/**
+ *  Rule to ensure a require element is well formed
+ */
+class RequireRule extends Rule {
+    init(parser, root) {
+        this.parser = parser;
+        this.result = true;
+        var self = this;
+        parser.on('startTag', (name, attrs, selfClosing, location) => {
+            if (name != 'require')
+                return;
+            var fromAttr = attrs.find((x) => {
+                return x.name == 'from';
+            });
+            if (fromAttr)
+                self.result = true;
+            else
+                self.result = false;
+        });
+    }
+    lint(completed) {
+        var self = this;
         return completed
             .then(() => {
             if (self.result == false)
@@ -45,11 +70,12 @@ class TemplateRootRule extends Rule {
         });
     }
 }
-export class Linter {
+class Linter {
     constructor() {
         this.rules = [
             new TemplateRootRule(),
-            new SelfCloseRule()
+            new SelfCloseRule(),
+            new RequireRule()
         ];
     }
     lint(html) {

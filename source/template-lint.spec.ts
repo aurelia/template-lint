@@ -26,6 +26,31 @@ describe("Linter", () => {
         done();
       });
   });
+  
+  it("can resolve well formed require ", (done) => {
+
+    var linter: Linter = new Linter();
+
+    linter.lint('<template><require from="something"></require></template>')
+      .then(
+      (result) => {
+        expect(result).toBe(true);
+        done();
+      });
+  });
+  
+   it("can reject ill formed require ", (done) => {
+
+    var linter: Linter = new Linter();
+
+    linter.lint('<template><require fmor="something"></require></template>')
+      .then(
+      (result) => {
+        expect(result).toBe(false);
+        done();
+      });
+  });
+  
 
   it("can reject self-closed template", (done) => {
 
