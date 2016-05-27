@@ -131,23 +131,39 @@ describe("Require Rule", () => {
   });  
 });
 
-describe("Linter Default", () => {
+describe("Parser Rule", () => {
 
   var linter: Linter = new Linter();  
     
-  it("will reject require elements without a from attribute", (done) => {
-    linter.lint('<template><require fgh="something"></require></template>')
+  it("will error on unclosed element", (done) => {
+    linter.lint('<template>')
       .then((errors) => {
         expect(errors.length).toBeGreaterThan(0);
         done();
       });
   });  
   
-  it("will reject self-closed template", (done) => {
-    linter.lint('<template/>')
+   it("will error on nested unclosed element", (done) => {
+    linter.lint('<template><div></template>')
       .then((errors) => {
         expect(errors.length).toBeGreaterThan(0);
         done();
       });
-  });
+  }); 
+  
+   it("will error on nested misnamed closing element", (done) => {
+    linter.lint('<template><div></dvi></template>')
+      .then((errors) => {
+        expect(errors.length).toBeGreaterThan(0);
+        done();
+      });
+  });  
+  
+  it("will error on multiple nested closing element (multiple)", (done) => {
+    linter.lint('<template><div><div><div></div></div></template>')
+      .then((errors) => {
+        expect(errors.length).toBeGreaterThan(0);
+        done();
+      });
+  });  
 });

@@ -5,13 +5,14 @@ const stream_1 = require('stream');
 * Abstract Lint Rule
 */
 class Rule {
+    finalise() { }
 }
 exports.Rule = Rule;
 /**
  * Rule to ensure non-void elements do not self-close
  */
 class SelfCloseRule extends Rule {
-    init(parser) {
+    init(parser, parseState) {
         const voidTags = [
             'area', 'base', 'br', 'col', 'embed', 'hr',
             'img', 'input', 'keygen', 'link', 'meta',
@@ -33,7 +34,7 @@ exports.SelfCloseRule = SelfCloseRule;
  *  Rule to ensure root element is the template element
  */
 class TemplateRule extends Rule {
-    init(parser) {
+    init(parser, parseState) {
         var self = this;
         self.errors = [];
         var isRoot = true;
@@ -62,7 +63,7 @@ exports.TemplateRule = TemplateRule;
  *  Rule to ensure root element is the template element
  */
 class RouterRule extends Rule {
-    init(parser) {
+    init(parser, parseState) {
         var self = this;
         self.errors = [];
         var capture = false;
@@ -86,7 +87,7 @@ exports.RouterRule = RouterRule;
  *  Rule to ensure require element is well formed
  */
 class RequireRule extends Rule {
-    init(parser) {
+    init(parser, parseState) {
         var self = this;
         self.errors = [];
         parser.on('startTag', (name, attrs, selfClosing, location) => {
@@ -101,10 +102,86 @@ class RequireRule extends Rule {
     }
 }
 exports.RequireRule = RequireRule;
+class WellFormedRule extends Rule {
+    init(parser, parseState) {
+        this.parseState = parseState;
+        this.errors = [];
+    }
+    finalise() {
+        this.errors = this.parseState.errors;
+    }
+}
+exports.WellFormedRule = WellFormedRule;
+class ParseNode {
+    constructor(scope, name, location) {
+        this.scope = scope;
+        this.name = name;
+        this.location = location;
+    }
+}
+exports.ParseNode = ParseNode;
+/**
+ *  Helper to maintain the current state of traversal.
+ */
+class ParseState {
+    constructor(scopes) {
+        if (scopes == null)
+            scopes = ['html', 'body', 'template', 'svg'];
+        this.scopes = scopes;
+    }
+    init(parser) {
+        this.stack = [];
+        this.errors = [];
+        this.illFormed = false;
+        var self = this;
+        var stack = this.stack;
+        parser.on("startTag", (name, attrs, selfClosing, location) => {
+            if (!selfClosing && !self.isVoid(name)) {
+                let scope = "";
+                if (stack.length > 0)
+                    scope = stack[stack.length - 1].scope;
+                if (self.isScope(name))
+                    scope = name;
+                stack.push(new ParseNode(scope, name, location));
+            }
+        });
+        parser.on("endTag", (name, location) => {
+            if (stack.length <= 0 || stack[stack.length - 1].name != name) {
+                let error = "mismatched close tag found [line: " + location.line + "]";
+                self.errors.push(error);
+            }
+            else {
+                stack.pop();
+            }
+        });
+    }
+    finalise() {
+        let stack = this.stack;
+        let errors = this.errors;
+        if (stack.length > 0) {
+            stack.forEach(element => {
+                let error = "suspected unclosed element detected [line: " + element.location.line + "]";
+                errors.push(error);
+            });
+        }
+    }
+    isVoid(name) {
+        const voidTags = [
+            'area', 'base', 'br', 'col', 'embed', 'hr',
+            'img', 'input', 'keygen', 'link', 'meta',
+            'param', 'source', 'track', 'wbr'];
+        return voidTags.indexOf(name) >= 0;
+    }
+    isScope(name) {
+        return this.scopes.indexOf(name) >= 0;
+    }
+}
+exports.ParseState = ParseState;
 class Linter {
     constructor(rules) {
         if (!rules)
             rules = [
+                new WellFormedRule(),
                 new SelfCloseRule(),
                 new TemplateRule(),
                 new RequireRule(),
@@ -114,19 +191,27 @@ class Linter {
     }
     lint(html) {
         var parser = new parse5_1.SAXParser({ locationInfo: true });
+        var parseState = new ParseState();
         var stream = new stream_1.Readable();
+        // must be done before initialising rules
+        parseState.init(parser);
         stream.push(html);
         stream.push(null);
-        this.rules.forEach((rule) => {
-            rule.init(parser);
+        var rules = this.rules;
+        rules.forEach((rule) => {
+            rule.init(parser, parseState);
         });
         var work = stream.pipe(parser);
         var completed = new Promise(function (resolve, reject) {
-            work.on("end", () => { resolve(); });
+            work.on("end", () => {
+                parseState.finalise();
+                resolve();
+            });
         });
         var ruleTasks = [];
-        this.rules.forEach((rule) => {
+        rules.forEach((rule) => {
             let task = completed.then(() => {
+                rule.finalise();
                 return rule.errors;
             });
             ruleTasks.push(task);
