@@ -23,7 +23,7 @@ There are currently a few proof of concept rules, they are:
   * *ensure root is a template element*
   * *no more than template element present* 
 * **RouterView**
-  * **don't allow RouterView to contain content elements** 
+  * *don't allow RouterView to contain content elements*
 * **Require**
   * *ensure require elments have a 'from' attribute*
   
