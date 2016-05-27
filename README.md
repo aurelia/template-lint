@@ -29,6 +29,8 @@ There are currently a few proof of concept rules, they are:
   * *don't allow router-view element to contain content elements*
 * **Require**
   * *ensure require elments have a 'from' attribute*
+* **Parser**
+  * *returns detected unclosed/ill-formed elements errors captured during parsing
   
 [More rules are planned](https://github.com/MeirionHughes/aurelia-template-lint/labels/rule)
 
