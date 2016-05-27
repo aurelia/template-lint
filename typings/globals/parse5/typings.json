@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/abc2bcfb8524b1e027e6298d3348012b5b06eda5/parse5/parse5.d.ts",
+    "raw": "registry:dt/parse5#2.1.5+20160224211008",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/abc2bcfb8524b1e027e6298d3348012b5b06eda5/parse5/parse5.d.ts"
+  }
+}
