@@ -105,7 +105,10 @@ class Linter {
     constructor(rules) {
         if (!rules)
             rules = [
-                new SelfCloseRule()
+                new SelfCloseRule(),
+                new TemplateRule(),
+                new RequireRule(),
+                new RouterRule(),
             ];
         this.rules = rules;
     }
