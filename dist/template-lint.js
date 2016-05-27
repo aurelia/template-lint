@@ -47,7 +47,7 @@ class TemplateRule extends Rule {
                     return;
                 }
             }
-            if (name = 'template') {
+            if (name == 'template') {
                 if (found > 0) {
                     let error = "another template element found [line: " + location.line + "]";
                     self.errors.push(error);

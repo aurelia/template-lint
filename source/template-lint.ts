@@ -71,7 +71,7 @@ export class TemplateRule extends Rule {
                 }             
             }
             
-            if (name = 'template')            
+            if (name == 'template')            
             {                
                 if(found > 0)
                 { 
