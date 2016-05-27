@@ -21,7 +21,7 @@ There are currently a few proof of concept rules, they are:
   * *ensure non-void elements do not self-close* 
 * **Template** 
   * *ensure root is a template element*
-  * *no more than template element present* 
+  * *no more than one template element present* 
 * **RouterView**
   * *don't allow RouterView to contain content elements*
 * **Require**
