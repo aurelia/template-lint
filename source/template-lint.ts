@@ -139,12 +139,14 @@ export class WellFormedRule extends Rule {
     }
 }
 
+/**
+ *  Node in traversal stack
+ */
 export class ParseNode {    
     constructor(public scope: string, public name: string, public location:StartTagLocationInfo)
     {        
     }      
 }
-
 
 /**
  *  Helper to maintain the current state of traversal.  
