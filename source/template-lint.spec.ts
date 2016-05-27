@@ -79,6 +79,14 @@ describe("Template Rule", () => {
         done();
       });
   });
+  
+  it("will pass template with valid contents", (done) => {
+    linter.lint('<template><button></button><div></div></template>')
+      .then((errors) => {
+        expect(errors.length).toBe(0);
+        done();
+      });
+  });
 });
 
 
