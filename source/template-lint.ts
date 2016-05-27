@@ -19,10 +19,6 @@ export abstract class Rule {
  * Rule to ensure non-void elements do not self-close
  */
 export class SelfCloseRule extends Rule {
-    public name: string;
-    public description: string;
-    public errors: string[];
-
     init(parser: SAXParser, parseState:ParseState) {
 
         const voidTags = [
@@ -47,10 +43,6 @@ export class SelfCloseRule extends Rule {
  *  Rule to ensure root element is the template element
  */
 export class TemplateRule extends Rule {
-    public name: string;
-    public description: string;
-    public errors: string[];
-
     init(parser: SAXParser, parseState:ParseState) {
         var self = this;
         self.errors = [];
@@ -86,10 +78,6 @@ export class TemplateRule extends Rule {
  *  Rule to ensure root element is the template element
  */
 export class RouterRule extends Rule {
-    public name: string;
-    public description: string;
-    public errors: string[];
-
     init(parser: SAXParser, parseState:ParseState) {
         var self = this;
         self.errors = [];
@@ -119,10 +107,6 @@ export class RouterRule extends Rule {
  *  Rule to ensure require element is well formed
  */
 export class RequireRule extends Rule {
-    public name: string;
-    public description: string;
-    public errors: string[];
-
     init(parser: SAXParser, parseState:ParseState) {
         var self = this;
         self.errors = [];
@@ -143,9 +127,6 @@ export class RequireRule extends Rule {
 }
 
 export class WellFormedRule extends Rule {
-    public name: string;
-    public description: string;
-    public errors: string[];
     private parseState:ParseState;
 
     init(parser: SAXParser, parseState:ParseState) {  
@@ -173,8 +154,6 @@ export class ParseState {
     public errors: string[];
     public scopes: string[];
     
-    private illFormed:boolean;
-
     constructor(scopes?: string[]) {
         if (scopes == null)
             scopes = ['html', 'body', 'template', 'svg'];
@@ -185,7 +164,6 @@ export class ParseState {
     init(parser: SAXParser) {
         this.stack = [];
         this.errors = [];
-        this.illFormed = false;
 
         var self = this;
         var stack = this.stack;                        
@@ -222,10 +200,9 @@ export class ParseState {
         let errors = this.errors;
         if(stack.length > 0)
         {
-            stack.forEach(element => {
-                let error = "suspected unclosed element detected [line: " + element.location.line + "]";
-                errors.push(error);               
-            });         
+            let element = stack[stack.length-1]
+            let error = "suspected unclosed element detected [line: " + element.location.line + "]";
+            errors.push(error);                  
         }
     }
 
