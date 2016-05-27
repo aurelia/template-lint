@@ -2,11 +2,10 @@
 
 ![logo](https://d30y9cdsu7xlg0.cloudfront.net/png/30843-200.png)
 
+Sanity check of Aurelia-flavor Template HTML. 
+
 [![NPM version][npm-image]][npm-url]
 
-
-
-Sanity check of Aurelia-flavor Template HTML. 
 
 ##Info
 This project was the result of wondering why aurelia applications had missing content when you used self-closing tags. In the end it turns out if your template html is ill formed, the browser parser will not complain and you will simply have missing content and/or an ill formed DOM element tree. 
