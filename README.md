@@ -2,6 +2,10 @@
 
 ![logo](https://d30y9cdsu7xlg0.cloudfront.net/png/30843-200.png)
 
+[![NPM version][npm-image]][npm-url]
+
+
+
 Sanity check of Aurelia-flavor Template HTML. 
 
 ##Info
@@ -36,3 +40,7 @@ For use with gulp, there is a [gulp plugin available](https://github.com/Meirion
 ##Icon
 
 Icon courtesy of [The Noun Project](https://thenounproject.com/)
+
+[npm-url]: https://npmjs.org/package/aurelia-template-lint
+[npm-image]: http://img.shields.io/npm/v/aurelia-template-lint.svg
+
