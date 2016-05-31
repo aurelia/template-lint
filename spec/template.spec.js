@@ -23,7 +23,12 @@ describe("Template Rule", () => {
         });
     });
     it("will ignore html non-template root element", (done) => {
-        linter.lint('<html><temslat></temslat></html>')
+        linter.lint('<!DOCTYPE html><html><body><temslat></temslat></body></html>')
+            .then((errors) => {
+            expect(errors.length).toBe(0);
+            done();
+        });
+        linter.lint('<!DOCTYPE html><html><body><temslat></temslat></body></html>')
             .then((errors) => {
             expect(errors.length).toBe(0);
             done();

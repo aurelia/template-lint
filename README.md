@@ -6,6 +6,37 @@ Sanity check of Aurelia-flavor Template HTML.
 
 [![NPM version][npm-image]][npm-url]
 
+##Example
+
+using all the current rules, the example:
+```html
+<template>
+    <require/>
+    <require frm="bad"/>
+    <require from="good"/>
+    
+    <slot>lint will not like non-whitespace under projection targets</slot>
+        
+    <template>
+        this is bad under aurelia
+    </template>  
+    
+</etemps> <!-- oops! -->
+```
+
+will result in the following errors:
+
+```
+WARNING: self-closing element, line: 2, column: 5 \source\example.html
+WARNING: self-closing element, line: 3, column: 5 \source\example.html
+WARNING: self-closing element, line: 4, column: 5 \source\example.html
+WARNING: mismatched close tag, line: 12, column: 1 \source\example.html
+WARNING: suspected unclosed element detected, line: 1, column: 1 \source\example.html
+WARNING: found content within projection target (slot), line: 6, column: 5 \source\example.html
+WARNING: nested template found, line: 8, column: 5 \source\example.html
+WARNING: require tag is missing a 'from' attribute, line: 2, column: 5 \source\example.html
+WARNING: require tag is missing a 'from' attribute, line: 3, column: 5 \source\example.html
+```
 
 ##Info
 This project was the result of wondering why aurelia applications had missing content when you used self-closing tags. In the end it turns out if your template html is ill formed, the browser parser will not complain and you will simply have missing content and/or an ill formed DOM element tree. 
@@ -37,6 +68,8 @@ There are currently a few proof of concept rules, they are:
 ##Usage
 
 For use with gulp, there is a [gulp plugin available](https://github.com/MeirionHughes/gulp-aurelia-template-lint)
+
+##Example
 
 ##Icon
 
