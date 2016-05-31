@@ -6,8 +6,18 @@ Sanity check of Aurelia-flavor Template HTML.
 
 [![NPM version][npm-image]][npm-url]
 
-##Example
+##Info
+This project was the result of wondering why aurelia applications had missing content when you used self-closing tags. 
+In the end it turns out that if your template html is ill-formed, the browser's parser will not complain and you will simply have missing content 
+and/or an ill formed DOM element tree. 
 
+This project extends upon [template-lint](https://github.com/MeirionHughes/template-lint/) (the base lint project) to add aurelia-specific rules. 
+
+See: 
+* [StackOverflow: aurelia-self-closing-require-element-does-not-work](http://stackoverflow.com/questions/37300986/aurelia-self-closing-require-element-does-not-work)
+* [StackOverflow: aurelia-sanity-check-template-html](http://stackoverflow.com/questions/37322985/aurelia-sanity-check-template-html)
+
+##Example
 using all the current rules, the example:
 ```html
 <template>
@@ -38,17 +48,8 @@ WARNING: require tag is missing a 'from' attribute, line: 2, column: 5 \source\e
 WARNING: require tag is missing a 'from' attribute, line: 3, column: 5 \source\example.html
 ```
 
-##Info
-This project was the result of wondering why aurelia applications had missing content when you used self-closing tags. 
-In the end it turns out that if your template html is ill-formed, the browser's parser will not complain and you will simply have missing content 
-and/or an ill formed DOM element tree. 
-
-See: 
-* [StackOverflow: aurelia-self-closing-require-element-does-not-work](http://stackoverflow.com/questions/37300986/aurelia-self-closing-require-element-does-not-work)
-* [StackOverflow: aurelia-sanity-check-template-html](http://stackoverflow.com/questions/37322985/aurelia-sanity-check-template-html)
-
 ## Rules
-There are currently a few proof of concept rules, they are: 
+There are currently a rules, they are: 
 
 * **SelfClose** 
   * *ensure non-void elements do not self-close* 
@@ -63,6 +64,7 @@ There are currently a few proof of concept rules, they are:
   * *returns detected unclosed/ill-matched elements errors captured during parsing*
   
 [More rules are planned](https://github.com/MeirionHughes/aurelia-template-lint/labels/rule)
+I'm more than happy to add or improve rules; so please feel free to create an issue. 
 
 ##Usage
 
