@@ -24,7 +24,7 @@ describe("Template Rule", () => {
   it("will reject non-template root element", (done) => {
     linter.lint('<temslat></temslat>')
       .then((errors) => {
-        expect(errors.length).toBeGreaterThan(0);
+        expect(errors[0].message).toBe('root element is not template');
         done();
       });
   });
