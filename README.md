@@ -39,14 +39,13 @@ WARNING: require tag is missing a 'from' attribute, line: 3, column: 5 \source\e
 ```
 
 ##Info
-This project was the result of wondering why aurelia applications had missing content when you used self-closing tags. In the end it turns out if your template html is ill formed, the browser parser will not complain and you will simply have missing content and/or an ill formed DOM element tree. 
+This project was the result of wondering why aurelia applications had missing content when you used self-closing tags. 
+In the end it turns out that if your template html is ill-formed, the browser's parser will not complain and you will simply have missing content 
+and/or an ill formed DOM element tree. 
 
 See: 
 * [StackOverflow: aurelia-self-closing-require-element-does-not-work](http://stackoverflow.com/questions/37300986/aurelia-self-closing-require-element-does-not-work)
 * [StackOverflow: aurelia-sanity-check-template-html](http://stackoverflow.com/questions/37322985/aurelia-sanity-check-template-html)
-
-
-This project's intended goal is to sanity check your template html during the development cycle to highlight potential problems. 
 
 ## Rules
 There are currently a few proof of concept rules, they are: 
@@ -68,8 +67,6 @@ There are currently a few proof of concept rules, they are:
 ##Usage
 
 For use with gulp, there is a [gulp plugin available](https://github.com/MeirionHughes/gulp-aurelia-template-lint)
-
-##Example
 
 ##Icon
 
