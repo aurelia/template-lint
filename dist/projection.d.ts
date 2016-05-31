@@ -7,5 +7,4 @@ export declare class ProjectionRule extends Rule {
     private projTags;
     constructor(projTags?: string[]);
     init(parser: SAXParser, parseState: ParseState): void;
-    private parentIsTag(tags, parseState);
 }

@@ -8,6 +8,8 @@ var runSequence = require('run-sequence');
 var jasmine = require('gulp-jasmine');
 var plumber = require('gulp-plumber');
 var sourcemap = require('gulp-sourcemaps');
+var ignore = require('gulp-ignore');
+var rimraf = require('gulp-rimraf');
 
 var paths = {
     source : "source/",
@@ -15,7 +17,13 @@ var paths = {
     spec : "spec/"
 }
 
-gulp.task('compile', function () {
+gulp.task('clean', function() {
+ return gulp.src([paths.output + '**/*', paths.spec + '*.spec.*'], { read: false }) // much faster 
+   .pipe(rimraf());
+});
+
+
+gulp.task('compile', ['clean'], function () {
     var project = ts.createProject('tsconfig.json');
 
     var tsResult = gulp        

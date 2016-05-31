@@ -6,27 +6,27 @@ const template_lint_1 = require('template-lint');
 class TemplateRule extends template_lint_1.Rule {
     init(parser, parseState) {
         var self = this;
-        var disable = false;
-        var first = true;
-        var count = 0;
+        self.disable = false;
+        self.first = true;
+        self.count = 0;
         parser.on('startTag', (name, attrs, selfClosing, location) => {
             // Ignore Full HTML Documents
-            if (disable || name == 'html') {
-                disable = true;
+            if (self.disable || name == 'html') {
+                self.disable = true;
                 return;
             }
-            if (first) {
+            if (self.first) {
                 if (name != 'template') {
                     let error = new template_lint_1.RuleError("root element is not template", location.line, location.col);
                     self.reportError(error);
                     return;
                 }
-                count++;
-                first = false;
+                self.count++;
+                self.first = false;
                 return;
             }
             if (name == 'template') {
-                if (count > 0) {
+                if (self.count > 0) {
                     if (parseState.stack.length > 0) {
                         let error = new template_lint_1.RuleError("nested template found", location.line, location.col);
                         self.reportError(error);
@@ -36,9 +36,15 @@ class TemplateRule extends template_lint_1.Rule {
                         self.reportError(error);
                     }
                 }
-                count += 1;
+                self.count += 1;
             }
         });
+    }
+    finalise() {
+        this.disable = false;
+        this.first = true;
+        this.count = 0;
+        return super.finalise();
     }
 }
 exports.TemplateRule = TemplateRule;

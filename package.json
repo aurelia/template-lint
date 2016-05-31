@@ -1,7 +1,7 @@
 {
   "name": "aurelia-template-lint",
   "description": "sanity check of template html",
-   "author": "Meirion Hughes <crakinshot@yahoo.com>",
+  "author": "Meirion Hughes <crakinshot@yahoo.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/MeirionHughes/aurelia-template-lint"
@@ -21,8 +21,10 @@
   "typings": "./dist/index.d.ts",
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-ignore": "^2.0.1",
     "gulp-jasmine": "^2.3.0",
     "gulp-plumber": "^1.1.0",
+    "gulp-rimraf": "^0.2.0",
     "gulp-shell": "^0.5.2",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.4",
@@ -37,6 +39,6 @@
   },
   "dependencies": {
     "parse5": "^2.1.5",
-    "template-lint": "^0.2.x"
+    "template-lint": "^0.3.x"
   }
 }

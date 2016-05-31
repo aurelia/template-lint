@@ -7,7 +7,7 @@ class ProjectionRule extends template_lint_1.Rule {
     constructor(projTags) {
         super();
         if (!projTags)
-            projTags = ['slot', 'router-view'];
+            projTags = ['slot', 'router-view', 'content'];
         this.projTags = projTags;
     }
     init(parser, parseState) {
@@ -27,10 +27,6 @@ class ProjectionRule extends template_lint_1.Rule {
         };
         parser.on('startTag', contentCheck);
         parser.on("text", contentCheck);
-    }
-    parentIsTag(tags, parseState) {
-        let stack = parseState.stack;
-        return false;
     }
 }
 exports.ProjectionRule = ProjectionRule;

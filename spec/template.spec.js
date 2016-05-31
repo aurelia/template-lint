@@ -23,23 +23,23 @@ describe("Template Rule", () => {
         });
     });
     it("will ignore html non-template root element", (done) => {
-        linter.lint('<temslat></temslat>')
+        linter.lint('<html><temslat></temslat></html>')
             .then((errors) => {
-            expect(errors.length).toBeGreaterThan(0);
+            expect(errors.length).toBe(0);
             done();
         });
     });
     it("will reject more than one template", (done) => {
         linter.lint('<template></template><template></template>')
             .then((errors) => {
-            expect(errors.length).toBeGreaterThan(0);
+            expect(errors[0].message).toBe("extraneous template found");
             done();
         });
     });
     it("will reject nested template", (done) => {
         linter.lint('<template><template></template></template>')
             .then((errors) => {
-            expect(errors.length).toBeGreaterThan(0);
+            expect(errors[0].message).toBe("nested template found");
             done();
         });
     });

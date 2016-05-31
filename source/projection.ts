@@ -14,7 +14,7 @@ export class ProjectionRule extends Rule {
         super();
 
         if (!projTags)
-            projTags = ['slot', 'router-view']
+            projTags = ['slot', 'router-view', 'content'];
 
         this.projTags = projTags;
     }
@@ -39,14 +39,6 @@ export class ProjectionRule extends Rule {
         
         parser.on('startTag', contentCheck);
         parser.on("text", contentCheck);
-    }
-
-    private parentIsTag(tags: string[], parseState: ParseState): boolean {
-        let stack = parseState.stack;
-
-        
-        
-        return false;
     }
 }
 
