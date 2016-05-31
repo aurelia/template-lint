@@ -11,7 +11,8 @@ This project was the result of wondering why aurelia applications had missing co
 In the end it turns out that if your template html is ill-formed, the browser's parser will not complain and you will simply have missing content 
 and/or an ill formed DOM element tree. 
 
-This project extends upon [template-lint](https://github.com/MeirionHughes/template-lint/) (the base lint project) to add aurelia-specific rules. 
+By using this lint during your development cycle, you can spot problems with your html and/or templates before they cause problems in the browser. 
+aurelia-template-lint extends upon [template-lint](https://github.com/MeirionHughes/template-lint/) (the base lint project) to add aurelia-specific rules.  
 
 See: 
 * [StackOverflow: aurelia-self-closing-require-element-does-not-work](http://stackoverflow.com/questions/37300986/aurelia-self-closing-require-element-does-not-work)
