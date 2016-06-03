@@ -18,10 +18,9 @@ var paths = {
 }
 
 gulp.task('clean', function() {
- return gulp.src([paths.output + '**/*', paths.spec + '*.spec.*'], { read: false }) // much faster 
+ return gulp.src([paths.output + '**/*', paths.spec + '**/*.spec.*'], { read: false }) // much faster 
    .pipe(rimraf());
 });
-
 
 gulp.task('compile:typescript', ['clean'], function () {
     var project = ts.createProject('tsconfig.json');
