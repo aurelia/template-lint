@@ -2,7 +2,7 @@ source
 spec
 .vscode
 typings
-*.js.map
+**/*.map
 tsconfig.json
 typings.json
 gulpfile.js
