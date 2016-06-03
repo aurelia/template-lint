@@ -7,7 +7,7 @@ class ProjectionRule extends template_lint_1.Rule {
     constructor(projTags) {
         super();
         if (!projTags)
-            projTags = ['slot', 'router-view', 'content'];
+            projTags = ['router-view', 'content'];
         this.projTags = projTags;
     }
     init(parser, parseState) {

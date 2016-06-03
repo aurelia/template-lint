@@ -14,7 +14,7 @@ export class ProjectionRule extends Rule {
         super();
 
         if (!projTags)
-            projTags = ['slot', 'router-view', 'content'];
+            projTags = ['router-view', 'content'];
 
         this.projTags = projTags;
     }

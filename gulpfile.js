@@ -23,7 +23,7 @@ gulp.task('clean', function() {
 });
 
 
-gulp.task('compile', ['clean'], function () {
+gulp.task('compile:typescript', ['clean'], function () {
     var project = ts.createProject('tsconfig.json');
 
     var tsResult = gulp        
@@ -43,7 +43,7 @@ gulp.task('compile', ['clean'], function () {
 	]);
 });
 
-gulp.task('compile-tests', ['compile'], function () {
+gulp.task('compile:tests', ['compile:typescript'], function () {
     var project = ts.createProject('tsconfig.json');
 
     var tsResult = gulp.src([
@@ -58,7 +58,7 @@ gulp.task('compile-tests', ['compile'], function () {
         .pipe(gulp.dest(paths.spec));
 });
 
-gulp.task('test', ['compile-tests'], function() {
+gulp.task('test', ['compile:tests'], function() {
    return gulp.src('spec/*.js')
       .pipe(plumber())
       .pipe(jasmine({verbose:true}));
@@ -70,14 +70,5 @@ gulp.task('watch', ['test'], function () {
         
 });
 
-gulp.task('flush', function () {
-  for (var prop in require.cache) {
-    if (prop.indexOf("node_modules") === -1) {
-      delete require.cache[prop];
-    }
-  }
-});
-
-gulp.task('default', function() {
-   return runSequence('compile', 'compile-tests', 'test');
+gulp.task('default', ['test'], function() {
 });
