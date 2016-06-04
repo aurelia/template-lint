@@ -25,7 +25,7 @@ describe("Aurelia Examples", () => {
             .then((errors) => {
             errors = errors.sort((a, b) => a.line - b.line);
             errors.forEach(error => {
-                console.log(error.message + " [ ln: " + error.line + " col: " + error.column + " ]");
+                //console.log(error.message + " [ ln: " + error.line + " col: " + error.column +" ]" );
             });
             done();
         });
