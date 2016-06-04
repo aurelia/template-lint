@@ -40,6 +40,6 @@
   },
   "dependencies": {
     "parse5": "^2.1.5",
-    "template-lint": "^0.3.x"
+    "template-lint": "^0.4.x"
   }
 }

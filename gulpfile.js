@@ -4,7 +4,6 @@ var gulp = require('gulp');
 var ts = require('gulp-typescript');
 var shell = require('gulp-shell');
 var merge = require('merge2');
-var runSequence = require('run-sequence');
 var jasmine = require('gulp-jasmine');
 var plumber = require('gulp-plumber');
 var sourcemap = require('gulp-sourcemaps');
