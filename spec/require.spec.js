@@ -1,9 +1,9 @@
 "use strict";
 const template_lint_1 = require('template-lint');
-const index_1 = require('../dist/index');
+const require_1 = require('../dist/require');
 describe("Require Rule", () => {
     var linter = new template_lint_1.Linter([
-        new index_1.RequireRule()
+        new require_1.RequireRule()
     ]);
     it("will pass require elements with a from attribute", (done) => {
         linter.lint('<template><require from="something"></require></template>')

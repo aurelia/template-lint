@@ -10,6 +10,7 @@ var plumber = require('gulp-plumber');
 var sourcemap = require('gulp-sourcemaps');
 var ignore = require('gulp-ignore');
 var rimraf = require('gulp-rimraf');
+var replace = require('gulp-replace');
 
 var paths = {
     source : "source/",
@@ -54,6 +55,7 @@ gulp.task('compile:tests', ['compile:typescript'], function () {
         
     return tsResult.js
         .pipe(sourcemap.write('.',  {sourceRoot: '../source'}))
+        .pipe(replace(/(require\('\.\/)/g, 'require(\'..\/dist\/'))
         .pipe(gulp.dest(paths.spec));
 });
 

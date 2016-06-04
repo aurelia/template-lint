@@ -1,16 +1,14 @@
 /// <reference path="index.ts" />
 import {Linter, Rule, ParseState, RuleError} from 'template-lint';
 import {SelfCloseRule, ParserRule} from 'template-lint';
-import {ProjectionRule} from '../dist/projection';
-import {RequireRule} from '../dist/require';
-import {TemplateRule} from '../dist/template';
+import {RequireRule} from './require';
+import {TemplateRule} from './template';
 
 describe("Aurelia Examples", () => {
 
     var linter: Linter = new Linter([
         new SelfCloseRule(),
         new ParserRule(),
-        new ProjectionRule(),
         new TemplateRule(),
         new RequireRule(),
     ]);

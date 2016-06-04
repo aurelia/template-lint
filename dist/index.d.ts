@@ -1,3 +1,5 @@
+import { SelfCloseRule } from 'template-lint';
 export * from './template';
-export * from './projection';
 export * from './require';
+export * from './slot';
+export declare var DefaultRules: SelfCloseRule[];

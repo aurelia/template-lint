@@ -43,7 +43,7 @@ declare module 'parse5' {
     }
 
     export interface Attribute {
-        key: string;
+        name: string;
         value: string;
     }
 

@@ -2,14 +2,12 @@
 /// <reference path="index.ts" />
 const template_lint_1 = require('template-lint');
 const template_lint_2 = require('template-lint');
-const projection_1 = require('../dist/projection');
 const require_1 = require('../dist/require');
 const template_1 = require('../dist/template');
 describe("Aurelia Examples", () => {
     var linter = new template_lint_1.Linter([
         new template_lint_2.SelfCloseRule(),
         new template_lint_2.ParserRule(),
-        new projection_1.ProjectionRule(),
         new template_1.TemplateRule(),
         new require_1.RequireRule(),
     ]);

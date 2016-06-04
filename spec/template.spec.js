@@ -1,16 +1,13 @@
 "use strict";
 const template_lint_1 = require('template-lint');
-const index_1 = require('../dist/index');
+const template_1 = require('../dist/template');
 describe("Template Rule", () => {
     var linter = new template_lint_1.Linter([
-        new index_1.TemplateRule()
+        new template_1.TemplateRule()
     ]);
     it("will accept template root element", (done) => {
         linter.lint('<template></template>')
             .then((errors) => {
-            errors.forEach(element => {
-                console.log(element);
-            });
             expect(errors.length).toBe(0);
             done();
         });

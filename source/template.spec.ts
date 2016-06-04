@@ -1,6 +1,6 @@
 
 import {Linter, Rule, ParseState, RuleError} from 'template-lint';
-import {TemplateRule, ProjectionRule, RequireRule} from '../dist/index';
+import {TemplateRule} from './template';
 
 describe("Template Rule", () => {
 
@@ -10,12 +10,7 @@ describe("Template Rule", () => {
   
     it("will accept template root element", (done) => {
     linter.lint('<template></template>')
-      .then((errors) => {
-        
-        errors.forEach(element => {
-          console.log(element);
-        });
-        
+      .then((errors) => {                
         expect(errors.length).toBe(0);
         done();
       });
