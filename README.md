@@ -88,8 +88,12 @@ I'm more than happy to add or improve rules;
 so please feel free to [create an issue](https://github.com/MeirionHughes/aurelia-template-lint/labels/rule),
 or even a pull request.
 
-##Usage
+## Install
+```
+npm install aurelia-template-lint
+```
 
+##Usage
 *For use with gulp, there is a [gulp plugin available](https://github.com/MeirionHughes/gulp-aurelia-template-lint)*
 
 
