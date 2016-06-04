@@ -21,7 +21,7 @@ class Config {
     }
 }
 exports.Config = Config;
-class Linter {
+class AureliaLinter {
     constructor(config) {
         if (config == undefined)
             config = new Config();
@@ -41,6 +41,6 @@ class Linter {
         return this.linter.lint(html);
     }
 }
-exports.Linter = Linter;
+exports.AureliaLinter = AureliaLinter;
 
-//# sourceMappingURL=linter.js.map
+//# sourceMappingURL=aurelia-linter.js.map

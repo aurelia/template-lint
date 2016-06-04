@@ -1,4 +1,4 @@
-import {Linter as TemplateLinter, Rule, RuleError} from 'template-lint';
+import {Linter, Rule, RuleError} from 'template-lint';
 
 import {SelfCloseRule} from 'template-lint';
 import {ParserRule} from 'template-lint';
@@ -21,8 +21,8 @@ export class Config {
     customRules: Rule[] = [];
 }
 
-export class Linter {
-    linter: TemplateLinter;
+export class AureliaLinter {
+    linter: Linter;
 
     constructor(config?: Config) {
 
@@ -42,7 +42,7 @@ export class Linter {
             
         ].concat(config.customRules);
 
-        this.linter = new TemplateLinter(
+        this.linter = new Linter(
             rules,
             config.scopes,
             config.voids);

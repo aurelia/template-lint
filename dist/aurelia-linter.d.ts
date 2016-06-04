@@ -1,4 +1,4 @@
-import { Linter as TemplateLinter, Rule, RuleError } from 'template-lint';
+import { Linter, Rule, RuleError } from 'template-lint';
 export declare class Config {
     obsoleteTags: Array<string>;
     obsoleteAttributes: Array<{
@@ -10,8 +10,8 @@ export declare class Config {
     rules: Rule[];
     customRules: Rule[];
 }
-export declare class Linter {
-    linter: TemplateLinter;
+export declare class AureliaLinter {
+    linter: Linter;
     constructor(config?: Config);
     lint(html: string): Promise<RuleError[]>;
 }

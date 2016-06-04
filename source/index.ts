@@ -12,4 +12,4 @@ export * from './require'
 export * from './slot'
 export * from './repeatfor'
 
-export * from './linter'
+export * from './aurelia-linter'

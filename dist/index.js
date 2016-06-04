@@ -6,6 +6,6 @@ __export(require('./template'));
 __export(require('./require'));
 __export(require('./slot'));
 __export(require('./repeatfor'));
-__export(require('./linter'));
+__export(require('./aurelia-linter'));
 
 //# sourceMappingURL=index.js.map

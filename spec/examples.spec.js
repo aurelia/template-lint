@@ -1,8 +1,8 @@
 "use strict";
 /// <reference path="index.ts" />
-const linter_1 = require('../dist/linter');
+const aurelia_linter_1 = require('../dist/aurelia-linter');
 describe("Aurelia Examples", () => {
-    var linter = new linter_1.Linter();
+    var linter = new aurelia_linter_1.AureliaLinter();
     it("linter okay with 'A Simple Template'", (done) => {
         var html = `
             <template>

@@ -1,10 +1,10 @@
 /// <reference path="index.ts" />
-import {Linter} from './linter';
+import {AureliaLinter} from './aurelia-linter';
 
 
 describe("Aurelia Examples", () => {
 
-    var linter: Linter = new Linter();
+    var linter: AureliaLinter = new AureliaLinter();
 
     it("linter okay with 'A Simple Template'", (done) => {
         var html = `
