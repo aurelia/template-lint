@@ -8,6 +8,7 @@ import {ObsoleteAttributeRule} from 'template-lint';
 import {RequireRule} from './require';
 import {SlotRule} from './slot';
 import {TemplateRule} from './template';
+import {RepeatForRule} from './repeatfor';
 
 export class Config {
     obsoleteTags: Array<string> = ['content'];
@@ -36,7 +37,9 @@ export class Linter {
 
             new RequireRule(),
             new SlotRule(),
-            new TemplateRule()
+            new TemplateRule(),
+            new RepeatForRule()
+            
         ].concat(config.customRules);
 
         this.linter = new TemplateLinter(

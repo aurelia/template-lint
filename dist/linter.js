@@ -7,6 +7,7 @@ const template_lint_5 = require('template-lint');
 const require_1 = require('./require');
 const slot_1 = require('./slot');
 const template_1 = require('./template');
+const repeatfor_1 = require('./repeatfor');
 class Config {
     constructor() {
         this.obsoleteTags = ['content'];
@@ -31,7 +32,8 @@ class Linter {
             new template_lint_4.ObsoleteTagRule(config.obsoleteTags),
             new require_1.RequireRule(),
             new slot_1.SlotRule(),
-            new template_1.TemplateRule()
+            new template_1.TemplateRule(),
+            new repeatfor_1.RepeatForRule()
         ].concat(config.customRules);
         this.linter = new template_lint_1.Linter(rules, config.scopes, config.voids);
     }
