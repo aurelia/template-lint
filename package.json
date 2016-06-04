@@ -7,7 +7,7 @@
     "url": "https://github.com/MeirionHughes/aurelia-template-lint"
   },
   "license": "(Apache-2.0)",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "keywords": [
     "template",
     "html",
@@ -29,7 +29,7 @@
     "gulp-shell": "^0.5.2",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.4",
-    "gulp-typings": "^2.0.0",   
+    "gulp-typings": "^2.0.0",
     "merge2": "^1.0.2",
     "typings": "^1.0.4"
   },
