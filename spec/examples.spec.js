@@ -94,6 +94,20 @@ describe("Aurelia Examples", () => {
             done();
         });
     });
+    it("complains about obsolete <content>'", (done) => {
+        var html = `  
+            <template>
+            <content>
+            </content>
+            </template>
+            `;
+        linter.lint(html)
+            .then((errors) => {
+            expect(errors.length).toBe(1);
+            expect(errors[0].message).toBe("<content> is obsolete");
+            done();
+        });
+    });
 });
 
 //# sourceMappingURL=examples.spec.js.map
