@@ -15,14 +15,16 @@ class Config {
             'img', 'input', 'keygen', 'link', 'meta',
             'param', 'source', 'track', 'wbr'];
         this.scopes = ['html', 'body', 'template', 'svg', 'math'];
-        this.rules = null;
+        this.rules = [];
         this.customRules = [];
     }
 }
 exports.Config = Config;
 class Linter {
-    constructor(config = new Config()) {
-        let rules = [
+    constructor(config) {
+        if (config == undefined)
+            config = new Config();
+        let rules = config.rules || [
             new template_lint_2.SelfCloseRule(),
             new template_lint_3.ParserRule(),
             new template_lint_5.ObsoleteAttributeRule(config.obsoleteAttributes),

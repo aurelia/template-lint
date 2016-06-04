@@ -23,9 +23,12 @@ export class Config {
 export class Linter {
     linter: TemplateLinter;
 
-    constructor(config: Config = new Config()) {
-        
-        let rules = [
+    constructor(config?: Config) {
+
+        if (config == undefined)
+            config = new Config();
+            
+        let rules = config.rules || [
             new SelfCloseRule(),
             new ParserRule(),
             new ObsoleteAttributeRule(config.obsoleteAttributes),

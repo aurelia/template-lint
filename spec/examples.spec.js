@@ -1,16 +1,8 @@
 "use strict";
 /// <reference path="index.ts" />
-const template_lint_1 = require('template-lint');
-const template_lint_2 = require('template-lint');
-const require_1 = require('../dist/require');
-const template_1 = require('../dist/template');
+const linter_1 = require('../dist/linter');
 describe("Aurelia Examples", () => {
-    var linter = new template_lint_1.Linter([
-        new template_lint_2.SelfCloseRule(),
-        new template_lint_2.ParserRule(),
-        new template_1.TemplateRule(),
-        new require_1.RequireRule(),
-    ]);
+    var linter = new linter_1.Linter();
     it("linter okay with 'A Simple Template'", (done) => {
         var html = `
             <template>
