@@ -15,7 +15,7 @@ class Config {
             'img', 'input', 'keygen', 'link', 'meta',
             'param', 'source', 'track', 'wbr'];
         this.scopes = ['html', 'body', 'template', 'svg', 'math'];
-        this.rules = [];
+        this.rules = null;
         this.customRules = [];
     }
 }
