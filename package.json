@@ -29,10 +29,8 @@
     "gulp-shell": "^0.5.2",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.4",
-    "gulp-typings": "^2.0.0",
-    "jasmine": "^2.4.1",
+    "gulp-typings": "^2.0.0",   
     "merge2": "^1.0.2",
-    "run-sequence": "^1.2.1",
     "typings": "^1.0.4"
   },
   "scripts": {

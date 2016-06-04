@@ -24,34 +24,40 @@ See:
 ##Example
 using all the current rules, the example:
 ```html
-<template>
-    <require/>
-    <require frm="bad"/>
-    <require from="good"/>
-    
-    <slot>lint will not like non-whitespace under projection targets</slot>
-        
-    <template>
-        this is bad under aurelia
-    </template>  
-    
-</etemps> <!-- oops! -->
+ 1: <template>
+ 2:    <require/>
+ 3:    <require frm="bad"/>
+ 4:    <require from="good"/>
+ 5:    
+ 6:    <div repeat="item of items"/>
+ 7:    <div repeat.for="item of"/>
+ 8:    
+ 9:    <slot></slot>
+10:    <slot></slot> 
+11:       
+12:    <template>
+13:        nested templates are bad under aurelia
+14:    </template>     
+15: </etemps> <!-- oops! -->
 ```
 
 will result in the following errors:
 
 ```
-WARNING: self-closing element, line: 2, column: 5 \source\example.html
-WARNING: self-closing element, line: 3, column: 5 \source\example.html
-WARNING: self-closing element, line: 4, column: 5 \source\example.html
-WARNING: mismatched close tag, line: 12, column: 1 \source\example.html
-WARNING: suspected unclosed element detected, line: 1, column: 1 \source\example.html
-WARNING: found content within projection target (slot), line: 6, column: 5 \source\example.html
-WARNING: nested template found, line: 8, column: 5 \source\example.html
-WARNING: require tag is missing a 'from' attribute, line: 2, column: 5 \source\example.html
-WARNING: require tag is missing a 'from' attribute, line: 3, column: 5 \source\example.html
+suspected unclosed element detected [ ln: 1 col: 1 ]
+self-closing element [ ln: 2 col: 5 ]
+require tag is missing a 'from' attribute [ ln: 2 col: 5 ]
+self-closing element [ ln: 3 col: 5 ]
+require tag is missing a 'from' attribute [ ln: 3 col: 5 ]
+self-closing element [ ln: 4 col: 5 ]
+self-closing element [ ln: 6 col: 5 ]
+did you miss `.for` on repeat? [ ln: 6 col: 5 ]
+self-closing element [ ln: 7 col: 5 ]
+repeat syntax should be of form `* of *` [ ln: 7 col: 5 ]
+more than one default slot detected [ ln: 10 col: 5 ]
+nested template found [ ln: 12 col: 5 ]
+mismatched close tag [ ln: 15 col: 1 ]
 ```
-
 ## Rules
 Rules used by default: 
 
@@ -64,7 +70,7 @@ Rules used by default:
 * **ObsoleteAttributes**
   * *identify obsolete attribute usage*
 * **Slot**
-  * *don't allow two, or more slots to have the same name;*
+  * *don't allow two, or more, slots to have the same name;*
   * *don't allow more than one default slot; *  
 * **Require**
   * *ensure require elments have a 'from' attribute*
@@ -77,9 +83,54 @@ Rules used by default:
 I'm more than happy to add or improve rules; 
 so please feel free to [create an issue](https://github.com/MeirionHughes/aurelia-template-lint/labels/rule), 
 or even a pull request. 
+
 ##Usage
 
-For use with gulp, there is a [gulp plugin available](https://github.com/MeirionHughes/gulp-aurelia-template-lint)
+*For use with gulp, there is a [gulp plugin available](https://github.com/MeirionHughes/gulp-aurelia-template-lint)*
+
+
+```
+const AureliaLinter = require('aurelia-template-lint').AureliaLinter
+
+var linter = new AureliaLinter();
+
+var html = "<template></template>"
+
+linter.lint(html)
+  .then((errors) => {    
+      errors = errors.sort((a,b)=> a.line - b.line);          
+      errors.forEach(error => {
+         console.log(error.message + " [ ln: " + error.line + " col: " + error.column +" ]" );
+      });
+  });
+```
+
+can be configured by passing a config object
+
+```
+const Config = require('aurelia-template-lint').Config
+
+var config = new Config();
+
+config.obsoleteTags.push('my-old-tag');
+
+var linter = new AureliaLinter(config);
+```
+
+Config is an object type of the form: 
+
+```
+class Config {
+    obsoleteTags: Array<string> = ['content'];
+    obsoleteAttributes: Array<{ name: string, tag: string }> = [];
+    voids: Array<string> = ['area', 'base', 'br', 'col', 'embed', 'hr',
+        'img', 'input', 'keygen', 'link', 'meta',
+        'param', 'source', 'track', 'wbr'];
+    scopes: Array<string> = ['html', 'body', 'template', 'svg', 'math'];
+    rules: Rule[] = null;
+    customRules: Rule[] = [];
+}
+```
 
 ##Icon
 

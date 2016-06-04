@@ -2,7 +2,47 @@
 /// <reference path="index.ts" />
 const aurelia_linter_1 = require('../dist/aurelia-linter');
 describe("Aurelia Examples", () => {
-    var linter = new aurelia_linter_1.AureliaLinter();
+    var config = new aurelia_linter_1.Config();
+    config.obsoleteTags.push('my-old-tag');
+    var linter = new aurelia_linter_1.AureliaLinter(config);
+    it("readme example'", (done) => {
+        var html = `<template>
+    <require/>
+    <require frm="bad"/>
+    <require from="good"/>
+    
+    <div repeat="item of items"/>
+    <div repeat.for="item of"/>
+    
+    <slot></slot>
+    <slot></slot> 
+       
+    <template>
+        nested templates are bad under aurelia
+    </template>   
+</etemps> <!-- oops! -->`;
+        linter.lint(html)
+            .then((errors) => {
+            errors = errors.sort((a, b) => a.line - b.line);
+            errors.forEach(error => {
+                console.log(error.message + " [ ln: " + error.line + " col: " + error.column + " ]");
+            });
+            done();
+        });
+    });
+    it("linter allows configerable obsolete tag", (done) => {
+        var html = `
+            <template>
+                <my-old-tag></my-old-tag>
+            </template>                  
+            `;
+        linter.lint(html)
+            .then((errors) => {
+            expect(errors.length).toBe(1);
+            expect(errors[0].message).toBe("<my-old-tag> is obsolete");
+            done();
+        });
+    });
     it("linter okay with 'A Simple Template'", (done) => {
         var html = `
             <template>
