@@ -71,7 +71,7 @@ Rules used by default:
   * *identify obsolete attribute usage*
 * **Slot**
   * *don't allow two, or more, slots to have the same name;*
-  * *don't allow more than one default slot; *  
+  * *don't allow more than one default slot;*  
 * **Require**
   * *ensure require elments have a 'from' attribute*
 * **RepeatFor**
