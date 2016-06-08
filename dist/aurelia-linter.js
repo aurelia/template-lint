@@ -11,7 +11,7 @@ const repeatfor_1 = require('./repeatfor');
 class Config {
     constructor() {
         this.obsoleteTags = ['content'];
-        this.obsoleteAttributes = [];
+        this.obsoleteAttributes = [{ name: "replaceable", tag: "template" }];
         this.voids = ['area', 'base', 'br', 'col', 'embed', 'hr',
             'img', 'input', 'keygen', 'link', 'meta',
             'param', 'source', 'track', 'wbr'];

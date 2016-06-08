@@ -148,6 +148,18 @@ describe("Aurelia Examples", () => {
             done();
         });
     });
+    it("complains about obsolete attribute `replaceable` ", (done) => {
+        var html = `  
+            <template replaceable="">
+            </template>
+            `;
+        linter.lint(html)
+            .then((errors) => {
+            expect(errors.length).toBe(1);
+            expect(errors[0].message).toBe("replaceable attribute is obsolete");
+            done();
+        });
+    });
 });
 
 //# sourceMappingURL=examples.spec.js.map
