@@ -37,7 +37,11 @@ export class TemplateRule extends Rule {
                 self.count++;
                 self.first = false;
                 return;
-            }           
+            } 
+
+            if(attrs.findIndex(x=>x.name == "replace-part") != -1){
+                return;                
+            }
 
             if (name == 'template') {
                 if (self.count > 0) {

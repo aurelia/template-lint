@@ -25,7 +25,9 @@ describe("Template Rule", () => {
             expect(errors.length).toBe(0);
             done();
         });
-        linter.lint('<!DOCTYPE html><html><body><temslat></temslat></body></html>')
+    });
+    it("will ignore nested template part replacement", (done) => {
+        linter.lint('<template><template replace-part=""></template></template>')
             .then((errors) => {
             expect(errors.length).toBe(0);
             done();

@@ -12,7 +12,7 @@ import {RepeatForRule} from './repeatfor';
 
 export class Config {
     obsoleteTags: Array<string> = ['content'];
-    obsoleteAttributes: Array<{ name: string, tag: string }> = [];
+    obsoleteAttributes: Array<{ name: string, tag: string }> = [{name:"replaceable", tag:"template"}];
     voids: Array<string> = ['area', 'base', 'br', 'col', 'embed', 'hr',
         'img', 'input', 'keygen', 'link', 'meta',
         'param', 'source', 'track', 'wbr'];

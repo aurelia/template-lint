@@ -25,6 +25,9 @@ class TemplateRule extends template_lint_1.Rule {
                 self.first = false;
                 return;
             }
+            if (attrs.findIndex(x => x.name == "replace-part") != -1) {
+                return;
+            }
             if (name == 'template') {
                 if (self.count > 0) {
                     if (parseState.stack.length > 0) {
