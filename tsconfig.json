@@ -5,6 +5,7 @@
         "module": "commonjs",
         "sourceMap": true,
         "noEmitOnError": true,
+        "newLine": "lf",
         "declaration": true,
         "removeComments": false,
         "experimentalDecorators": true,
