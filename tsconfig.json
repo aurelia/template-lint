@@ -4,9 +4,14 @@
         "target": "es6",
         "module": "commonjs",
         "sourceMap": true,
+        "noEmitOnError": true,
+        "newLine": "lf",
         "declaration": true,
         "removeComments": false,
         "experimentalDecorators": true,
         "allowSyntheticDefaultImports": true
-    }
+    },
+    "exclude": [
+      "node_modules"
+    ]
 }
