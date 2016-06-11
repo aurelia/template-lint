@@ -47,7 +47,8 @@ class ConflictingAttributesRule extends template_lint_1.Rule {
         }
     }
 }
-ConflictingAttributesRule.TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_PREFIX = "template controllers shouldn't be placed to the same element, found follwoing conflicting attributes: ";
+ConflictingAttributesRule.TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_PREFIX = "conflicting attributes: ";
+ConflictingAttributesRule.TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_DESCRIPTION = "template controllers shouldn't be placed to the same element";
 exports.ConflictingAttributesRule = ConflictingAttributesRule;
 
 //# sourceMappingURL=conflictingattributes.js.map

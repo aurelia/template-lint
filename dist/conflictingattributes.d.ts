@@ -11,6 +11,7 @@ export declare class ConflictingAttributes {
 export declare class ConflictingAttributesRule extends Rule {
     conflictingAttributesList: ConflictingAttributes[];
     static TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_PREFIX: string;
+    static TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_DESCRIPTION: string;
     constructor(conflictingAttributesList?: ConflictingAttributes[]);
     static createDefaultConflictingAttributes(): ConflictingAttributes[];
     init(parser: SAXParser, parseState: ParseState): void;

@@ -12,7 +12,8 @@ export class ConflictingAttributes {
  * Rule to ensure tags don't have attributes that shouldn't be used at the same time.
  */
 export class ConflictingAttributesRule extends Rule {
-  static TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_PREFIX = "template controllers shouldn't be placed to the same element, found follwoing conflicting attributes: ";
+  static TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_PREFIX = /*"template controllers shouldn't be placed to the same element, */ "conflicting attributes: ";
+  static TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_DESCRIPTION = "template controllers shouldn't be placed to the same element";
 
   constructor(public conflictingAttributesList?: ConflictingAttributes[]) {
     super();

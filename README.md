@@ -26,38 +26,34 @@ using all the current rules, the example:
 ```html
  1: <template>
  2:    <require/>
- 3:    <require frm="bad"/>
- 4:    <require from="good"/>
- 5:    
- 6:    <div repeat="item of items"/>
- 7:    <div repeat.for="item of"/>
- 8:    
- 9:    <slot></slot>
-10:    <slot></slot>
-11:       
-12:    <template>
-13:        nested templates are bad under aurelia
-14:    </template>  
-15:    <div repeat.for="user of users" with.bind="user"></div>
-16: </etemps> <!-- oops! -->
+ 3:    <require frm="bad"/> 
+ 4:
+ 5:    <div repeat="item of items"></div>
+ 6:    <div repeat.for="item of"></div>
+ 7:
+ 8:    <slot></slot>
+ 9:    <slot></slot>    
+10:       
+11:    <table>
+12:        <template></template>     
+13:    </table>
+14:    <div repeat.for="user of users" with.bind="user"></div>
+15: </etemps> <!-- oops! -->`
 ```
 
 will result in the following errors:
 
 ```
-suspected unclosed element detected [ ln: 1 col: 1 ]
-self-closing element [ ln: 2 col: 5 ]
-require tag is missing a 'from' attribute [ ln: 2 col: 5 ]
+suspected unclosed element detected [ ln: 2 col: 1 ]
 self-closing element [ ln: 3 col: 5 ]
 require tag is missing a 'from' attribute [ ln: 3 col: 5 ]
+require tag is missing a 'from' attribute [ ln: 4 col: 5 ]
 self-closing element [ ln: 4 col: 5 ]
-self-closing element [ ln: 6 col: 5 ]
 did you miss `.for` on repeat? [ ln: 6 col: 5 ]
-self-closing element [ ln: 7 col: 5 ]
 repeat syntax should be of form `* of *` [ ln: 7 col: 5 ]
 more than one default slot detected [ ln: 10 col: 5 ]
-nested template found [ ln: 12 col: 5 ]
-template controllers shouldn't be placed to the same element, found follwoing conflicting attributes: [repeat.for, with.bind] [ ln: 15 col: 5 ]
+template as child of <table> not allowed [ ln: 13 col: 9 ]
+conflicting attributes: [repeat.for, with.bind] [ ln: 15 col: 5 ]
 mismatched close tag [ ln: 16 col: 1 ]
 ```
 ## Rules
@@ -79,9 +75,10 @@ Rules used by default:
 * **RepeatFor**
   * *ensure loop is well formed*
 * **ConflictingAttributesRule**
-  * *ensure element doesn't have attributes, that shouldn't be used at the same time, such as template controller attributes (`if.bind` and `repeat.for` on the same element)*
+  * *ensure element doesn't have attribute combination marked as conflicting.* 
+  * *i.e. template controller attributes (`if.bind` and `repeat.for` on the same element)*
 * **Template**
-  * *ensure root is a template element*
+  * *ensure root is a template element, unless its <html>*
   * *no more than one template element present*
 
 I'm more than happy to add or improve rules;

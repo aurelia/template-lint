@@ -11,27 +11,28 @@ describe("Aurelia Examples", () => {
     var linter: AureliaLinter = new AureliaLinter(config);
     
      it("readme example'", (done) => {
-        var html = `<template>
+        var html = `
+<template>
     <require/>
-    <require frm="bad"/>
-    <require from="good"/>
-    
-    <div repeat="item of items"/>
-    <div repeat.for="item of"/>
-    
+    <require frm="bad"/> 
+
+    <div repeat="item of items"></div>
+    <div repeat.for="item of"></div>
+
     <slot></slot>
-    <slot></slot> 
+    <slot></slot>    
        
-    <template>
-        nested templates are bad under aurelia
-    </template>   
+    <table>
+        <template></template>     
+    </table>
+    <div repeat.for="user of users" with.bind="user"></div>
 </etemps> <!-- oops! -->`
         linter.lint(html)
             .then((errors) => {    
                 
                 errors = errors.sort((a,b)=> a.line - b.line);          
                 errors.forEach(error => {
-                    //console.log(error.message + " [ ln: " + error.line + " col: " + error.column +" ]" );
+                    console.log(error.message + " [ ln: " + error.line + " col: " + error.column +" ]" );
                 });
                 done();
             });
