@@ -74,7 +74,7 @@ gulp.task('test:jasmine', ['compile:tests'], function(done) {
 });
 
 gulp.task('test', function(done) {
-   runsequence('test:jasmine', 'clean:tests', done);
+   runsequence('compile:tests', 'test:jasmine', 'clean:tests', done);
 });
 
 gulp.task('watch', ['test'], function () {    

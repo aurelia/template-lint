@@ -1,25 +1,8 @@
 {
     "version": "0.2.0",
     "configurations": [
-         {
-            "name": "Launch2",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
-            "stopOnEntry": false,
-            "args": ["compile"],
-            "cwd": "${workspaceRoot}",
-            "preLaunchTask": null,
-            "runtimeExecutable": null,
-            "runtimeArgs": [
-                "--nolazy"
-            ],
-            "env": {
-                "NODE_ENV": "development"
-            },
-            "externalConsole": false     
-        },
         {
+            
             "name": "Launch",
             "type": "node",
             "request": "launch",
@@ -27,7 +10,8 @@
             "stopOnEntry": false,
             "args": ["test"],
             "cwd": "${workspaceRoot}",
-            "preLaunchTask": "compile",
+            "preLaunchTask": "compile:tests",
+            "internalConsoleOptions": "openOnSessionStart" ,
             "runtimeExecutable": null,
             "runtimeArgs": [
                 "--nolazy"
