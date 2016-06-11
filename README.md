@@ -26,10 +26,10 @@ using the default config, the example:
 
 ```html
  1:<template>
- 2:   <require/>
- 3:   <require frm="bad"/> 
+ 2:    <require/>
+ 3:    <require frm="bad"/> 
  4:
- 5:   <div repeat="item of items"></div>
+ 5:    <div repeat="item of items"></div>
  6:    <div repeat.for="item of"></div>
  7:
  8:    <content></content>
