@@ -7,7 +7,7 @@ export declare class Config {
     }>;
     voids: Array<string>;
     scopes: Array<string>;
-    rules: Rule[];
+    containers: Array<string>;
     customRules: Rule[];
 }
 export declare class AureliaLinter {

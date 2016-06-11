@@ -130,11 +130,12 @@ Config is an object type of the form:
 ```
 class Config {
     obsoleteTags: Array<string> = ['content'];
-    obsoleteAttributes: Array<{ name: string, tag: string }> = [];
+    obsoleteAttributes: Array<{ name: string, tag: string }> = [{name:"replaceable", tag:"template"}];
     voids: Array<string> = ['area', 'base', 'br', 'col', 'embed', 'hr',
         'img', 'input', 'keygen', 'link', 'meta',
         'param', 'source', 'track', 'wbr'];
     scopes: Array<string> = ['html', 'body', 'template', 'svg', 'math'];
+    containers: Array<string> = ['table', 'select'];
     customRules: Rule[] = [];
 }
 ```

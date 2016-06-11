@@ -17,7 +17,7 @@ class Config {
             'img', 'input', 'keygen', 'link', 'meta',
             'param', 'source', 'track', 'wbr'];
         this.scopes = ['html', 'body', 'template', 'svg', 'math'];
-        this.rules = null;
+        this.containers = ['table', 'select'];
         this.customRules = [];
     }
 }
@@ -26,14 +26,14 @@ class AureliaLinter {
     constructor(config) {
         if (config == undefined)
             config = new Config();
-        let rules = config.rules || [
+        let rules = [
             new template_lint_2.SelfCloseRule(),
             new template_lint_3.ParserRule(),
             new template_lint_5.ObsoleteAttributeRule(config.obsoleteAttributes),
             new template_lint_4.ObsoleteTagRule(config.obsoleteTags),
             new require_1.RequireRule(),
             new slot_1.SlotRule(),
-            new template_1.TemplateRule(),
+            new template_1.TemplateRule(config.containers),
             new conflictingattributes_1.ConflictingAttributesRule(),
             new repeatfor_1.RepeatForRule()
         ].concat(config.customRules);
