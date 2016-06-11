@@ -8,8 +8,6 @@ import {SAXParser} from 'parse5';
  */
 export class RepeatForRule extends Rule {
 
-    private 
-
     init(parser: SAXParser, parseState: ParseState) {
         super.init(parser, parseState);
         
