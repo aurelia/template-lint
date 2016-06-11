@@ -4,6 +4,7 @@
         "target": "es6",
         "module": "commonjs",
         "sourceMap": true,
+        "noEmitOnError": true,
         "declaration": true,
         "removeComments": false,
         "experimentalDecorators": true,
