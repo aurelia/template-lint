@@ -12,6 +12,14 @@ export class TemplateRule extends Rule {
     first:boolean;
     count:number;
 
+    constructor(public containers?:string[])
+    {
+        super();
+
+        if(!this.containers)
+            this.containers = ['table', 'select'];
+    }
+
     init(parser: SAXParser, parseState: ParseState) {
         var self = this;
         self.disable = false;
@@ -37,20 +45,25 @@ export class TemplateRule extends Rule {
                 self.count++;
                 self.first = false;
                 return;
-            } 
-
-            if(attrs.findIndex(x=>x.name == "replace-part") != -1){
-                return;                
             }
 
             if (name == 'template') {
                 if (self.count > 0) {
-                    if (parseState.stack.length > 0) {
-                        let error = new RuleError("nested template found", location.line, location.col);
-                        self.reportError(error);
+                    let stack = parseState.stack;
+                    let stackCount = stack.length;
+                    
+                    if (stackCount > 0) {
+
+                        self.containers.forEach(containerName => {
+                            if(stack[stackCount-1].name == containerName)
+                            {
+                                let error = new RuleError(`template as child of <${containerName}> not allowed`, location.line, location.col);
+                                self.reportError(error);
+                            }                     
+                        });
                     }
                     else {
-                        let error = new RuleError("extraneous template found", location.line, location.col);
+                        let error = new RuleError("more than one template in file", location.line, location.col);
                         self.reportError(error);
                     }
                 }

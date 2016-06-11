@@ -4,6 +4,12 @@ const template_lint_1 = require('template-lint');
  *  Rule to ensure root element is the template element
  */
 class TemplateRule extends template_lint_1.Rule {
+    constructor(containers) {
+        super();
+        this.containers = containers;
+        if (!this.containers)
+            this.containers = ['table', 'select'];
+    }
     init(parser, parseState) {
         var self = this;
         self.disable = false;
@@ -25,17 +31,20 @@ class TemplateRule extends template_lint_1.Rule {
                 self.first = false;
                 return;
             }
-            if (attrs.findIndex(x => x.name == "replace-part") != -1) {
-                return;
-            }
             if (name == 'template') {
                 if (self.count > 0) {
-                    if (parseState.stack.length > 0) {
-                        let error = new template_lint_1.RuleError("nested template found", location.line, location.col);
-                        self.reportError(error);
+                    let stack = parseState.stack;
+                    let stackCount = stack.length;
+                    if (stackCount > 0) {
+                        self.containers.forEach(containerName => {
+                            if (stack[stackCount - 1].name == containerName) {
+                                let error = new template_lint_1.RuleError(`template as child of <${containerName}> not allowed`, location.line, location.col);
+                                self.reportError(error);
+                            }
+                        });
                     }
                     else {
-                        let error = new template_lint_1.RuleError("extraneous template found", location.line, location.col);
+                        let error = new template_lint_1.RuleError("more than one template in file", location.line, location.col);
                         self.reportError(error);
                     }
                 }

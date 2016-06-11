@@ -33,31 +33,32 @@ describe("Template Rule", () => {
       });      
   });
 
-  it("will ignore nested template part replacement", (done) => {
+  it("will ignore nested template", (done) => {
     
-    linter.lint('<template><template replace-part=""></template></template>')
+    linter.lint('<template><template></template></template>')
       .then((errors) => {
         expect(errors.length).toBe(0);
         done();
       });      
   });
   
-  it("will reject more than one template", (done) => {
-    linter.lint('<template></template><template></template>')
+  it("will reject template directly under table ", (done) => {
+    linter.lint('<template><table><template><template><table></template>')
       .then((errors) => {
-        expect(errors[0].message).toBe("extraneous template found");
+        expect(errors[0].message).toBe("template as child of <table> not allowed");
+        done();
+      });
+  })
+
+   it("will reject template directly under select", (done) => {
+    linter.lint('<template><select><template></template></select></template>')
+      .then((errors) => {
+        expect(errors[0].message).toBe("template as child of <select> not allowed");
         done();
       });
   })
   
-  it("will reject nested template", (done) => {
-    linter.lint('<template><template></template></template>')
-      .then((errors) => {
-        expect(errors[0].message).toBe("nested template found");
-        done();
-      });
-  });
-  
+    
   it("will pass template with valid contents", (done) => {
     linter.lint('<template><button></button><div></div></template>')
       .then((errors) => {

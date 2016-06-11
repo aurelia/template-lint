@@ -8,6 +8,7 @@ const require_1 = require('./require');
 const slot_1 = require('./slot');
 const template_1 = require('./template');
 const repeatfor_1 = require('./repeatfor');
+const conflictingattributes_1 = require('./conflictingattributes');
 class Config {
     constructor() {
         this.obsoleteTags = ['content'];
@@ -33,6 +34,7 @@ class AureliaLinter {
             new require_1.RequireRule(),
             new slot_1.SlotRule(),
             new template_1.TemplateRule(),
+            new conflictingattributes_1.ConflictingAttributesRule(),
             new repeatfor_1.RepeatForRule()
         ].concat(config.customRules);
         this.linter = new template_lint_1.Linter(rules, config.scopes, config.voids);
