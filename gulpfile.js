@@ -10,6 +10,8 @@ var sourcemap = require('gulp-sourcemaps');
 var ignore = require('gulp-ignore');
 var rimraf = require('gulp-rimraf');
 var replace = require('gulp-replace');
+var runsequence = require('run-sequence');
+
 
 var paths = {
     source : "source/",
@@ -17,12 +19,20 @@ var paths = {
     spec : "spec/"
 }
 
-gulp.task('clean', function() {
- return gulp.src([paths.output + '**/*', paths.spec + '**/*.spec.*'], { read: false }) // much faster 
+gulp.task('clean:typescript', function() {
+ return gulp.src([paths.output + '**/*'], { read: false })
    .pipe(rimraf());
 });
 
-gulp.task('compile:typescript', ['clean'], function () {
+gulp.task('clean:tests', function() {
+ return gulp.src([paths.spec + '**/*.spec.js', paths.spec + '**/*.map'], { read: false })  
+   .pipe(rimraf());
+});
+
+gulp.task('clean', ['clean:tests','clean:typescript'], function() {
+});
+
+gulp.task('compile:typescript', ['clean:typescript'], function () {
     var project = ts.createProject('tsconfig.json');
 
     var tsResult = gulp        
@@ -42,32 +52,33 @@ gulp.task('compile:typescript', ['clean'], function () {
 	]);
 });
 
-gulp.task('compile:tests', ['compile:typescript'], function () {
+gulp.task('compile:tests', ['compile:typescript','clean:tests'], function () {
     var project = ts.createProject('tsconfig.json');
 
     var tsResult = gulp.src([
-            paths.source + '**/*spec.ts',
-            'typings/index.d.ts'
+            paths.spec + '**/*spec.ts', 'typings/index.d.ts'
         ])
         .pipe(sourcemap.init())
         .pipe(ts(project));        
         
     return tsResult.js
-        .pipe(sourcemap.write('.',  {sourceRoot: '../source'}))
-        .pipe(replace(/(require\('\.\/)/g, 'require(\'..\/dist\/'))
+        .pipe(sourcemap.write('.',  {sourceRoot: '../spec'}))
+        .pipe(replace(/(require\('\..\/source\/)/g, 'require(\'..\/dist\/'))
         .pipe(gulp.dest(paths.spec));
 });
 
-gulp.task('test', ['compile:tests'], function() {
+gulp.task('test:jasmine', ['compile:tests'], function(done) {
    return gulp.src('spec/*.js')
       .pipe(plumber())
       .pipe(jasmine({verbose:true}));
 });
 
-gulp.task('watch', ['test'], function () {
-    
-    gulp.watch(paths.source + '**/*.ts', ['test']);
-        
+gulp.task('test', function(done) {
+   runsequence('test:jasmine', 'clean:tests', done);
+});
+
+gulp.task('watch', ['test'], function () {    
+    gulp.watch(paths.source + '**/*.ts', ['test']);      
 });
 
 gulp.task('default', ['test'], function() {

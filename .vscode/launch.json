@@ -1,13 +1,13 @@
 {
     "version": "0.2.0",
     "configurations": [
-        {
-            "name": "Launch",
+         {
+            "name": "Launch2",
             "type": "node",
             "request": "launch",
             "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
             "stopOnEntry": false,
-            "args": ["test"],
+            "args": ["compile"],
             "cwd": "${workspaceRoot}",
             "preLaunchTask": null,
             "runtimeExecutable": null,
@@ -17,10 +17,28 @@
             "env": {
                 "NODE_ENV": "development"
             },
+            "externalConsole": false     
+        },
+        {
+            "name": "Launch",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+            "stopOnEntry": false,
+            "args": ["test"],
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "compile",
+            "runtimeExecutable": null,
+            "runtimeArgs": [
+                "--nolazy"
+            ],
+            "env": {
+                "NODE_ENV": "development"
+            },
             "externalConsole": false,
             "sourceMaps": true,            
-            "outDir": "${workspaceRoot}/dist" //["${workspaceRoot}/dist",  "${workspaceRoot}/spec"]
-            //"outDir": "${workspaceRoot}/spec" //["${workspaceRoot}/dist",  "${workspaceRoot}/spec"]
+            //"outDir": "${workspaceRoot}/dist" //["${workspaceRoot}/dist",  "${workspaceRoot}/spec"]
+            "outDir": "${workspaceRoot}/spec" //["${workspaceRoot}/dist",  "${workspaceRoot}/spec"]
         },
         {
             "name": "Attach",

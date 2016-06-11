@@ -1,6 +1,6 @@
 
 import {Linter, Rule, ParseState, RuleError} from 'template-lint';
-import {SlotRule} from './slot';
+import {SlotRule} from '../source/slot';
 
 describe("Slot Rule", () => {
 

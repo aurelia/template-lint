@@ -1,6 +1,6 @@
 
 import {Linter, Rule, ParseState, RuleError} from 'template-lint';
-import {RepeatForRule} from './repeatfor';
+import {RepeatForRule} from '../source/repeatfor';
 
 describe("RepeatFor Rule", () => {
 

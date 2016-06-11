@@ -6,10 +6,12 @@
     "type": "git",
     "url": "https://github.com/MeirionHughes/aurelia-template-lint"
   },
-  "contributors": [{
-    "name": "atsu85",
-    "url": "https://github.com/atsu85"
-  }],
+  "contributors": [
+    {
+      "name": "atsu85",
+      "url": "https://github.com/atsu85"
+    }
+  ],
   "license": "(Apache-2.0)",
   "version": "0.4.0",
   "keywords": [
@@ -35,6 +37,7 @@
     "gulp-typescript": "^2.13.4",
     "gulp-typings": "^2.0.0",
     "merge2": "^1.0.2",
+    "run-sequence": "^1.2.1",
     "typings": "^1.0.4"
   },
   "scripts": {

@@ -1,6 +1,6 @@
 
 import {Linter, Rule, ParseState, RuleError} from 'template-lint';
-import {TemplateRule} from './template';
+import {TemplateRule} from '../source/template';
 
 describe("Template Rule", () => {
 
