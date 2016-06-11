@@ -18,7 +18,7 @@ export class Config {
         'img', 'input', 'keygen', 'link', 'meta',
         'param', 'source', 'track', 'wbr'];
     scopes: Array<string> = ['html', 'body', 'template', 'svg', 'math'];
-    rules: Rule[] = null;
+    containers: Array<string> = ['table', 'select'];
     customRules: Rule[] = [];
 }
 
@@ -30,7 +30,7 @@ export class AureliaLinter {
         if (config == undefined)
             config = new Config();
 
-        let rules = config.rules || [
+        let rules = [
             new SelfCloseRule(),
             new ParserRule(),
             new ObsoleteAttributeRule(config.obsoleteAttributes),
@@ -38,7 +38,7 @@ export class AureliaLinter {
 
             new RequireRule(),
             new SlotRule(),
-            new TemplateRule(),
+            new TemplateRule(config.containers),
             new ConflictingAttributesRule(),
             new RepeatForRule()
 

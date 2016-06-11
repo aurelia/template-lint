@@ -135,7 +135,6 @@ class Config {
         'img', 'input', 'keygen', 'link', 'meta',
         'param', 'source', 'track', 'wbr'];
     scopes: Array<string> = ['html', 'body', 'template', 'svg', 'math'];
-    rules: Rule[] = null;
     customRules: Rule[] = [];
 }
 ```
