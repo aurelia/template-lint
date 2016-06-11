@@ -2,22 +2,22 @@
 
 ![logo](https://d30y9cdsu7xlg0.cloudfront.net/png/30843-200.png)
 
-Sanity check of Aurelia-flavor Template HTML. 
+Sanity check of Aurelia-flavor Template HTML.
 
 [![NPM version][npm-image]][npm-url]
 [![NPM downloads][npm-downloads]][npm-url]
 [![Travis Status][travis-image]][travis-url]
 
 ##Info
-This project was the result of wondering why aurelia applications had missing content when you used self-closing tags. 
-In the end it turns out that if your template html is ill-formed, the browser's parser will not complain and you will simply have missing content 
-and/or an ill formed DOM element tree. 
+This project was the result of wondering why aurelia applications had missing content when you used self-closing tags.
+In the end it turns out that if your template html is ill-formed, the browser's parser will not complain and you will simply have missing content
+and/or an ill formed DOM element tree.
 
-By using this lint during your development cycle, you can spot problems with your html and/or templates before they cause problems in the browser. 
-aurelia-template-lint extends upon [template-lint](https://github.com/MeirionHughes/template-lint/) (the base lint project) to add aurelia-specific rules 
-and easier configuration of them. 
+By using this lint during your development cycle, you can spot problems with your html and/or templates before they cause problems in the browser.
+aurelia-template-lint extends upon [template-lint](https://github.com/MeirionHughes/template-lint/) (the base lint project) to add aurelia-specific rules
+and easier configuration of them.
 
-See: 
+See:
 * [StackOverflow: aurelia-self-closing-require-element-does-not-work](http://stackoverflow.com/questions/37300986/aurelia-self-closing-require-element-does-not-work)
 * [StackOverflow: aurelia-sanity-check-template-html](http://stackoverflow.com/questions/37322985/aurelia-sanity-check-template-html)
 
@@ -33,12 +33,13 @@ using all the current rules, the example:
  7:    <div repeat.for="item of"/>
  8:    
  9:    <slot></slot>
-10:    <slot></slot> 
+10:    <slot></slot>
 11:       
 12:    <template>
 13:        nested templates are bad under aurelia
-14:    </template>     
-15: </etemps> <!-- oops! -->
+14:    </template>  
+15:    <div repeat.for="user of users" with.bind="user"></div>
+16: </etemps> <!-- oops! -->
 ```
 
 will result in the following errors:
@@ -56,13 +57,14 @@ self-closing element [ ln: 7 col: 5 ]
 repeat syntax should be of form `* of *` [ ln: 7 col: 5 ]
 more than one default slot detected [ ln: 10 col: 5 ]
 nested template found [ ln: 12 col: 5 ]
-mismatched close tag [ ln: 15 col: 1 ]
+template controllers shouldn't be placed to the same element, found follwoing conflicting attributes: [repeat.for, with.bind] [ ln: 15 col: 5 ]
+mismatched close tag [ ln: 16 col: 1 ]
 ```
 ## Rules
-Rules used by default: 
+Rules used by default:
 
-* **SelfClose** 
-  * *ensure non-void elements do not self-close* 
+* **SelfClose**
+  * *ensure non-void elements do not self-close*
 * **Parser**
   * *returns detected unclosed/ill-matched elements errors captured during parsing*
 * **ObsoleteTag**
@@ -76,13 +78,15 @@ Rules used by default:
   * *ensure require elments have a 'from' attribute*
 * **RepeatFor**
   * *ensure loop is well formed*
-* **Template** 
+* **ConflictingAttributesRule**
+  * *ensure element doesn't have attributes, that shouldn't be used at the same time, such as template controller attributes (`if.bind` and `repeat.for` on the same element)*
+* **Template**
   * *ensure root is a template element*
-  * *no more than one template element present* 
-  
-I'm more than happy to add or improve rules; 
-so please feel free to [create an issue](https://github.com/MeirionHughes/aurelia-template-lint/labels/rule), 
-or even a pull request. 
+  * *no more than one template element present*
+
+I'm more than happy to add or improve rules;
+so please feel free to [create an issue](https://github.com/MeirionHughes/aurelia-template-lint/labels/rule),
+or even a pull request.
 
 ##Usage
 
@@ -117,7 +121,7 @@ config.obsoleteTags.push('my-old-tag');
 var linter = new AureliaLinter(config);
 ```
 
-Config is an object type of the form: 
+Config is an object type of the form:
 
 ```
 class Config {

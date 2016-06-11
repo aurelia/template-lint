@@ -9,6 +9,7 @@ import {RequireRule} from './require';
 import {SlotRule} from './slot';
 import {TemplateRule} from './template';
 import {RepeatForRule} from './repeatfor';
+import {ConflictingAttributesRule} from './conflictingattributes';
 
 export class Config {
     obsoleteTags: Array<string> = ['content'];
@@ -28,7 +29,7 @@ export class AureliaLinter {
 
         if (config == undefined)
             config = new Config();
-            
+
         let rules = config.rules || [
             new SelfCloseRule(),
             new ParserRule(),
@@ -38,8 +39,9 @@ export class AureliaLinter {
             new RequireRule(),
             new SlotRule(),
             new TemplateRule(),
+            new ConflictingAttributesRule(),
             new RepeatForRule()
-            
+
         ].concat(config.customRules);
 
         this.linter = new Linter(
