@@ -27,7 +27,6 @@
   "typings": "./dist/index.d.ts",
   "devDependencies": {
     "gulp": "^3.9.1",
-    "gulp-ignore": "^2.0.1",
     "gulp-jasmine": "^2.3.0",
     "gulp-plumber": "^1.1.0",
     "gulp-replace": "^0.5.4",
@@ -35,7 +34,6 @@
     "gulp-shell": "^0.5.2",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.4",
-    "gulp-typings": "^2.0.0",
     "merge2": "^1.0.2",
     "run-sequence": "^1.2.1",
     "typings": "^1.0.4"
@@ -45,6 +43,6 @@
   },
   "dependencies": {
     "parse5": "^2.1.5",
-    "template-lint": "^0.4.x"
+    "template-lint": "^0.5.x"
   }
 }

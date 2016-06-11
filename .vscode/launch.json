@@ -21,8 +21,8 @@
             },
             "externalConsole": false,
             "sourceMaps": true,            
-            //"outDir": "${workspaceRoot}/dist" //["${workspaceRoot}/dist",  "${workspaceRoot}/spec"]
-            "outDir": "${workspaceRoot}/spec" //["${workspaceRoot}/dist",  "${workspaceRoot}/spec"]
+            //"outDir": "${workspaceRoot}/dist"
+            "outDir": "${workspaceRoot}/spec" 
         },
         {
             "name": "Attach",

@@ -5,11 +5,11 @@ import {ParserRule} from 'template-lint';
 import {ObsoleteTagRule} from 'template-lint';
 import {ObsoleteAttributeRule} from 'template-lint';
 
-import {RequireRule} from './require';
-import {SlotRule} from './slot';
-import {TemplateRule} from './template';
-import {RepeatForRule} from './repeatfor';
-import {ConflictingAttributesRule} from './conflictingattributes';
+import {RequireRule} from './rules/require';
+import {SlotRule} from './rules/slot';
+import {TemplateRule} from './rules/template';
+import {RepeatForRule} from './rules/repeatfor';
+import {ConflictingAttributesRule, ConflictingAttributes} from './rules/conflictingattributes';
 
 import {Config} from './config';
 
@@ -30,7 +30,7 @@ export class AureliaLinter {
             new RequireRule(),
             new SlotRule(),
             new TemplateRule(config.containers),
-            new ConflictingAttributesRule(),
+            new ConflictingAttributesRule(<ConflictingAttributes[]> config.conflictingAttributes),
             new RepeatForRule()
 
         ].concat(config.customRules);

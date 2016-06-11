@@ -1,9 +1,9 @@
 "use strict";
 const template_lint_1 = require('template-lint');
 class ConflictingAttributes {
-    constructor(attributeNames, errMsgPrefix) {
-        this.attributeNames = attributeNames;
-        this.errMsgPrefix = errMsgPrefix;
+    constructor(attrs, msg) {
+        this.attrs = attrs;
+        this.msg = msg;
     }
 }
 exports.ConflictingAttributes = ConflictingAttributes;
@@ -23,7 +23,7 @@ class ConflictingAttributesRule extends template_lint_1.Rule {
     }
     static createDefaultConflictingAttributes() {
         return [
-            new ConflictingAttributes(["repeat.for", "if.bind", "with.bind"], ConflictingAttributesRule.TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_PREFIX),
+            new ConflictingAttributes(["repeat.for", "if.bind", "with.bind"], ConflictingAttributesRule.ERRMSG_PREFIX),
         ];
     }
     init(parser, parseState) {
@@ -37,18 +37,17 @@ class ConflictingAttributesRule extends template_lint_1.Rule {
     checkConflictsWith(attrs, loc, conflictingAttributes) {
         const attributes = [];
         attrs.forEach(attr => {
-            if (conflictingAttributes.attributeNames.indexOf(attr.name) >= 0) {
+            if (conflictingAttributes.attrs.indexOf(attr.name) >= 0) {
                 attributes.push(attr.name);
             }
         });
         if (attributes.length > 1) {
-            const fullErrMsg = conflictingAttributes.errMsgPrefix + "[" + attributes.join(", ") + "]";
-            this.reportError(new template_lint_1.RuleError(fullErrMsg, loc.line, loc.col));
+            const fullErrMsg = ConflictingAttributesRule.ERRMSG_PREFIX + "[" + attributes.join(", ") + "]";
+            this.reportError(new template_lint_1.RuleError(fullErrMsg, loc.line, loc.col, conflictingAttributes.msg));
         }
     }
 }
-ConflictingAttributesRule.TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_PREFIX = "conflicting attributes: ";
-ConflictingAttributesRule.TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_DESCRIPTION = "template controllers shouldn't be placed to the same element";
+ConflictingAttributesRule.ERRMSG_PREFIX = "conflicting attributes: ";
 exports.ConflictingAttributesRule = ConflictingAttributesRule;
 
 //# sourceMappingURL=conflictingattributes.js.map

@@ -7,7 +7,6 @@ var merge = require('merge2');
 var jasmine = require('gulp-jasmine');
 var plumber = require('gulp-plumber');
 var sourcemap = require('gulp-sourcemaps');
-var ignore = require('gulp-ignore');
 var rimraf = require('gulp-rimraf');
 var replace = require('gulp-replace');
 var runsequence = require('run-sequence');

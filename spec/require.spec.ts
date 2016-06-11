@@ -1,6 +1,6 @@
 
 import {Linter, Rule, ParseState, RuleError} from 'template-lint';
-import {RequireRule} from '../source/require';
+import {RequireRule} from '../source/rules/require';
 
 describe("Require Rule", () => {
 

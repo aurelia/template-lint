@@ -1,6 +1,7 @@
 "use strict";
 
-import {AureliaLinter, Config} from '../source/aurelia-linter';
+import {Config} from '../source/config';
+import {AureliaLinter} from '../source/aurelia-linter';
 
 describe("Failing Scenarios", () => {
     var config: Config = new Config();

@@ -1,27 +1,27 @@
 import {Rule} from 'template-lint';
-import {ConflictingAttributesRule} from './conflictingattributes';
+import {ConflictingAttributesRule} from './rules/conflictingattributes';
 
 
 export class Config {
-    obsoleteTags: Array<{ tag: string, msg: string }> = [
+    obsoleteTags: Array<{ tag: string, msg?: string }> = [
         {
             tag: 'content',
             msg: 'use slot instead'
         }
     ];
 
-    obsoleteAttributes: Array<{ name: string, tag: string, msg: string }> = [
+    obsoleteAttributes: Array<{ attr: string, tag?: string, msg?: string }> = [
         {
-            name: "replaceable",
+            attr: "replaceable",
             tag: "template",
-            msg: "'replaceable' on template has been superceded by the slot element"
+            msg: "has been superceded by the slot element"
         }
     ];
 
-    conflictingAttributes: Array<{ tags: string[], msg: string }> = [
+    conflictingAttributes: Array<{ attrs: string[], msg?: string }> = [
         {
-            tags: ["repeat.for", "if.bind", "with.bind"],
-            msg: "template controllers shouldn't be placed to the same element"
+            attrs: ["repeat.for", "if.bind", "with.bind"],
+            msg: "template controllers shouldn't be placed on the same element"
         }
     ];
 

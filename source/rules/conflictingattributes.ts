@@ -4,7 +4,7 @@ import {Rule, ParseState, RuleError} from 'template-lint';
 import {SAXParser, Attribute, StartTagLocationInfo} from 'parse5';
 
 export class ConflictingAttributes {
-  constructor(public attributeNames: string[], public errMsgPrefix: string) {
+  constructor(public attrs: string[], public msg: string) {
   }
 }
 
@@ -41,13 +41,13 @@ export class ConflictingAttributesRule extends Rule {
   private checkConflictsWith(attrs: Attribute[], loc: StartTagLocationInfo, conflictingAttributes: ConflictingAttributes) {
     const attributes = [];
     attrs.forEach(attr => {
-      if (conflictingAttributes.attributeNames.indexOf(attr.name) >= 0 ) {
+      if (conflictingAttributes.attrs.indexOf(attr.name) >= 0 ) {
         attributes.push(attr.name);
       }
     });
     if (attributes.length > 1) {
-      const fullErrMsg = conflictingAttributes.errMsgPrefix + "[" + attributes.join(", ") + "]";
-      this.reportError(new RuleError(fullErrMsg, loc.line, loc.col));
+      const fullErrMsg = ConflictingAttributesRule.ERRMSG_PREFIX + "[" + attributes.join(", ") + "]";
+      this.reportError(new RuleError(fullErrMsg, loc.line, loc.col, conflictingAttributes.msg ));
     }
   }
 

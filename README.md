@@ -22,39 +22,43 @@ See:
 * [StackOverflow: aurelia-sanity-check-template-html](http://stackoverflow.com/questions/37322985/aurelia-sanity-check-template-html)
 
 ##Example
-using all the current rules, the example:
+using the default config, the example:
+
 ```html
- 1: <template>
- 2:    <require/>
- 3:    <require frm="bad"/> 
+ 1:<template>
+ 2:   <require/>
+ 3:   <require frm="bad"/> 
  4:
- 5:    <div repeat="item of items"></div>
+ 5:   <div repeat="item of items"></div>
  6:    <div repeat.for="item of"></div>
  7:
- 8:    <slot></slot>
- 9:    <slot></slot>    
-10:       
-11:    <table>
-12:        <template></template>     
-13:    </table>
-14:    <div repeat.for="user of users" with.bind="user"></div>
-15: </etemps> <!-- oops! -->`
+ 8:    <content></content>
+ 9:
+10:    <slot></slot>
+11:    <slot></slot>    
+12:       
+13:    <table>
+14:        <template></template>     
+15:    </table>
+16:    <div repeat.for="user of users" with.bind="user"></div>
+17:</etemps> <!-- oops! -->
 ```
 
 will result in the following errors:
 
 ```
-suspected unclosed element detected [ ln: 2 col: 1 ]
-self-closing element [ ln: 3 col: 5 ]
-require tag is missing a 'from' attribute [ ln: 3 col: 5 ]
-require tag is missing a 'from' attribute [ ln: 4 col: 5 ]
-self-closing element [ ln: 4 col: 5 ]
-did you miss `.for` on repeat? [ ln: 6 col: 5 ]
-repeat syntax should be of form `* of *` [ ln: 7 col: 5 ]
-more than one default slot detected [ ln: 10 col: 5 ]
-template as child of <table> not allowed [ ln: 13 col: 9 ]
-conflicting attributes: [repeat.for, with.bind] [ ln: 15 col: 5 ]
-mismatched close tag [ ln: 16 col: 1 ]
+suspected unclosed element detected [ln: 1 col: 1]
+self-closing element [ln: 2 col: 5]
+require tag is missing a 'from' attribute [ln: 2 col: 5]
+require tag is missing a 'from' attribute [ln: 3 col: 5]
+self-closing element [ln: 3 col: 5]
+did you miss `.for` on repeat? [ln: 5 col: 5]
+repeat syntax should be of form `* of *` [ln: 6 col: 5]
+<content> is obsolete [ln: 8 col: 5]
+more than one default slot detected [ln: 11 col: 5]
+template as child of <table> not allowed [ln: 14 col: 9]
+conflicting attributes: [repeat.for, with.bind] [ln: 16 col: 5]
+mismatched close tag [ln: 17 col: 1]
 ```
 ## Rules
 Rules used by default:
@@ -117,20 +121,41 @@ const Config = require('aurelia-template-lint').Config
 
 var config = new Config();
 
-config.obsoleteTags.push('my-old-tag');
+config.obsoleteTags.push({tag:'my-old-tag', msg:'is really old'});
 
 var linter = new AureliaLinter(config);
 ```
 
-Config is an object type of the form:
+Config is an object type of the form and default:
 
 ```
 class Config {
-    obsoleteTags: Array<string> = ['content'];
-    obsoleteAttributes: Array<{ name: string, tag: string }> = [{name:"replaceable", tag:"template"}];
+    obsoleteTags: Array<{ tag: string, msg?: string }> = [
+        {
+            tag: 'content',
+            msg: 'use slot instead'
+        }
+    ];
+
+    obsoleteAttributes: Array<{ attr: string, tag?: string, msg?: string }> = [
+        {
+            attr: "replaceable",
+            tag: "template",
+            msg: "has been superceded by the slot element"
+        }
+    ];
+
+    conflictingAttributes: Array<{ attrs: string[], msg?: string }> = [
+        {
+            attrs: ["repeat.for", "if.bind", "with.bind"],
+            msg: "template controllers shouldn't be placed on the same element"
+        }
+    ];
+
     voids: Array<string> = ['area', 'base', 'br', 'col', 'embed', 'hr',
         'img', 'input', 'keygen', 'link', 'meta',
         'param', 'source', 'track', 'wbr'];
+
     scopes: Array<string> = ['html', 'body', 'template', 'svg', 'math'];
     containers: Array<string> = ['table', 'select'];
     customRules: Rule[] = [];

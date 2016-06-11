@@ -1,6 +1,6 @@
 
 import {Linter, Rule, ParseState, RuleError, } from 'template-lint';
-import {ConflictingAttributesRule, ConflictingAttributes} from '../source/conflictingattributes';
+import {ConflictingAttributesRule, ConflictingAttributes} from '../source/rules/conflictingattributes';
 
 describe("ConflictingAttributes Rule", () => {
 
@@ -73,8 +73,8 @@ describe("ConflictingAttributes Rule", () => {
       const invalidHTML = '<button onclick="dummy()" disabled></button>';
       linter.lint(invalidHTML + validHTML)
       .then((errors) => {
-        const errMsg = getLoneError(errors).message;
-        expect(errMsg).toContain(customErrMsg);
+        const errDetail = getLoneError(errors).detail;
+        expect(errDetail).toContain(customErrMsg);
         done();
       });
     });

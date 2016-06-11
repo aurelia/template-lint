@@ -1,23 +1,23 @@
-import {AureliaLinter, Config} from '../source/aurelia-linter';
-
-
+import {Config} from '../source/config';
+import {AureliaLinter} from '../source/aurelia-linter';
 
 describe("Aurelia Examples", () => {
 
     var config: Config = new Config();
     
-    config.obsoleteTags.push('my-old-tag');
+    config.obsoleteTags.push({tag:'my-old-tag'});
     
     var linter: AureliaLinter = new AureliaLinter(config);
     
-     it("readme example'", (done) => {
-        var html = `
-<template>
+/*     it("readme example'", (done) => {
+        var html = `<template>
     <require/>
     <require frm="bad"/> 
 
     <div repeat="item of items"></div>
     <div repeat.for="item of"></div>
+
+    <content></content>
 
     <slot></slot>
     <slot></slot>    
@@ -32,11 +32,11 @@ describe("Aurelia Examples", () => {
                 
                 errors = errors.sort((a,b)=> a.line - b.line);          
                 errors.forEach(error => {
-                    console.log(error.message + " [ ln: " + error.line + " col: " + error.column +" ]" );
+                    console.log(`${error.message} [ln: ${error.line} col: ${error.column}]`);
                 });
                 done();
             });
-    });
+    });*/
     
     it("linter allows configerable obsolete tag", (done) => {
         var html = `
@@ -176,5 +176,5 @@ describe("Aurelia Examples", () => {
                 expect(errors[0].message).toBe("replaceable attribute is obsolete");
                 done();
             });
-    });
+    }); 
 });
