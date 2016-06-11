@@ -30,7 +30,7 @@ describe("ConflictingAttributes Rule", () => {
       linter.lint(DEFAULT_RULES_VIOLATION_SAMPLE)
       .then((errors) => {
         const errMsg = getLoneError(errors).message;
-        expect(errMsg).toContain(ConflictingAttributesRule.TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_PREFIX);
+        expect(errMsg).toContain(ConflictingAttributesRule.ERRMSG_PREFIX);
         expect(errMsg).toContain("repeat.for");
         expect(errMsg).toContain("if.bind");
         done();
@@ -42,7 +42,7 @@ describe("ConflictingAttributes Rule", () => {
       linter.lint('<div repeat.for="user of users" with.bind="user"></div>')
       .then((errors) => {
         const errMsg = getLoneError(errors).message;
-        expect(errMsg).toContain(ConflictingAttributesRule.TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_PREFIX);
+        expect(errMsg).toContain(ConflictingAttributesRule.ERRMSG_PREFIX);
         expect(errMsg).toContain("repeat.for");
         expect(errMsg).toContain("with.bind");
         expect(errMsg).not.toContain("if.bind");

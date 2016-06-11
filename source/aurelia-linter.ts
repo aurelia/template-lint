@@ -11,16 +11,7 @@ import {TemplateRule} from './template';
 import {RepeatForRule} from './repeatfor';
 import {ConflictingAttributesRule} from './conflictingattributes';
 
-export class Config {
-    obsoleteTags: Array<string> = ['content'];
-    obsoleteAttributes: Array<{ name: string, tag: string }> = [{name:"replaceable", tag:"template"}];
-    voids: Array<string> = ['area', 'base', 'br', 'col', 'embed', 'hr',
-        'img', 'input', 'keygen', 'link', 'meta',
-        'param', 'source', 'track', 'wbr'];
-    scopes: Array<string> = ['html', 'body', 'template', 'svg', 'math'];
-    containers: Array<string> = ['table', 'select'];
-    customRules: Rule[] = [];
-}
+import {Config} from './config';
 
 export class AureliaLinter {
     linter: Linter;

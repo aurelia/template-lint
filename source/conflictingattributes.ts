@@ -12,8 +12,7 @@ export class ConflictingAttributes {
  * Rule to ensure tags don't have attributes that shouldn't be used at the same time.
  */
 export class ConflictingAttributesRule extends Rule {
-  static TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_PREFIX = /*"template controllers shouldn't be placed to the same element, */ "conflicting attributes: ";
-  static TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_DESCRIPTION = "template controllers shouldn't be placed to the same element";
+  static ERRMSG_PREFIX = "conflicting attributes: ";
 
   constructor(public conflictingAttributesList?: ConflictingAttributes[]) {
     super();
@@ -26,7 +25,7 @@ export class ConflictingAttributesRule extends Rule {
 
   static createDefaultConflictingAttributes() {
     return [
-      new ConflictingAttributes(["repeat.for", "if.bind", "with.bind"], ConflictingAttributesRule.TEMPLATE_CONTROLLER_ATTRIBUTES_ERRMSG_PREFIX),
+      new ConflictingAttributes(["repeat.for", "if.bind", "with.bind"], ConflictingAttributesRule.ERRMSG_PREFIX),
     ];
   }
 
