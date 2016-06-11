@@ -55,9 +55,11 @@ self-closing element [ln: 3 col: 5]
 did you miss `.for` on repeat? [ln: 5 col: 5]
 repeat syntax should be of form `* of *` [ln: 6 col: 5]
 <content> is obsolete [ln: 8 col: 5]
+  * use slot instead
 more than one default slot detected [ln: 11 col: 5]
 template as child of <table> not allowed [ln: 14 col: 9]
 conflicting attributes: [repeat.for, with.bind] [ln: 16 col: 5]
+  * template controllers shouldn't be placed on the same element
 mismatched close tag [ln: 17 col: 1]
 ```
 ## Rules
@@ -108,8 +110,9 @@ var html = "<template></template>"
 linter.lint(html)
   .then((errors) => {    
       errors = errors.sort((a,b)=> a.line - b.line);          
-      errors.forEach(error => {
-         console.log(error.message + " [ ln: " + error.line + " col: " + error.column +" ]" );
+      errors.forEach(error => {         
+         console.log(`${error.message} [ln: ${error.line} col: ${error.column}]`);
+             if(error.detail) console.log(`  * ${error.detail}`);
       });
   });
 ```
