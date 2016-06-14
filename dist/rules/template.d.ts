@@ -1,4 +1,4 @@
-import { Rule, ParseState, RuleError } from 'template-lint';
+import { Rule, ParseState } from 'template-lint';
 import { SAXParser } from 'parse5';
 /**
  *  Rule to ensure root element is the template element
@@ -10,5 +10,4 @@ export declare class TemplateRule extends Rule {
     count: number;
     constructor(containers?: string[]);
     init(parser: SAXParser, parseState: ParseState): void;
-    finalise(): RuleError[];
 }
