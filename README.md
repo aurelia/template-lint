@@ -24,7 +24,7 @@ See:
 * [StackOverflow: aurelia-sanity-check-template-html](http://stackoverflow.com/questions/37322985/aurelia-sanity-check-template-html)
 
 *Note: it is recommended you use this via the [gulp plugin](https://github.com/MeirionHughes/gulp-aurelia-template-lint).*
-*If you use this library directly, ensure you lock to a minor version* 
+*If you use this library directly, in a production environment (ci), then ensure you lock to a minor version as this library is under development and subject to breaking changes on minor versions*
 
 ##Example
 using the default config, the example:
