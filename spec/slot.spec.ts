@@ -43,4 +43,17 @@ describe("Slot Rule", () => {
         done();
       });      
   });
+
+  it("will accept slots with template controllers in slot content", (done) => {
+
+    linter.lint(`
+      <slot>
+        <div if.bind='addMe'>valid</div>
+        <div repeat.for="item of items">also valid</div>
+      </slot>`)
+      .then((errors) => {
+        expect(errors.length).toBe(0);
+        done();
+      });
+  });
 });
