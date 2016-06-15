@@ -16,7 +16,7 @@ describe("Slot Rule", () => {
         done();
       });
   });
-  
+
   it("will reject duplicate named slot", (done) => {
     linter.lint("<slot name='foo'></slot><slot name='foo'></slot><slot></slot>")
       .then((errors) => {
@@ -27,21 +27,21 @@ describe("Slot Rule", () => {
   });
 
   it("will accept multiple slots with different names", (done) => {
-    
+
     linter.lint("<slot name='boo'></slot><slot name='foo'></slot><slot></slot>")
       .then((errors) => {
         expect(errors.length).toBe(0);
         done();
-      });      
+      });
   });
-  
+
   it("will accept slots with content", (done) => {
-    
+
     linter.lint("<slot> hello world </slot>")
       .then((errors) => {
         expect(errors.length).toBe(0);
         done();
-      });      
+      });
   });
 
   it("will accept slots with template controllers in slot content", (done) => {
@@ -53,6 +53,21 @@ describe("Slot Rule", () => {
       </slot>`)
       .then((errors) => {
         expect(errors.length).toBe(0);
+        done();
+      });
+  });
+
+  it("will reject slot elements inside template controllers", (done) => {
+
+    linter.lint(`
+      <div if.bind='addMe'><!-- repeat.for attribute should trigger failure as well -->
+        <div><!-- should reject even if slot is wrapped with some element that is descendant of template controller -->
+          <slot>INVALID - slot inside of an if.bind cannot work because slots themselves have to be statically known</slot>
+        </div>
+      </div>
+      `)
+      .then((errors) => {
+        expect(errors.length).toBe(1);
         done();
       });
   });
