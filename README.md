@@ -7,6 +7,8 @@ Sanity check of Aurelia-flavor Template HTML.
 [![NPM version][npm-image]][npm-url]
 [![NPM downloads][npm-downloads]][npm-url]
 [![Travis Status][travis-image]][travis-url]
+[![Breaks-on][breaks-image]][npm-url]
+[![Stability][stability-image]][npm-url]
 
 ##Info
 This project was the result of wondering why aurelia applications had missing content when you used self-closing tags.
@@ -182,3 +184,6 @@ Icon courtesy of [The Noun Project](https://thenounproject.com/)
 [npm-downloads]: http://img.shields.io/npm/dm/aurelia-template-lint.svg
 [travis-url]: https://travis-ci.org/MeirionHughes/aurelia-template-lint
 [travis-image]: https://img.shields.io/travis/MeirionHughes/aurelia-template-lint/master.svg
+[breaks-image]: https://img.shields.io/badge/breaks--on-minor-yellow.svg
+[stability-image]: https://img.shields.io/badge/stability-2%20%3A%20unstable-red.svg
+
