@@ -6,6 +6,12 @@ class Config {
                 attr: /^style$/,
                 not: /\${(.?)+}/,
                 msg: "interpolation not allowed for attribute"
+            },
+            {
+                attr: /^bindable$/,
+                not: /[a-z][A-Z]/,
+                msg: "camelCase bindable is converted to camel-case",
+                tag: "template"
             }
         ];
         this.obsoleteTags = [

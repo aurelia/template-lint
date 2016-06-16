@@ -209,4 +209,25 @@ describe("Aurelia Examples", () => {
                 done();
             });
     });
+
+    it("complains about camel case bindable", (done) => {
+        var html = `<template bindable="myNameIs"></template>`
+
+        linter.lint(html)
+            .then((issues) => {
+                expect(issues.length).toBe(1);
+                expect(issues[0].message).toBe("camelCase bindable is converted to camel-case");
+                done();
+            });
+    });
+
+    it("okay with non-camel-case bindable", (done) => {
+        var html = `<template bindable="mynameis"></template>`
+
+        linter.lint(html)
+            .then((issues) => {
+                expect(issues.length).toBe(0);
+                done();
+            });
+    });
 });
