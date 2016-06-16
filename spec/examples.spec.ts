@@ -9,35 +9,35 @@ describe("Aurelia Examples", () => {
 
     var linter: AureliaLinter = new AureliaLinter(config);
 
-/*  it("readme example'", (done) => {
-        var html = `<template>
-    <require/>
-    <require frm="bad"/> 
-
-    <div repeat="item of items"></div>
-    <div repeat.for="item of"></div>
-
-    <content></content>
-
-    <slot></slot>
-    <slot></slot>    
-       
-    <table>
-        <template></template>     
-    </table>
-    <div repeat.for="user of users" with.bind="user"></div>
-</etemps> <!-- oops! -->`
-        linter.lint(html)
-            .then((errors) => {
-
-                errors = errors.sort((a, b) => a.line - b.line);
-                errors.forEach(error => {
-                    console.log(`${error.message} [ln: ${error.line} col: ${error.column}]`);
-                    if (error.detail) console.log(`  * ${error.detail}`);
+    /*  it("readme example'", (done) => {
+            var html = `<template>
+        <require/>
+        <require frm="bad"/> 
+    
+        <div repeat="item of items"></div>
+        <div repeat.for="item of"></div>
+    
+        <content></content>
+    
+        <slot></slot>
+        <slot></slot>    
+           
+        <table>
+            <template></template>     
+        </table>
+        <div repeat.for="user of users" with.bind="user"></div>
+    </etemps> <!-- oops! -->`
+            linter.lint(html)
+                .then((issues) => {
+    
+                    issues = issues.sort((a, b) => a.line - b.line);
+                    issues.forEach(error => {
+                        console.log(`${error.message} [ln: ${error.line} col: ${error.column}]`);
+                        if (error.detail) console.log(`  * ${error.detail}`);
+                    });
+                    done();
                 });
-                done();
-            });
-    });*/
+        });*/
 
     it("linter allows configerable obsolete tag", (done) => {
         var html = `
@@ -46,9 +46,9 @@ describe("Aurelia Examples", () => {
             </template>                  
             `
         linter.lint(html)
-            .then((errors) => {
-                expect(errors.length).toBe(1);
-                expect(errors[0].message).toBe("<my-old-tag> is obsolete");
+            .then((issues) => {
+                expect(issues.length).toBe(1);
+                expect(issues[0].message).toBe("<my-old-tag> is obsolete");
                 done();
             });
     });
@@ -60,8 +60,8 @@ describe("Aurelia Examples", () => {
             </template>                  
             `
         linter.lint(html)
-            .then((errors) => {
-                expect(errors.length).toBe(0);
+            .then((issues) => {
+                expect(issues.length).toBe(0);
                 done();
             });
     });
@@ -79,8 +79,8 @@ describe("Aurelia Examples", () => {
             </template>  
             `
         linter.lint(html)
-            .then((errors) => {
-                expect(errors.length).toBe(0);
+            .then((issues) => {
+                expect(issues.length).toBe(0);
                 done();
             });
     });
@@ -96,8 +96,8 @@ describe("Aurelia Examples", () => {
             </template>
             `
         linter.lint(html)
-            .then((errors) => {
-                expect(errors.length).toBeGreaterThan(0);
+            .then((issues) => {
+                expect(issues.length).toBeGreaterThan(0);
                 done();
             });
     });
@@ -113,8 +113,8 @@ describe("Aurelia Examples", () => {
             </template>
             `
         linter.lint(html)
-            .then((errors) => {
-                expect(errors.length).toBe(0);
+            .then((issues) => {
+                expect(issues.length).toBe(0);
                 done();
             });
     });
@@ -130,8 +130,8 @@ describe("Aurelia Examples", () => {
             </select>
             </template> `
         linter.lint(html)
-            .then((errors) => {
-                expect(errors.length).toBeGreaterThan(0);
+            .then((issues) => {
+                expect(issues.length).toBeGreaterThan(0);
                 done();
             });
     });
@@ -145,8 +145,8 @@ describe("Aurelia Examples", () => {
             </template>
             `
         linter.lint(html)
-            .then((errors) => {
-                expect(errors.length).toBe(0);
+            .then((issues) => {
+                expect(issues.length).toBe(0);
                 done();
             });
     });
@@ -159,9 +159,9 @@ describe("Aurelia Examples", () => {
             </template>
             `
         linter.lint(html)
-            .then((errors) => {
-                expect(errors.length).toBe(1);
-                expect(errors[0].message).toBe("<content> is obsolete");
+            .then((issues) => {
+                expect(issues.length).toBe(1);
+                expect(issues[0].message).toBe("<content> is obsolete");
                 done();
             });
     });
@@ -172,9 +172,9 @@ describe("Aurelia Examples", () => {
             </template>
             `
         linter.lint(html)
-            .then((errors) => {
-                expect(errors.length).toBe(1);
-                expect(errors[0].message).toBe("replaceable attribute is obsolete");
+            .then((issues) => {
+                expect(issues.length).toBe(1);
+                expect(issues[0].message).toBe("replaceable attribute is obsolete");
                 done();
             });
     });

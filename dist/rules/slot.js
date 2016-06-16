@@ -34,8 +34,11 @@ class SlotRule extends template_lint_1.Rule {
                 else {
                     errorStr = `duplicated slot name \(${slot.name}\)`;
                 }
-                let error = new template_lint_1.RuleError(errorStr, slot.loc.line, slot.loc.col);
-                this.reportError(error);
+                let error = new template_lint_1.Issue({
+                    message: errorStr,
+                    line: slot.loc.line,
+                    column: slot.loc.col });
+                this.reportIssue(error);
             }
             else {
                 names.push(slot.name);

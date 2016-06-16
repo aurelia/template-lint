@@ -1,7 +1,7 @@
 
 "use strict";
 
-import {Rule, ParseState, RuleError} from 'template-lint';
+import {Rule, ParseState, Issue, IssueSeverity} from 'template-lint';
 import {SAXParser} from 'parse5';
 
 /**
@@ -37,8 +37,12 @@ export class TemplateRule extends Rule {
             if (this.first) {
 
                 if (name != 'template') {
-                    let error = new RuleError("root element is not template", location.line, location.col);
-                    this.reportError(error);
+                    let error = new Issue({
+                        message: "root element is not template",
+                        line: location.line, 
+                        column:location.col});
+                    
+                    this.reportIssue(error);
                     return;
                 }
                 
@@ -57,14 +61,22 @@ export class TemplateRule extends Rule {
                         this.containers.forEach(containerName => {
                             if(stack[stackCount-1].name == containerName)
                             {
-                                let error = new RuleError(`template as child of <${containerName}> not allowed`, location.line, location.col);
-                                this.reportError(error);
+                                let error = new Issue({
+                                    message: `template as child of <${containerName}> not allowed`, 
+                                    line: location.line, 
+                                    column: location.col
+                                });
+
+                                this.reportIssue(error);
                             }                     
                         });
                     }
                     else {
-                        let error = new RuleError("more than one template in file", location.line, location.col);
-                        this.reportError(error);
+                        let error = new Issue({
+                            message: "more than one template in file", 
+                            line: location.line, 
+                            column: location.col});
+                        this.reportIssue(error);
                     }
                 }
                 this.count += 1;

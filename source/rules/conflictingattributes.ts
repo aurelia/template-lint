@@ -1,6 +1,6 @@
 "use strict";
 
-import {Rule, ParseState, RuleError} from 'template-lint';
+import {Rule, ParseState, Issue, IssueSeverity} from 'template-lint';
 import {SAXParser, Attribute, StartTagLocationInfo} from 'parse5';
 
 export class ConflictingAttributes {
@@ -30,7 +30,6 @@ export class ConflictingAttributesRule extends Rule {
   }
 
   init(parser: SAXParser, parseState: ParseState) {
-    super.init(parser, parseState);
     parser.on("startTag", (tag, attrs, selfClosing, loc) => {
       this.conflictingAttributesList.forEach((conflictingAttributes) => {
         this.checkConflictsWith(attrs, loc, conflictingAttributes);
@@ -41,14 +40,18 @@ export class ConflictingAttributesRule extends Rule {
   private checkConflictsWith(attrs: Attribute[], loc: StartTagLocationInfo, conflictingAttributes: ConflictingAttributes) {
     const attributes = [];
     attrs.forEach(attr => {
-      if (conflictingAttributes.attrs.indexOf(attr.name) >= 0 ) {
+      if (conflictingAttributes.attrs.indexOf(attr.name) >= 0) {
         attributes.push(attr.name);
       }
     });
     if (attributes.length > 1) {
       const fullErrMsg = ConflictingAttributesRule.ERRMSG_PREFIX + "[" + attributes.join(", ") + "]";
-      this.reportError(new RuleError(fullErrMsg, loc.line, loc.col, conflictingAttributes.msg ));
+      this.reportIssue(new Issue({
+        message: fullErrMsg,
+        line: loc.line,
+        column: loc.col,
+        detail: conflictingAttributes.msg
+      }));
     }
   }
-
 }

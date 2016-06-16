@@ -1,9 +1,11 @@
-import {Linter, Rule, RuleError} from 'template-lint';
+import {Linter, Rule, Issue, IssueSeverity} from 'template-lint';
 
 import {SelfCloseRule} from 'template-lint';
 import {ParserRule} from 'template-lint';
 import {ObsoleteTagRule} from 'template-lint';
 import {ObsoleteAttributeRule} from 'template-lint';
+import {UniqueIdRule} from 'template-lint';
+import {AttributeValueRule} from 'template-lint';
 
 import {RequireRule} from './rules/require';
 import {SlotRule} from './rules/slot';
@@ -26,6 +28,8 @@ export class AureliaLinter {
             new ParserRule(),
             new ObsoleteAttributeRule(config.obsoleteAttributes),
             new ObsoleteTagRule(config.obsoleteTags),
+            new UniqueIdRule(),
+            new AttributeValueRule(config.attributeValueRules),
 
             new RequireRule(),
             new SlotRule(),
@@ -39,9 +43,12 @@ export class AureliaLinter {
             rules,
             config.scopes,
             config.voids);
+
+        // fix to many event-handler issue
+        require('events').EventEmitter.prototype._maxListeners = 100;
     }
 
-    public lint(html: string): Promise<RuleError[]> {
+    public lint(html: string): Promise<Issue[]> {
         return this.linter.lint(html);
     }
 }

@@ -1,6 +1,6 @@
 "use strict";
 
-import {Rule, ParseState, RuleError} from 'template-lint';
+import {Rule, ParseState, Issue, IssueSeverity} from 'template-lint';
 import {SAXParser} from 'parse5';
 
 /**
@@ -9,31 +9,37 @@ import {SAXParser} from 'parse5';
 export class RepeatForRule extends Rule {
 
     init(parser: SAXParser, parseState: ParseState) {
-        super.init(parser, parseState);
-        
-        var syntax:RegExp = /(.+)( +of +)(.+)/
+
+        var syntax: RegExp = /(.+)( +of +)(.+)/
 
         parser.on("startTag", (tag, attrs, selfClosing, loc) => {
 
             var self = this;
-            
+
             attrs.forEach(attr => {
                 if (attr.name == "repeat") {
-                    let error = new RuleError("did you miss `.for` on repeat?", loc.line, loc.col);
-                    self.reportError(error);
+                    let issue = new Issue({
+                        message: "did you miss `.for` on repeat?", 
+                        line: loc.line, 
+                        column: loc.col});
+
+                    self.reportIssue(issue);
                     return;
                 }
                 if (attr.name == "repeat.for") {
                     var script = attr.value.trim();
-                              
+
                     var matches = script.match(syntax);
-                    
+
                     var error = null;
-                    
-                    if(matches == null || matches.length == 0){
-                        let error = new RuleError("repeat syntax should be of form `* of *`", loc.line, loc.col);
-                        self.reportError(error);
-                    }                       
+
+                    if (matches == null || matches.length == 0) {
+                        let error = new Issue({
+                            message: "repeat syntax should be of form `* of *`",
+                            line: loc.line,
+                            column: loc.col});
+                        self.reportIssue(error);
+                    }
                 }
             });
         });

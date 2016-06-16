@@ -1,7 +1,7 @@
 
 "use strict";
 
-import {Rule, ParseState, RuleError} from 'template-lint';
+import {Rule, ParseState, Issue, IssueSeverity} from 'template-lint';
 import {SAXParser} from 'parse5';
 
 /**
@@ -19,8 +19,11 @@ export class RequireRule extends Rule {
             let result = attrs.find(x => (<any>x).name == 'from');
 
             if (!result) {
-                let error = new RuleError("require tag is missing a 'from' attribute", location.line, location.col);
-                self.reportError(error);
+                let error = new Issue({
+                    message: "require tag is missing a 'from' attribute",
+                    line: location.line, 
+                    column: location.col}); 
+                self.reportIssue(error);
             }
         });
     }

@@ -1,5 +1,12 @@
 import { Rule } from 'template-lint';
 export declare class Config {
+    attributeValueRules: Array<{
+        attr: RegExp;
+        is?: RegExp;
+        not?: RegExp;
+        msg?: string;
+        tag?: string;
+    }>;
     obsoleteTags: Array<{
         tag: string;
         msg?: string;

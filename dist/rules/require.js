@@ -11,8 +11,11 @@ class RequireRule extends template_lint_1.Rule {
                 return;
             let result = attrs.find(x => x.name == 'from');
             if (!result) {
-                let error = new template_lint_1.RuleError("require tag is missing a 'from' attribute", location.line, location.col);
-                self.reportError(error);
+                let error = new template_lint_1.Issue({
+                    message: "require tag is missing a 'from' attribute",
+                    line: location.line,
+                    column: location.col });
+                self.reportIssue(error);
             }
         });
     }

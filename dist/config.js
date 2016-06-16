@@ -1,6 +1,13 @@
 "use strict";
 class Config {
     constructor() {
+        this.attributeValueRules = [
+            {
+                attr: /^style$/,
+                not: /\${(.?)+}/,
+                msg: "interpolation not allowed for attribute"
+            }
+        ];
         this.obsoleteTags = [
             {
                 tag: 'content',

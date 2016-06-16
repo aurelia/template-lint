@@ -3,6 +3,15 @@ import {ConflictingAttributesRule} from './rules/conflictingattributes';
 
 
 export class Config {
+    
+    attributeValueRules: Array<{ attr: RegExp, is?: RegExp, not?: RegExp, msg?: string, tag?:string }> = [
+        {
+            attr:/^style$/,
+            not:/\${(.?)+}/,
+            msg:"interpolation not allowed for attribute"            
+        }
+    ]
+
     obsoleteTags: Array<{ tag: string, msg?: string }> = [
         {
             tag: 'content',

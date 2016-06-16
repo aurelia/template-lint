@@ -1,5 +1,5 @@
 
-import {Linter, Rule, ParseState, RuleError} from 'template-lint';
+import {Linter, Rule, ParseState} from 'template-lint';
 import {SlotRule} from '../source/rules/slot';
 
 describe("Slot Rule", () => {
@@ -10,18 +10,18 @@ describe("Slot Rule", () => {
 
   it("will reject duplicate default slot", (done) => {
     linter.lint('<slot></slot><slot></slot>')
-      .then((errors) => {
-        expect(errors.length).toBe(1);
-        expect(errors[0].message).toBe("more than one default slot detected");
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toBe("more than one default slot detected");
         done();
       });
   });
 
   it("will reject duplicate named slot", (done) => {
     linter.lint("<slot name='foo'></slot><slot name='foo'></slot><slot></slot>")
-      .then((errors) => {
-        expect(errors.length).toBe(1);
-        expect(errors[0].message).toBe("duplicated slot name (foo)");
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toBe("duplicated slot name (foo)");
         done();
       });
   });
@@ -29,8 +29,8 @@ describe("Slot Rule", () => {
   it("will accept multiple slots with different names", (done) => {
 
     linter.lint("<slot name='boo'></slot><slot name='foo'></slot><slot></slot>")
-      .then((errors) => {
-        expect(errors.length).toBe(0);
+      .then((issues) => {
+        expect(issues.length).toBe(0);
         done();
       });
   });
@@ -38,8 +38,8 @@ describe("Slot Rule", () => {
   it("will accept slots with content", (done) => {
 
     linter.lint("<slot> hello world </slot>")
-      .then((errors) => {
-        expect(errors.length).toBe(0);
+      .then((issues) => {
+        expect(issues.length).toBe(0);
         done();
       });
   });
@@ -51,8 +51,8 @@ describe("Slot Rule", () => {
         <div if.bind='addMe'>valid</div>
         <div repeat.for="item of items">also valid</div>
       </slot>`)
-      .then((errors) => {
-        expect(errors.length).toBe(0);
+      .then((issues) => {
+        expect(issues.length).toBe(0);
         done();
       });
   });
@@ -66,8 +66,8 @@ describe("Slot Rule", () => {
         </div>
       </div>
       `)
-      .then((errors) => {
-        expect(errors.length).toBe(1);
+      .then((issues) => {
+        expect(issues.length).toBe(1);
         done();
       });
   });

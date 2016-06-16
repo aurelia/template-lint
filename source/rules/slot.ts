@@ -1,7 +1,7 @@
 
 "use strict";
 
-import {Rule, ParseState, RuleError} from 'template-lint';
+import {Rule, ParseState, Issue, IssueSeverity} from 'template-lint';
 import {SAXParser, Attribute, StartTagLocationInfo} from 'parse5';
 
 /**
@@ -31,11 +31,14 @@ export class SlotRule extends Rule {
                     name = attrs[nameIndex].value;         
 
                 self.slots.push({name:name, loc:loc});
+
+                
+
             }
         })
     }
 
-    finalise(): RuleError[] {
+    finalise(): Issue[] {
         var slots = this.slots;
         
         var names = new Array<string>();
@@ -52,9 +55,12 @@ export class SlotRule extends Rule {
                     errorStr = `duplicated slot name \(${slot.name}\)`;
                 }
 
-                let error = new RuleError(errorStr, slot.loc.line, slot.loc.col);
+                let error = new Issue({
+                    message:errorStr,
+                    line: slot.loc.line, 
+                    column: slot.loc.col});
 
-                this.reportError(error)
+                this.reportIssue(error)
             }
             else{              
                 names.push(slot.name);

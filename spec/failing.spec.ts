@@ -11,8 +11,8 @@ describe("Failing Scenarios", () => {
     /*it("some test that fails", (done) => {
         var html = `<template></etemps> <!-- oops! -->`
         linter.lint(html)
-            .then((errors) => {                   
-                expect(errors.length).toBe(0);
+            .then((issues) => {                   
+                expect(issues.length).toBe(0);
                 done();
             });
     });*/

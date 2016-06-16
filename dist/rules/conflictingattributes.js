@@ -27,7 +27,6 @@ class ConflictingAttributesRule extends template_lint_1.Rule {
         ];
     }
     init(parser, parseState) {
-        super.init(parser, parseState);
         parser.on("startTag", (tag, attrs, selfClosing, loc) => {
             this.conflictingAttributesList.forEach((conflictingAttributes) => {
                 this.checkConflictsWith(attrs, loc, conflictingAttributes);
@@ -43,7 +42,12 @@ class ConflictingAttributesRule extends template_lint_1.Rule {
         });
         if (attributes.length > 1) {
             const fullErrMsg = ConflictingAttributesRule.ERRMSG_PREFIX + "[" + attributes.join(", ") + "]";
-            this.reportError(new template_lint_1.RuleError(fullErrMsg, loc.line, loc.col, conflictingAttributes.msg));
+            this.reportIssue(new template_lint_1.Issue({
+                message: fullErrMsg,
+                line: loc.line,
+                column: loc.col,
+                detail: conflictingAttributes.msg
+            }));
         }
     }
 }
