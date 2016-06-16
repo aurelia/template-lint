@@ -35,7 +35,7 @@ export class SlotRule extends Rule {
                     if (result){
                         this.reportIssue(
                             new Issue({
-                                message: `slot cannot be ancestor of ${result.name}`,
+                                message: `slot cannot have ancestor using ${result.name}`,
                                 line: loc.line,
                                 column: loc.col
                             }));

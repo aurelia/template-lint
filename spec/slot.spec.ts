@@ -68,7 +68,7 @@ describe("Slot Rule", () => {
       `)
       .then((issues) => {
         expect(issues.length).toBe(1);
-        expect(issues[0].message).toContain("slot cannot be ancestor")
+        expect(issues[0].message).toContain("slot cannot have ancestor using")
         done();
       });
   });
@@ -84,7 +84,7 @@ describe("Slot Rule", () => {
       `)
       .then((issues) => {
         expect(issues.length).toBe(1);
-        expect(issues[0].message).toContain("slot cannot be ancestor")
+        expect(issues[0].message).toContain("slot cannot have ancestor using")
         done();
       });
   });
@@ -100,7 +100,7 @@ describe("Slot Rule", () => {
       `)
       .then((issues) => {
         expect(issues.length).toBe(1);
-        expect(issues[0].message).toContain("slot cannot be ancestor")
+        expect(issues[0].message).toContain("slot cannot have ancestor using")
         done();
       });
   });

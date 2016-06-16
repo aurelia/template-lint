@@ -22,7 +22,7 @@ class SlotRule extends template_lint_1.Rule {
                     let result = stack[i].attrs.find(x => this.controllers.indexOf(x.name) != -1);
                     if (result) {
                         this.reportIssue(new template_lint_1.Issue({
-                            message: `slot cannot be ancestor of ${result.name}`,
+                            message: `slot cannot have ancestor using ${result.name}`,
                             line: loc.line,
                             column: loc.col
                         }));
