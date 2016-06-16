@@ -4,9 +4,10 @@ const template_lint_1 = require('template-lint');
  *  Rule to ensure root element is the template element
  */
 class SlotRule extends template_lint_1.Rule {
-    constructor() {
+    constructor(controllers) {
         super();
         this.slots = new Array();
+        this.controllers = controllers || ["repeat.for", "if.bind", "with.bind"];
     }
     init(parser, parseState) {
         var stack = parseState.stack;
@@ -18,9 +19,10 @@ class SlotRule extends template_lint_1.Rule {
                     name = attrs[nameIndex].value;
                 this.slots.push({ name: name, loc: loc });
                 for (let i = stack.length - 1; i >= 0; i--) {
-                    if (stack[i].attrs.find(x => x.name == "if.bind")) {
+                    let result = stack[i].attrs.find(x => this.controllers.indexOf(x.name) != -1);
+                    if (result) {
                         this.reportIssue(new template_lint_1.Issue({
-                            message: "slot has ancestor with if.bind",
+                            message: `slot cannot be ancestor of ${result.name}`,
                             line: loc.line,
                             column: loc.col
                         }));

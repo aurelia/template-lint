@@ -24,7 +24,7 @@ class AureliaLinter {
             new template_lint_6.UniqueIdRule(),
             new template_lint_7.AttributeValueRule(config.attributeValueRules),
             new require_1.RequireRule(),
-            new slot_1.SlotRule(),
+            new slot_1.SlotRule(config.templateControllers),
             new template_1.TemplateRule(config.containers),
             new conflictingattributes_1.ConflictingAttributesRule(config.conflictingAttributes),
             new repeatfor_1.RepeatForRule()

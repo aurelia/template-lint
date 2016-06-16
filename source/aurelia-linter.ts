@@ -32,7 +32,7 @@ export class AureliaLinter {
             new AttributeValueRule(config.attributeValueRules),
 
             new RequireRule(),
-            new SlotRule(),
+            new SlotRule(config.templateControllers),
             new TemplateRule(config.containers),
             new ConflictingAttributesRule(<ConflictingAttributes[]> config.conflictingAttributes),
             new RepeatForRule()

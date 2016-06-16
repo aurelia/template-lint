@@ -33,6 +33,9 @@ class Config {
                 msg: "template controllers shouldn't be placed on the same element"
             }
         ];
+        this.templateControllers = [
+            "repeat.for", "if.bind", "with.bind"
+        ];
         this.voids = ['area', 'base', 'br', 'col', 'embed', 'hr',
             'img', 'input', 'keygen', 'link', 'meta',
             'param', 'source', 'track', 'wbr'];

@@ -20,6 +20,7 @@ export declare class Config {
         attrs: string[];
         msg?: string;
     }>;
+    templateControllers: string[];
     voids: Array<string>;
     scopes: Array<string>;
     containers: Array<string>;

@@ -8,12 +8,13 @@ import {SAXParser, Attribute, StartTagLocationInfo} from 'parse5';
  *  Rule to ensure root element is the template element
  */
 export class SlotRule extends Rule {
-
+    controllers:string[];
     slots: Array<{ name: string, loc: StartTagLocationInfo }>;
 
-    constructor() {
+    constructor(controllers?:string[]) {        
         super();
         this.slots = new Array<{ name: string, loc: StartTagLocationInfo }>();
+        this.controllers = controllers || ["repeat.for", "if.bind", "with.bind"];
     }
 
     init(parser: SAXParser, parseState: ParseState) {
@@ -30,10 +31,11 @@ export class SlotRule extends Rule {
                 this.slots.push({ name: name, loc: loc });
 
                 for (let i = stack.length - 1; i >= 0; i--) {
-                    if (stack[i].attrs.find(x => x.name == "if.bind")) {
+                    let result = stack[i].attrs.find(x => this.controllers.indexOf(x.name)!= -1)
+                    if (result){
                         this.reportIssue(
                             new Issue({
-                                message: "slot has ancestor with if.bind",
+                                message: `slot cannot be ancestor of ${result.name}`,
                                 line: loc.line,
                                 column: loc.col
                             }));

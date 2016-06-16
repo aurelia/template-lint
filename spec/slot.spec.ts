@@ -57,17 +57,64 @@ describe("Slot Rule", () => {
       });
   });
 
-  it("will reject slot elements inside template controllers", (done) => {
+  it("will reject slot elements inside if.bind template controller", (done) => {
 
     linter.lint(`
-      <div if.bind='addMe'><!-- repeat.for attribute should trigger failure as well -->
-        <div><!-- should reject even if slot is wrapped with some element that is descendant of template controller -->
-          <slot>INVALID - slot inside of an if.bind cannot work because slots themselves have to be statically known</slot>
+      <div if.bind="">
+        <div>
+          <slot></slot>
         </div>
       </div>
       `)
       .then((issues) => {
         expect(issues.length).toBe(1);
+        expect(issues[0].message).toContain("slot cannot be ancestor")
+        done();
+      });
+  });
+
+  it("will reject slot elements inside repeat.for template controllers", (done) => {
+
+    linter.lint(`
+      <div repeat.for="">
+        <div>
+          <slot></slot>
+        </div>
+      </div>
+      `)
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toContain("slot cannot be ancestor")
+        done();
+      });
+  });
+
+   it("will reject slot elements inside with.bind template controllers", (done) => {
+
+    linter.lint(`
+      <div with.bind="">
+        <div>
+          <slot></slot>
+        </div>
+      </div>
+      `)
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toContain("slot cannot be ancestor")
+        done();
+      });
+  });
+
+  it("will accept slot element outside of template controllers", (done) => {
+
+    linter.lint(`
+      <div if.bind=""></div>
+      <div repeat.for=""></div>
+      <div with.bind=""></div>
+      <slot></slot>
+      `)
+      .then((issues) => {
+        expect(issues.length).toBe(0);
         done();
       });
   });
