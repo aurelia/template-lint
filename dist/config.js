@@ -12,6 +12,12 @@ class Config {
                 not: /[a-z][A-Z]/,
                 msg: "camelCase bindable is converted to camel-case",
                 tag: "template"
+            },
+            {
+                tag: "button",
+                attr: /^type$/,
+                is: /^button$|^submit$|^reset$/,
+                msg: "button type invalid"
             }
         ];
         this.obsoleteTags = [
