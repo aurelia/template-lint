@@ -170,6 +170,18 @@ class Config {
     customRules: Rule[] = [];
 }
 ```
+##Compiling
+Clone the repository. 
+In the project root run
+```
+npm install
+npm test
+```
+
+##Visual Studio Code
+
+Once installed, you can use make use of Visual Studio Code launcher (`ctrl + f5`). Also allows you to place breakpoints on ts spec files (currently only for those files in `outDir` path in `launch.json` see: https://github.com/Microsoft/vscode/issues/6915) 
+  
 
 ## Contributors
 Special thanks to code / test contributors: 
