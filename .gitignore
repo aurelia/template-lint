@@ -1,5 +1,5 @@
 **/node_modules
 **/jspm_packages
 **/*.map
-
 spec/**/*.js
+/dist
