@@ -42,7 +42,7 @@
     "test": "gulp test"
   },
   "dependencies": {
-    "parse5": "^2.1.5",
-    "template-lint": "^0.6.x"
+    "parse5": "2.1.x",
+    "template-lint": "0.6.x"
   }
 }
