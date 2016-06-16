@@ -9,7 +9,6 @@ class SlotRule extends template_lint_1.Rule {
         this.slots = new Array();
     }
     init(parser, parseState) {
-        var self = this;
         var stack = parseState.stack;
         parser.on("startTag", (tag, attrs, sc, loc) => {
             if (tag == 'slot') {
@@ -17,7 +16,17 @@ class SlotRule extends template_lint_1.Rule {
                 var nameIndex = attrs.findIndex((a) => a.name == "name");
                 if (nameIndex >= 0)
                     name = attrs[nameIndex].value;
-                self.slots.push({ name: name, loc: loc });
+                this.slots.push({ name: name, loc: loc });
+                for (let i = stack.length - 1; i >= 0; i--) {
+                    if (stack[i].attrs.find(x => x.name == "if.bind")) {
+                        this.reportIssue(new template_lint_1.Issue({
+                            message: "slot has ancestor with if.bind",
+                            line: loc.line,
+                            column: loc.col
+                        }));
+                        return;
+                    }
+                }
             }
         });
     }
@@ -37,7 +46,8 @@ class SlotRule extends template_lint_1.Rule {
                 let error = new template_lint_1.Issue({
                     message: errorStr,
                     line: slot.loc.line,
-                    column: slot.loc.col });
+                    column: slot.loc.col
+                });
                 this.reportIssue(error);
             }
             else {
