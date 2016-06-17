@@ -19,7 +19,7 @@ export class Config {
         {
             tag:"button",
             attr:/^type$/,            
-            is:/^button$|^submit$|^reset$/,            
+            is:/^button$|^submit$|^reset$|^menu$/,            
             msg:"button type invalid"
         }  
     ]   
