@@ -1,5 +1,5 @@
 
-import {Linter, Rule, ParseState} from 'template-lint';
+import {Linter, Rule} from 'template-lint';
 import {RepeatForRule} from '../source/rules/repeatfor';
 
 describe("RepeatFor Rule", () => {

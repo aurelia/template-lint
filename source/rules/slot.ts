@@ -1,8 +1,8 @@
 
 "use strict";
 
-import {Rule, ParseState, Issue, IssueSeverity} from 'template-lint';
-import {SAXParser, Attribute, StartTagLocationInfo} from 'parse5';
+import {Rule, Parser, Issue, IssueSeverity} from 'template-lint';
+import {Attribute, StartTagLocationInfo} from 'parse5';
 
 /**
  *  Rule to ensure root element is the template element
@@ -17,8 +17,8 @@ export class SlotRule extends Rule {
         this.controllers = controllers || ["repeat.for", "if.bind", "with.bind"];
     }
 
-    init(parser: SAXParser, parseState: ParseState) {
-        var stack = parseState.stack;
+    init(parser: Parser) {
+        var stack = parser.state.stack
 
         parser.on("startTag", (tag, attrs, sc, loc) => {
             if (tag == 'slot') {

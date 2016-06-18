@@ -1,8 +1,7 @@
 
 "use strict";
 
-import {Rule, ParseState, Issue, IssueSeverity} from 'template-lint';
-import {SAXParser} from 'parse5';
+import {Rule, Parser, Issue, IssueSeverity} from 'template-lint';
 
 /**
  *  Rule to ensure root element is the template element
@@ -20,7 +19,7 @@ export class TemplateRule extends Rule {
             this.containers = ['table', 'select'];
     }
 
-    init(parser: SAXParser, parseState: ParseState) {
+    init(parser: Parser) {
       
         this.disable = false;
         this.first = true;
@@ -53,7 +52,7 @@ export class TemplateRule extends Rule {
 
             if (name == 'template') {
                 if (this.count > 0) {
-                    let stack = parseState.stack;
+                    let stack = parser.state.stack;
                     let stackCount = stack.length;
                     
                     if (stackCount > 0) {

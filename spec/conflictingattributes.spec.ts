@@ -1,5 +1,5 @@
 
-import {Linter, Rule, ParseState, Issue } from 'template-lint';
+import {Linter, Rule, Issue } from 'template-lint';
 import {ConflictingAttributesRule, ConflictingAttributes} from '../source/rules/conflictingattributes';
 
 describe("ConflictingAttributes Rule", () => {

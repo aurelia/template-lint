@@ -1,14 +1,14 @@
 
 "use strict";
 
-import {Rule, ParseState, Issue, IssueSeverity} from 'template-lint';
-import {SAXParser} from 'parse5';
+import {Rule, Parser, Issue, IssueSeverity} from 'template-lint';
+
 
 /**
  *  Rule to ensure require element is well formed
  */
 export class RequireRule extends Rule {
-    init(parser: SAXParser, parseState: ParseState) {
+    init(parser: Parser) {
         var self = this;
 
         parser.on('startTag', (name, attrs, selfClosing, location) => {

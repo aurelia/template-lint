@@ -1,14 +1,13 @@
 "use strict";
 
-import {Rule, ParseState, Issue, IssueSeverity} from 'template-lint';
-import {SAXParser} from 'parse5';
+import {Rule, Parser, Issue, IssueSeverity} from 'template-lint';
 
 /**
  * Rule to ensure tags are properly closed. 
  */
 export class RepeatForRule extends Rule {
 
-    init(parser: SAXParser, parseState: ParseState) {
+    init(parser: Parser) {
 
         var syntax: RegExp = /(.+)( +of +)(.+)/
 

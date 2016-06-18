@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "parse5": "2.1.x",
-    "template-lint": "0.6.x"
+    "template-lint": "0.7.x",
+    "typescript": "^1.8.10"
   }
 }

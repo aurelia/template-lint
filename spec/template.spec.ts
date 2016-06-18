@@ -1,5 +1,5 @@
 
-import {Linter, Rule, ParseState} from 'template-lint';
+import {Linter, Rule} from 'template-lint';
 import {TemplateRule} from '../source/rules/template';
 
 describe("Template Rule", () => {
