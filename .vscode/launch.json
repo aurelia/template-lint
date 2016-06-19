@@ -8,7 +8,7 @@
             "request": "launch",
             "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
             "stopOnEntry": false,
-            "args": ["test"],
+            "args": ["test:jasmine"],
             "cwd": "${workspaceRoot}",
             "preLaunchTask": "compile:tests",
             "internalConsoleOptions": "openOnSessionStart" ,
@@ -21,8 +21,8 @@
             },
             "externalConsole": false,
             "sourceMaps": true,            
-            //"outDir": "${workspaceRoot}/dist"
-            "outDir": "${workspaceRoot}/spec" 
+            "outDir": "${workspaceRoot}/dist"
+            //"outDir": "${workspaceRoot}/spec" 
         },
         {
             "name": "Attach",

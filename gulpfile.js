@@ -67,14 +67,14 @@ gulp.task('compile:tests', ['compile:typescript','clean:tests'], function () {
         .pipe(gulp.dest(paths.spec));
 });
 
-gulp.task('test:jasmine', ['compile:tests'], function(done) {
+gulp.task('test:jasmine', function(done) {
    return gulp.src('spec/*.js')
       .pipe(plumber())
       .pipe(jasmine({verbose:true}));
 });
 
 gulp.task('test', function(done) {
-   runsequence('test:jasmine', 'clean:tests', done);
+   runsequence('compile:tests','test:jasmine', 'clean:tests', done);
 });
 
 gulp.task('watch', ['test'], function () {    
