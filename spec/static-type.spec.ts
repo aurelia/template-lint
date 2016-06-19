@@ -15,7 +15,7 @@ describe("StaticType Rule", () => {
   var reflection = new Reflection();
 
   let person =
-  `
+    `
   import {Address} from './address';
   export class Person
   {
@@ -25,7 +25,7 @@ describe("StaticType Rule", () => {
   }
   `
   let address =
-  `
+    `
   export class Address
   {    
     address:string;
@@ -33,30 +33,46 @@ describe("StaticType Rule", () => {
   }
   `
 
-  let template = 
+  let viewModel =
+    `
+  import {Person} from './person';
+  export class FooViewModel
+  {    
+    person:Person
+  }
   `
+
+  let view =
+    `
   <template>
-    <input value.bind="name"></input>
+    <input value.bind="peron.name"></input>
     <div>
-       \${nam}
-       \${address.poscoe}
+       \${person.nam}
+       \${person.address.poscoe}
     </div>
   </template>
   `
 
   reflection.add("./person.ts", person);
   reflection.add("./address.ts", address);
-  
+  reflection.add("./foo.js", viewModel);
+
   var linter: Linter = new Linter([
     new StaticTypeRule(reflection)
   ]);
 
-  it("raises issues if binding paths cannot be found in string interpolations", () => {
-    linter.lint(template, "person.html")
-      .then((issues) => {
-        //expect(issues.length).toBe(2);
-        //expect(issues[0].message).toBe("cannot find 'nam' in type 'Person'")
-        //expect(issues[1].message).toBe("cannot find 'poscoe' in type 'Address'") 
-      });
+  it("raises issues if binding paths cannot be found", async (done) => {
+
+    var issues = await linter.lint(view, "foo.html")
+
+    expect(issues.length).toBe(3);
+
+    if (issues.length == 3) {
+      expect(issues[0].message).toBe("cannot find 'peron' in type 'FooViewModel'")
+      expect(issues[1].message).toBe("cannot find 'nam' in type 'Person'")
+      expect(issues[2].message).toBe("cannot find 'poscoe' in type 'Address'");
+    }
+
+    done();
   });
 });
