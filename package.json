@@ -42,6 +42,10 @@
     "test": "gulp test"
   },
   "dependencies": {
+    "aurelia-pal-nodejs": "git+https://github.com/MeirionHughes/pal-nodejs.git",
+    "aurelia-polyfills": "^1.0.0-beta.2.0.1",
+    "aurelia-templating": "^1.0.0-beta.3.0.3",
+    "aurelia-templating-binding": "^1.0.0-beta.2.0.2",
     "parse5": "2.1.x",
     "template-lint": "0.7.x",
     "typescript": "^1.8.10"
