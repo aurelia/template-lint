@@ -15,7 +15,7 @@ describe("StaticType Rule", () => {
   var reflection = new Reflection();
 
   let person =
-    `
+  `
   import {Address} from './address';
   export class Person
   {
@@ -25,7 +25,7 @@ describe("StaticType Rule", () => {
   }
   `
   let address =
-    `
+  `
   export class Address
   {    
     address:string;
@@ -34,7 +34,7 @@ describe("StaticType Rule", () => {
   `
 
   let viewModel =
-    `
+  `
   import {Person} from './person';
   export class FooViewModel
   {    
@@ -43,7 +43,7 @@ describe("StaticType Rule", () => {
   `
 
   let view =
-    `
+  `
   <template>
     <input value.bind="peron.name"></input>
     <div>
@@ -55,7 +55,7 @@ describe("StaticType Rule", () => {
 
   reflection.add("./person.ts", person);
   reflection.add("./address.ts", address);
-  reflection.add("./foo.js", viewModel);
+  reflection.add("./foo.ts", viewModel);
 
   var linter: Linter = new Linter([
     new StaticTypeRule(reflection)
