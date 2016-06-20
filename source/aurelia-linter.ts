@@ -17,6 +17,10 @@ import {ConflictingAttributesRule, ConflictingAttributes} from './rules/conflict
 import {Reflection} from './reflection';
 import {Config} from './config';
 
+import {initialize} from 'aurelia-pal-nodejs';
+
+initialize();
+
 export class AureliaLinter {
     linter: Linter;
     reflection: Reflection;
@@ -42,7 +46,8 @@ export class AureliaLinter {
             new SlotRule(config.templateControllers),
             new TemplateRule(config.containers),
             new ConflictingAttributesRule(<ConflictingAttributes[]> config.conflictingAttributes),
-            new RepeatForRule()
+            new RepeatForRule(),
+            new StaticTypeRule(this.reflection)
 
         ].concat(config.customRules);
        
@@ -50,16 +55,19 @@ export class AureliaLinter {
             rules,
             config.scopes,
             config.voids);
-
-        // fix to many event-handler issue
-        require('events').EventEmitter.prototype._maxListeners = 100;
     }
 
-    public async lint(html: string): Promise<Issue[]> {
-        
-        if(this.config.useStaticTyping)        
-            await this.reflection.addGlob("**/*.ts");        
+    public initialise(sourceGlob:string): Promise<any> {
+        if(this.config.useStaticTyping)
+        {
+            return this.reflection.addGlob(sourceGlob);
+        }      
+        else{
+            return Promise.resolve();
+        }
+    }
 
-        return await this.linter.lint(html);
+    public lint(html: string, path?:string ): Promise<Issue[]> {
+        return this.linter.lint(html, path);
     }
 }
