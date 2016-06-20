@@ -11,17 +11,24 @@ import {RequireRule} from './rules/require';
 import {SlotRule} from './rules/slot';
 import {TemplateRule} from './rules/template';
 import {RepeatForRule} from './rules/repeatfor';
+import {StaticTypeRule} from './rules/static-type';
 import {ConflictingAttributesRule, ConflictingAttributes} from './rules/conflictingattributes';
 
+import {Reflection} from './reflection';
 import {Config} from './config';
 
 export class AureliaLinter {
     linter: Linter;
+    reflection: Reflection;
+    config: Config;
 
     constructor(config?: Config) {
 
         if (config == undefined)
             config = new Config();
+
+        this.config = config;
+        this.reflection = new Reflection();   
 
         let rules = [
             new SelfCloseRule(),
@@ -38,7 +45,7 @@ export class AureliaLinter {
             new RepeatForRule()
 
         ].concat(config.customRules);
-
+       
         this.linter = new Linter(
             rules,
             config.scopes,
@@ -48,7 +55,11 @@ export class AureliaLinter {
         require('events').EventEmitter.prototype._maxListeners = 100;
     }
 
-    public lint(html: string): Promise<Issue[]> {
-        return this.linter.lint(html);
+    public async lint(html: string): Promise<Issue[]> {
+        
+        if(this.config.useStaticTyping)        
+            await this.reflection.addGlob("**/*.ts");        
+
+        return await this.linter.lint(html);
     }
 }

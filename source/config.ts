@@ -57,4 +57,6 @@ export class Config {
     scopes: Array<string> = ['html', 'body', 'template', 'svg', 'math'];
     containers: Array<string> = ['table', 'select'];
     customRules: Rule[] = [];
+
+    useStaticTyping = false;
 }

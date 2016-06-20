@@ -103,7 +103,7 @@ export class StaticTypeRule extends Rule {
             } else if (part.ancestor !== undefined) {
                 //this or ancestor access ($parent)
             }
-            else {
+            else if((<string>part).match !== undefined) {
                 let newLines = (<string>part).match(/\n|\r/);
 
                 if (newLines)
@@ -150,13 +150,12 @@ export class StaticTypeRule extends Rule {
         while (access !== undefined) {
             chain.push(access);
             access = access.object;
-        }
+        }        
 
         return chain.reverse();
     }
 
     private resolveViewModel(path: string) {
-
         let viewFileInfo = Path.parse(path);
         this.viewModelFile = Path.join(viewFileInfo.dir, `${viewFileInfo.name}.ts`);
         let viewName = this.capitalize(viewFileInfo.name);
