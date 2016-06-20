@@ -60,7 +60,7 @@ export class StaticTypeRule extends Rule {
     }
 
     private examineTag(tag: string, attrs: Attribute[], line: number) {
-        
+
         let bindingLanguage = this.bindingLanguage;
         let resources = this.resources;
 
@@ -71,11 +71,11 @@ export class StaticTypeRule extends Rule {
             let info: any = bindingLanguage.inspectAttribute(resources, tag, attrExpStr, attrValue);
             let type = resources.getAttribute(info.attrName);
 
-            if(!info) continue;
+            if (!info) continue;
 
             let instruction = bindingLanguage.createAttributeInstruction(resources, <any>{ tagName: tag }, info, undefined);
 
-            if(!instruction) continue;
+            if (!instruction) continue;
 
             //BindingExpression  
 
@@ -83,7 +83,7 @@ export class StaticTypeRule extends Rule {
             let access = instruction.attributes[attrName].sourceExpression;
             let chain = this.flattenAccessChain(access);
 
-            this.examineAccessMember(this.viewModelClass, chain, line);                    
+            this.examineAccessMember(this.viewModelClass, chain, line);
         }
     }
 
@@ -120,8 +120,28 @@ export class StaticTypeRule extends Rule {
             .filter(x => x.kind == ts.SyntaxKind.PropertyDeclaration)
             .find(x => (<any>x.name).text == name);
 
-        if (!member)
+        if (!member){
             this.reportAccessMemberIssue(name, decl, line);
+            return;
+        }
+        if(chain.length == 1)
+            return;
+
+        //member exists and access chain continues...
+
+        let type = (<any>member).type.typeName.text;
+            
+        let typeDecl = this.reflection.getDeclForImportedType(
+            (<ts.SourceFile>decl.parent),
+            type);
+
+        if(typeDecl){
+            this.examineAccessMember(typeDecl, chain.slice(1), line);
+        }
+        else{
+            //Failure to find the import source might be an error
+            //Or simply didn't find the source file. 
+        }
     }
 
     private flattenAccessChain(access) {
@@ -134,7 +154,7 @@ export class StaticTypeRule extends Rule {
 
         return chain.reverse();
     }
-    
+
     private resolveViewModel(path: string) {
         let viewFileInfo = Path.parse(path);
         this.viewModelFile = `${viewFileInfo.name}.ts`;
