@@ -45,7 +45,7 @@ describe("StaticType Rule", () => {
   let view =
     `
   <template>
-    <input value.bind="peron.name"></input>
+    <input value.bind="peron.age"></input>
     <div>
        \${peron.nam}
        \${person.nam}
@@ -66,8 +66,6 @@ describe("StaticType Rule", () => {
     try {
       var issues = await linter.lint(view, "foo.html")
 
-      expect(issues.length).toBe(4);
-
       if (issues.length == 1)
         expect(issues[0].message).toBe("cannot find 'peron' in type 'FooViewModel'");
       if (issues.length == 2)
@@ -76,6 +74,8 @@ describe("StaticType Rule", () => {
         expect(issues[2].message).toBe("cannot find 'nam' in type 'Person'");
       if (issues.length == 4)
         expect(issues[4].message).toBe("cannot find 'poscoe' in type 'Address'");
+
+      expect(issues.length).toBe(4);
     }
     catch (error) {
       console.log(error);

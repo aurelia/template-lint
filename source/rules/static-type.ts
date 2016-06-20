@@ -51,19 +51,7 @@ export class StaticTypeRule extends Rule {
             return;
 
         parser.on("startTag", (name, attrs, selfClosing, location) => {
-            /*let resources = this.resources;
-            let bindingLanguage = resources.getBindingLanguage(this.bindingLanguage);
-
-            for (let i = 0, ii = attrs.length; i < ii; ++i) {
-                let attr = attrs[i];
-                let attrName = attr.name;
-                let attrValue = attr.value;
-                let info: any = bindingLanguage.inspectAttribute(resources, name, attrName, attrValue);
-                let type = resources.getAttribute(info.attrName);
-
-                let instruction = bindingLanguage.createAttributeInstruction(
-                    resources, <any>{ tagName: name }, info, undefined);               
-            }*/
+            this.examineTag(name, attrs, location.line);
         });
 
         parser.on("text", (text, location) => {
@@ -71,6 +59,33 @@ export class StaticTypeRule extends Rule {
         });
     }
 
+    private examineTag(tag: string, attrs: Attribute[], line: number) {
+        
+        let bindingLanguage = this.bindingLanguage;
+        let resources = this.resources;
+
+        for (let i = 0, ii = attrs.length; i < ii; ++i) {
+            let attr = attrs[i];
+            let attrExpStr = attr.name;
+            let attrValue = attr.value;
+            let info: any = bindingLanguage.inspectAttribute(resources, tag, attrExpStr, attrValue);
+            let type = resources.getAttribute(info.attrName);
+
+            if(!info) continue;
+
+            let instruction = bindingLanguage.createAttributeInstruction(resources, <any>{ tagName: tag }, info, undefined);
+
+            if(!instruction) continue;
+
+            //BindingExpression  
+
+            let attrName = instruction.attrName;
+            let access = instruction.attributes[attrName].sourceExpression;
+            let chain = this.flattenAccessChain(access);
+
+            this.examineAccessMember(this.viewModelClass, chain, line);                    
+        }
+    }
 
     private examineText(text: string, lineStart: number) {
         let exp = this.bindingLanguage.inspectTextContent(this.resources, text);
@@ -102,8 +117,8 @@ export class StaticTypeRule extends Rule {
 
         //find the member;
         let member = decl.members
-            .filter(x => x.kind == ts.SyntaxKind.PropertyDeclaration)            
-            .find(x => (<any>x.name).text == name);            
+            .filter(x => x.kind == ts.SyntaxKind.PropertyDeclaration)
+            .find(x => (<any>x.name).text == name);
 
         if (!member)
             this.reportAccessMemberIssue(name, decl, line);
