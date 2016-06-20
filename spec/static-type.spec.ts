@@ -16,7 +16,7 @@ describe("StaticType Rule", () => {
 
   let person =
     `
-  import {Address} from './address';
+  import {Address} from '../address';
   export class Person
   {
     name:string;
@@ -54,9 +54,9 @@ describe("StaticType Rule", () => {
   </template>
   `
 
-  reflection.add("./person.ts", person);
+  reflection.add("./dir/person.ts", person);
   reflection.add("./address.ts", address);
-  reflection.add("./foo.ts", viewModel);
+  reflection.add("./dir/foo.ts", viewModel);
 
   var linter: Linter = new Linter([
     new StaticTypeRule(reflection)
@@ -64,7 +64,7 @@ describe("StaticType Rule", () => {
 
   it("raises issues if binding paths cannot be found", async (done) => {
     try {
-      var issues = await linter.lint(view, "foo.html")
+      var issues = await linter.lint(view, "./dir/foo.html")
 
       expect(issues.length).toBe(4);
 
@@ -74,7 +74,7 @@ describe("StaticType Rule", () => {
       expect(issues[3].message).toBe("cannot find 'poscoe' in type 'Address'");
     }
     catch (error) {
-      console.log(error);
+      expect(error).toBeUndefined();
     }
     finally {
       done();

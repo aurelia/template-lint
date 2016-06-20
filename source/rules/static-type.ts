@@ -120,25 +120,25 @@ export class StaticTypeRule extends Rule {
             .filter(x => x.kind == ts.SyntaxKind.PropertyDeclaration)
             .find(x => (<any>x.name).text == name);
 
-        if (!member){
+        if (!member) {
             this.reportAccessMemberIssue(name, decl, line);
             return;
         }
-        if(chain.length == 1)
+        if (chain.length == 1)
             return;
 
         //member exists and access chain continues...
 
         let type = (<any>member).type.typeName.text;
-            
+
         let typeDecl = this.reflection.getDeclForImportedType(
             (<ts.SourceFile>decl.parent),
             type);
 
-        if(typeDecl){
+        if (typeDecl) {
             this.examineAccessMember(typeDecl, chain.slice(1), line);
         }
-        else{
+        else {
             //Failure to find the import source might be an error
             //Or simply didn't find the source file. 
         }
@@ -156,12 +156,17 @@ export class StaticTypeRule extends Rule {
     }
 
     private resolveViewModel(path: string) {
+
         let viewFileInfo = Path.parse(path);
-        this.viewModelFile = `${viewFileInfo.name}.ts`;
+        this.viewModelFile = Path.join(viewFileInfo.dir, `${viewFileInfo.name}.ts`);
         let viewName = this.capitalize(viewFileInfo.name);
         this.viewModelName = `${viewName}ViewModel`; // convention for now
 
         this.viewModelSource = this.reflection.pathToSource[this.viewModelFile];
+
+        if (!this.viewModelSource)
+            return;
+
         let classes = this.viewModelSource.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration);
 
         this.viewModelClass = <ts.ClassDeclaration>classes.find(x => (<ts.ClassDeclaration>x).name.text == this.viewModelName);

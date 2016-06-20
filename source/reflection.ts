@@ -17,7 +17,9 @@ export class Reflection {
     }
 
     getDeclForImportedType(source: ts.SourceFile, symbol: string): ts.ClassDeclaration {
-
+        
+        let base = Path.parse(source.fileName).dir;
+        
         let imports = source.statements
             .filter(x => x.kind == ts.SyntaxKind.ImportDeclaration)
 
@@ -36,11 +38,13 @@ export class Reflection {
         });
 
         if(!match)
-            return null;  
+            return null;
             
         let importModule = (<any>match).moduleSpecifier.text;
 
-        let sourceFile =  this.pathToSource[Path.normalize(`${importModule}.ts`)];
+        let sourceFilePath = Path.normalize(Path.join(base, `${importModule}.ts`));
+
+        let sourceFile =  this.pathToSource[sourceFilePath];
 
         if(!sourceFile)
             return null;
