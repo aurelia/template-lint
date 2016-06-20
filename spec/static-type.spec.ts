@@ -16,45 +16,50 @@ describe("StaticType Rule", () => {
 
     var reflection = new Reflection();
 
-    let person =
-      `
-  import {Address} from '../address';
-  export class Person
-  {
-    name:string;
-    address:Address;
-    age:number;
-  }
-  `
-    let address =
-      `
-  export class Address
-  {    
-    address:string;
-    postcode:Address;
-  }
-  `
+    let person = `
+    import {Address} from '../address';
+    export class Person
+    {
+      name:string;
+      address:Address;
+      age:number;
+    }
+    `
+    let address = `
+    export class Address
+    {    
+      address:string;
+      postcode:Address;
+    }
+    `
 
-    let viewModel =
-      `
-  import {Person} from './person';
-  export class FooViewModel
-  {    
-    person:Person
-  }
-  `
+    let viewModel = `
+    import {Person} from './person';
+    export class FooViewModel
+    {    
+      person:Person
+    }
+    `
 
-    let view =
-      `
-  <template>
-    <input value.bind="peron.age"></input>
-    <div>
-       \${peron.nam}
-       \${person.nam}
-       \${person.address.poscoe}
-    </div>
-  </template>
-  `
+    let view = `
+    <template>
+      <input value.bind="peron.age"></input>
+      <div>
+        \${peron.nam}
+        \${person.nam}
+        \${person.address.poscoe}
+      </div>
+      <div repeat.for="item of ites">
+      </div>
+
+      <table>
+        <tr repeat.for="item of items">
+          <td>\${itm.name}</td>
+          <td>\${item.nme}</td>
+        </tr>
+      </table>
+    </template>
+    `
 
     reflection.add("./dir/person.ts", person);
     reflection.add("./address.ts", address);
@@ -68,12 +73,14 @@ describe("StaticType Rule", () => {
       try {
         var issues = await linter.lint(view, "./dir/foo.html")
 
-        expect(issues.length).toBe(4);
+        expect(issues.length).toBe(6);
 
         expect(issues[0].message).toBe("cannot find 'peron' in type 'FooViewModel'");
         expect(issues[1].message).toBe("cannot find 'peron' in type 'FooViewModel'");
         expect(issues[2].message).toBe("cannot find 'nam' in type 'Person'");
-        expect(issues[3].message).toBe("cannot find 'poscoe' in type 'Address'");
+        expect(issues[3].message).toBe("cannot find 'poscoe' in type 'Address'");        
+        expect(issues[4].message).toBe("cannot find 'ites' in type 'FooViewModel'");
+        expect(issues[5].message).toBe("cannot find 'nme' in type 'Item'");
       }
       catch (error) {
         expect(error).toBeUndefined();
