@@ -11,17 +11,28 @@ import {RequireRule} from './rules/require';
 import {SlotRule} from './rules/slot';
 import {TemplateRule} from './rules/template';
 import {RepeatForRule} from './rules/repeatfor';
+import {StaticTypeRule} from './rules/static-type';
 import {ConflictingAttributesRule, ConflictingAttributes} from './rules/conflictingattributes';
 
+import {Reflection} from './reflection';
 import {Config} from './config';
+
+import {initialize} from 'aurelia-pal-nodejs';
+
+initialize();
 
 export class AureliaLinter {
     linter: Linter;
+    reflection: Reflection;
+    config: Config;
 
     constructor(config?: Config) {
 
         if (config == undefined)
             config = new Config();
+
+        this.config = config;
+        this.reflection = new Reflection();   
 
         let rules = [
             new SelfCloseRule(),
@@ -35,20 +46,28 @@ export class AureliaLinter {
             new SlotRule(config.templateControllers),
             new TemplateRule(config.containers),
             new ConflictingAttributesRule(<ConflictingAttributes[]> config.conflictingAttributes),
-            new RepeatForRule()
+            new RepeatForRule(),
+            new StaticTypeRule(this.reflection)
 
         ].concat(config.customRules);
-
+       
         this.linter = new Linter(
             rules,
             config.scopes,
             config.voids);
-
-        // fix to many event-handler issue
-        require('events').EventEmitter.prototype._maxListeners = 100;
     }
 
-    public lint(html: string): Promise<Issue[]> {
-        return this.linter.lint(html);
+    public initialise(sourceGlob:string): Promise<any> {
+        if(this.config.useStaticTyping)
+        {
+            return this.reflection.addGlob(sourceGlob);
+        }      
+        else{
+            return Promise.resolve();
+        }
+    }
+
+    public lint(html: string, path?:string ): Promise<Issue[]> {
+        return this.linter.lint(html, path);
     }
 }
