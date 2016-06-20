@@ -66,11 +66,16 @@ describe("StaticType Rule", () => {
     try {
       var issues = await linter.lint(view, "foo.html")
 
-      //expect(issues.length).toBe();
+      expect(issues.length).toBe(4);
 
-      expect(issues[0].message).toBe("cannot find 'peron' in type 'FooViewModel'")
-      //expect(issues[1].message).toBe("cannot find 'nam' in type 'Person'")
-      //expect(issues[2].message).toBe("cannot find 'poscoe' in type 'Address'");
+      if (issues.length == 1)
+        expect(issues[0].message).toBe("cannot find 'peron' in type 'FooViewModel'");
+      if (issues.length == 2)
+        expect(issues[1].message).toBe("cannot find 'peron' in type 'FooViewModel'");
+      if (issues.length == 3)
+        expect(issues[2].message).toBe("cannot find 'nam' in type 'Person'");
+      if (issues.length == 4)
+        expect(issues[4].message).toBe("cannot find 'poscoe' in type 'Address'");
     }
     catch (error) {
       console.log(error);

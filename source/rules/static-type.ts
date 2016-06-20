@@ -103,7 +103,7 @@ export class StaticTypeRule extends Rule {
         //find the member;
         let member = decl.members
             .filter(x => x.kind == ts.SyntaxKind.PropertyDeclaration)            
-            .find(x => (<any>x.name).text == name.text);
+            .find(x => (<any>x.name).text == name);            
 
         if (!member)
             this.reportAccessMemberIssue(name, decl, line);
