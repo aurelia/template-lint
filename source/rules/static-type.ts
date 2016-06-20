@@ -134,37 +134,7 @@ export class StaticTypeRule extends Rule {
 
         return chain.reverse();
     }
-
-    //https://github.com/aurelia/templating/blob/3e925bb57e179e0f566eabc5882b7e416cbb44ec/src/view-compiler.js
-    private configureProperties(instruction, resources) {
-        let type = instruction.type;
-        let attrName = instruction.attrName;
-        let attributes = instruction.attributes;
-        let property;
-        let key;
-        let value;
-
-        let knownAttribute = resources.mapAttribute(attrName);
-        if (knownAttribute && attrName in attributes && knownAttribute !== attrName) {
-            attributes[knownAttribute] = attributes[attrName];
-            delete attributes[attrName];
-        }
-
-        for (key in attributes) {
-            value = attributes[key];
-
-            if (value !== null && typeof value === 'object') {
-                property = type.attributes[key];
-
-                if (property !== undefined) {
-                    value.targetProperty = property.name;
-                } else {
-                    value.targetProperty = key;
-                }
-            }
-        }
-    }
-
+    
     private resolveViewModel(path: string) {
         let viewFileInfo = Path.parse(path);
         this.viewModelFile = `${viewFileInfo.name}.ts`;
