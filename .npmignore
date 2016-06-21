@@ -6,4 +6,5 @@ typings
 tsconfig.json
 typings.json
 gulpfile.js
-example/
+example
+exxample.js
