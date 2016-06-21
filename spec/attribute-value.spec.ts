@@ -12,7 +12,7 @@ describe("Aurelia Examples", () => {
         linter.lint(html)
             .then((issues) => {
                 expect(issues.length).toBe(1);
-                expect(issues[0].message).toBe("interpolation not allowed for attribute");
+                expect(issues[0].message).toBe("interpolation not allowed in style attribute");
                 done();
             });
     });

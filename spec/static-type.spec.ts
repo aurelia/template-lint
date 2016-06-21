@@ -7,14 +7,18 @@ import {Parser, ObserverLocator, NameExpression, bindingMode} from 'aurelia-bind
 import fs = require('fs');
 import {initialize} from 'aurelia-pal-nodejs';
 
-
-
 initialize();
 
 describe("StaticType Rule", () => {
   describe("with Manual Reflection", () => {
 
     var reflection = new Reflection();
+
+    let item = `   
+    export class Item
+    {
+      name:string;
+    }`
 
     let person = `
     import {Address} from '../address';
@@ -35,9 +39,11 @@ describe("StaticType Rule", () => {
 
     let viewModel = `
     import {Person} from './person';
+    import {Item} from './nested/item'
     export class FooViewModel
     {    
       person:Person
+      items:Item[];
     }
     `
 
@@ -60,7 +66,7 @@ describe("StaticType Rule", () => {
       </table>
     </template>
     `
-
+    reflection.add("./dir/nested/item.ts", item);
     reflection.add("./dir/person.ts", person);
     reflection.add("./address.ts", address);
     reflection.add("./dir/foo.ts", viewModel);
@@ -73,14 +79,15 @@ describe("StaticType Rule", () => {
       try {
         var issues = await linter.lint(view, "./dir/foo.html")
 
-        expect(issues.length).toBe(6);
+        expect(issues.length).toBe(7);
 
         expect(issues[0].message).toBe("cannot find 'peron' in type 'FooViewModel'");
         expect(issues[1].message).toBe("cannot find 'peron' in type 'FooViewModel'");
         expect(issues[2].message).toBe("cannot find 'nam' in type 'Person'");
         expect(issues[3].message).toBe("cannot find 'poscoe' in type 'Address'");        
         expect(issues[4].message).toBe("cannot find 'ites' in type 'FooViewModel'");
-        expect(issues[5].message).toBe("cannot find 'nme' in type 'Item'");
+        expect(issues[5].message).toBe("cannot find 'itm' in type 'FooViewModel'");
+        expect(issues[6].message).toBe("cannot find 'nme' in type 'Item'");
       }
       catch (error) {
         expect(error).toBeUndefined();
@@ -107,12 +114,13 @@ describe("StaticType Rule", () => {
       try {
         var issues = await linter.lint(view, viewPath)
 
-        expect(issues.length).toBe(4);
+        expect(issues.length).toBe(5);
 
-        expect(issues[0].message).toBe("cannot find 'peron' in type 'FooViewModel'");
-        expect(issues[1].message).toBe("cannot find 'peron' in type 'FooViewModel'");
-        expect(issues[2].message).toBe("cannot find 'nam' in type 'Person'");
-        expect(issues[3].message).toBe("cannot find 'poscoe' in type 'Address'");
+        expect(issues[0].message).toBe("cannot find 'ino' in type 'Item'");
+        expect(issues[1].message).toBe("cannot find 'isAdmn' in type 'Role'");
+        expect(issues[2].message).toBe("cannot find 'sizeee' in type 'Data'");
+        expect(issues[3].message).toBe("cannot find 'postcdo' in type 'Address'");
+        expect(issues[4].message).toBe("cannot find 'nme' in type 'Item'");
       }
       catch (error) {
         expect(error).toBeUndefined();

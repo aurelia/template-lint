@@ -9,14 +9,19 @@
     <template></template>
   </table>
   <div style="width: ${width}px; height: ${height}px;"></div>
-  <div repeat.for="item of items" with.bind="items">    
+  <div repeat.for="item of items" with.bind="items">
   </div>
   <template repeat.for="item of items">
-    ${item.ino}  
-    ${item.role.isAdmn}
-    ${item.update().sizeee}      
+    ${item.ino} 
+    ${item.role.isAdmn} 
+    ${item.update().sizeee}
   </template>
   <template with.bind="person">
-    ${address.postcdo}  
+    ${address.postcdo}
   </template>
-</etemps>
+  <table>
+    <tr repeat.for="item of items">
+      <td>${item.nme}</td>
+    </tr>
+  </table>
+  </etemps>
