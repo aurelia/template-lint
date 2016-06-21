@@ -1,7 +1,7 @@
 import {Person} from './my-types/person';
-import {Moo} from './my-types/moo';
+import {Item} from './my-types/item';
 
 export class FooViewModel {
   person: Person;
-  moos: Moo[];
+  items: Item[];
 }

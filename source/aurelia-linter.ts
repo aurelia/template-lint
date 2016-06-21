@@ -47,7 +47,7 @@ export class AureliaLinter {
             new TemplateRule(config.containers),
             new ConflictingAttributesRule(<ConflictingAttributes[]> config.conflictingAttributes),
             new RepeatForRule(),
-            new StaticTypeRule(this.reflection)
+            new StaticTypeRule(this.reflection, config.throwStaticTypingErrors)
 
         ].concat(config.customRules);
        

@@ -30,43 +30,53 @@ See:
 ##Example
 using the default config, the example:
 
+
+***foo.html***
 ```html
  1:<template>
- 2:    <require/>
- 3:    <require frm="bad"/> 
- 4:
- 5:    <div repeat="item of items"></div>
- 6:    <div repeat.for="item of"></div>
- 7:
- 8:    <content></content>
- 9:
-10:    <slot></slot>
-11:    <slot></slot>    
-12:       
-13:    <table>
-14:        <template></template>     
-15:    </table>
-16:    <div repeat.for="user of users" with.bind="user"></div>
-17:</etemps> <!-- oops! -->
+ 2: <require></require>
+ 3: <div repeat="item of items"></div>
+ 4:  <div repeat.for="item of"></div>
+ 5:  <content></content>
+ 6:  <slot></slot>
+ 7:  <slot></slot>
+ 8:  <table>
+ 9:    <template></template>
+10:  </table>
+11:  <div style="width: ${width}px; height: ${height}px;"></div>
+12:  <div repeat.for="item of items" with.bind="items">    
+13:  </div>
+14:  <template repeat.for="item of items">
+15:    ${item.ino}  
+16:    ${item.role.isAdmn}
+17:    ${item.update().sizeee}      
+18:  </template>
+19:  <template with.bind="person">
+20:    ${address.postcdo}  
+21:  </template>
+22:</etemps>
 ```
 
 will result in the following errors:
 
 ```
 suspected unclosed element detected [ln: 1 col: 1]
-self-closing element [ln: 2 col: 5]
-require tag is missing a 'from' attribute [ln: 2 col: 5]
-require tag is missing a 'from' attribute [ln: 3 col: 5]
-self-closing element [ln: 3 col: 5]
-did you miss `.for` on repeat? [ln: 5 col: 5]
-repeat syntax should be of form `* of *` [ln: 6 col: 5]
-<content> is obsolete [ln: 8 col: 5]
+self-closing element [ln: 2 col: 3]
+require tag is missing a 'from' attribute [ln: 2 col: 3]
+did you miss `.for` on repeat? [ln: 3 col: 3]
+repeat syntax should be of form `* of *` [ln: 4 col: 3]
+<content> is obsolete [ln: 5 col: 3]
   * use slot instead
-more than one default slot detected [ln: 11 col: 5]
-template as child of <table> not allowed [ln: 14 col: 9]
-conflicting attributes: [repeat.for, with.bind] [ln: 16 col: 5]
+more than one default slot detected [ln: 7 col: 3]
+template as child of <table> not allowed [ln: 9 col: 5]
+interpolation not allowed in style attribute [ln: 11 col: 3]
+conflicting attributes: [repeat.for, with.bind] [ln: 12 col: 3]
   * template controllers shouldn't be placed on the same element
-mismatched close tag [ln: 17 col: 1]
+cannot find 'ino' in type 'Item' [ln: 15 col: 0]
+cannot find 'isAdmn' in type 'Role' [ln: 16 col: 0]
+cannot find 'sizeee' in type 'Data' [ln: 17 col: 0]
+cannot find 'postcdo' in type 'Address' [ln: 20 col: 0]
+mismatched close tag [ln: 22 col: 1]
 ```
 ## Rules
 Rules used by default:
@@ -113,7 +123,7 @@ npm install aurelia-template-lint
 *For use with gulp, there is a [gulp plugin available](https://github.com/MeirionHughes/gulp-aurelia-template-lint)*
 
 
-```
+```js
 const AureliaLinter = require('aurelia-template-lint').AureliaLinter
 
 var linter = new AureliaLinter();
@@ -132,7 +142,7 @@ linter.lint(html)
 
 can be configured by passing a config object
 
-```
+```js
 const Config = require('aurelia-template-lint').Config
 
 var config = new Config();
@@ -144,7 +154,7 @@ var linter = new AureliaLinter(config);
 
 Config is an object type of the form and default:
 
-```
+```ts
 class Config {
     
     attributeValueRules: Array<{ attr: RegExp, is?: RegExp, not?: RegExp, msg?: string, tag?:string }> = [
@@ -209,7 +219,7 @@ class Config {
 ## Static Types
 In order to use static type checking you must opt-in:
 
-```
+```js
 const Config = require('aurelia-template-lint').Config
 
 var config = new Config();
@@ -220,14 +230,19 @@ config.sourceFileGlob = "base/path/**/*.ts";
 var linter = new AureliaLinter(config);
 ```
 
-please report any false-negatives or code exceptions with an example of what (HTML/TS) causes the problem. 
+please [report any false-negatives or code exceptions](https://github.com/MeirionHughes/aurelia-template-lint/issues/35) with an example of what (HTML/TS) causes the problem. 
 
 ##Compiling
 Clone the repository. 
 In the project root run
-```
+```shell
 npm install
 npm test
+```
+
+test with: 
+```shell
+gulp compile:typescript && node example.js
 ```
 
 ##Visual Studio Code

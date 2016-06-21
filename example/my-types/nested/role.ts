@@ -1,4 +1,4 @@
 export class Role
 {
-    admin:boolean;
+    isAdmin:boolean;
 }

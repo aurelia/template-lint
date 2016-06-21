@@ -1,5 +1,5 @@
 <template>
-  <require>
+  <require/>
   <div repeat="item of items"></div>
   <div repeat.for="item of"></div>
   <content></content>
@@ -12,9 +12,9 @@
   <div repeat.for="item of items" with.bind="items">    
   </div>
   <template repeat.for="item of items">
-    ${item.info}  
+    ${item.ino}  
     ${item.role.isAdmn}
-    ${item.update().size}      
+    ${item.update().sizeee}      
   </template>
   <template with.bind="person">
     ${address.postcdo}  

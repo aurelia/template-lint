@@ -5,6 +5,7 @@ import {ViewResources, BindingLanguage, BehaviorInstruction} from 'aurelia-templ
 import {AccessMember, AccessScope, AccessKeyed/*, AccessThis*/, NameExpression} from 'aurelia-binding';
 import {Container} from 'aurelia-dependency-injection';
 import * as ts from 'typescript';
+import * as Path from 'path';
 
 import {Rule, Parser, ParserState, Issue, IssueSeverity} from 'template-lint';
 import {Reflection} from '../reflection';
@@ -12,16 +13,11 @@ import {Attribute} from 'parse5';
 
 import 'aurelia-polyfills';
 
-import * as Path from 'path';
-
-import {configure} from 'aurelia-templating-resources';
-
 interface INodeVars {
     name: string,
     type: string
     override?: { any };
 }
-
 
 /**
  *  Rule to ensure static type usage is valid
@@ -41,10 +37,10 @@ export class StaticTypeRule extends Rule {
     private viewModelSource: ts.SourceFile;
     private viewModelClassDecl: ts.ClassDeclaration;
 
-    constructor(private reflection: Reflection,
-        base?: string) {
+
+
+    constructor(private reflection: Reflection, public throws?:boolean) {
         super();
-        this.base = base || "";
 
         this.container = new Container();
         this.resources = this.container.get(ViewResources);
@@ -63,23 +59,53 @@ export class StaticTypeRule extends Rule {
         if (!this.viewModelClassDecl)
             return;
 
-        parser.on("startTag", (name, attrs, selfClosing, location) => {
+        parser.on("startTag", (name, attrs, selfClosing, location) => {  
+
+            if(this.state.nextNode == null)
+                return;
+
             let node = this.state.nextNode;
             let context: INodeVars[] = this.inheritVariables(0);
             let decl = this.inheritDecl();
+            let active = this.inheritActive();
 
             node.data.context = context;
             node.data.decl = decl;
+            node.data.active = active;
 
-            this.examineTag(context, decl, name, attrs, location.line);
+            if (active) {
+                try {
+                    this.examineTag(context, decl, name, attrs, location.line);
+                } catch (error) {
+
+                    if(this. throws)
+                        throw error;
+
+                    node.data.active = false;
+                }
+            }
         });
 
         parser.on("text", (text, location) => {
+
             let stack = this.state.stack;
+            if(stack.length == 0)
+                return;
             let node = stack[stack.length - 1];
             let context: { name: string, type: string }[] = node.data.context;
             let decl = node.data.decl;
-            this.examineText(context, decl, text, location.line);
+            let active = node.data.active;
+            if (active) {
+                try {
+                    this.examineText(context, decl, text, location.line);
+                } catch (error) {
+                                        
+                    if(this. throws)
+                        throw error;
+
+                    node.data.active = false;
+                }
+            }
         });
     }
 
@@ -93,8 +119,19 @@ export class StaticTypeRule extends Rule {
         return context;
     }
 
+    private inheritActive():boolean{
+        let stack = this.state.stack;
+        for (let i = stack.length - 1; i >= 0; --i) {
+            let node = stack[i];
+            if (node.data.active == false)
+                return false;
+        }
+
+        return true;
+    }
+
     private inheritDecl(): ts.ClassDeclaration {
-        let context: INodeVars[] = []
+        
         let stack = this.state.stack;
 
         for (let i = stack.length - 1; i >= 0; --i) {
@@ -126,7 +163,7 @@ export class StaticTypeRule extends Rule {
 
             let attrName = instruction.attrName;
             let discrete = instruction.discrete;
-            
+
             if (discrete) {
                 let name = instruction.sourceExpression.name;
                 let type = "$$$";
@@ -202,15 +239,14 @@ export class StaticTypeRule extends Rule {
             if (localVar)
                 type = localVar.type;
 
-            if (type == "$element")
+            if (type == "$$$")
                 return type;
         }
 
         if (!type) {
             //find the member;
             let member = decl.members
-                .filter(x =>
-                    x.kind == ts.SyntaxKind.PropertyDeclaration)
+                .filter(x => x.kind == ts.SyntaxKind.PropertyDeclaration || x.kind == ts.SyntaxKind.MethodDeclaration)
                 .find(x => (<any>x.name).text == name);
 
             if (!member) {

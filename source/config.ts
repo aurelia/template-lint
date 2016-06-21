@@ -8,7 +8,7 @@ export class Config {
         {
             attr:/^style$/,
             not:/\${(.?)+}/,
-            msg:"interpolation not allowed for attribute"            
+            msg:"interpolation not allowed in style attribute"            
         },
         {
             attr:/^bindable$/,
@@ -59,5 +59,7 @@ export class Config {
     customRules: Rule[] = [];
 
     useStaticTyping = false;
+    throwStaticTypingErrors = false;
     sourceFileGlob = "source/**/*.ts"
+    
 }
