@@ -294,8 +294,6 @@ export class StaticTypeRule extends Rule {
         let viewFileInfo = Path.parse(path);
         this.viewModelFile = Path.join(viewFileInfo.dir, `${viewFileInfo.name}.ts`);
         let viewName = this.capitalize(viewFileInfo.name);
-        this.viewModelName = `${viewName}ViewModel`; // convention for now
-
         this.viewModelSource = this.reflection.pathToSource[this.viewModelFile];
 
         if (!this.viewModelSource)
@@ -303,6 +301,17 @@ export class StaticTypeRule extends Rule {
 
         let classes = this.viewModelSource.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration);
 
+        this.viewModelName = `${viewName}`; // convention for now
+        this.viewModelClassDecl = <ts.ClassDeclaration>classes.find(x => (<ts.ClassDeclaration>x).name.text == this.viewModelName);
+
+        if(this.viewModelClassDecl!= null) return;
+
+        this.viewModelName = `${viewName}ViewModel`; // convention for now
+        this.viewModelClassDecl = <ts.ClassDeclaration>classes.find(x => (<ts.ClassDeclaration>x).name.text == this.viewModelName);
+
+        if(this.viewModelClassDecl!= null) return;
+        
+        this.viewModelName = `${viewName}VM`; // convention for now
         this.viewModelClassDecl = <ts.ClassDeclaration>classes.find(x => (<ts.ClassDeclaration>x).name.text == this.viewModelName);
     }
 
