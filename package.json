@@ -1,6 +1,6 @@
 {
   "name": "aurelia-template-lint",
-  "description": "sanity check of template html",
+  "description": "sanity check of Aurelia-flavor templates",
   "author": "Meirion Hughes <crakinshot@yahoo.com>",
   "repository": {
     "type": "git",
@@ -46,9 +46,9 @@
     "aurelia-polyfills": "^1.0.0-beta.2.0.1",
     "aurelia-templating": "^1.0.0-beta.3.0.3",
     "aurelia-templating-binding": "^1.0.0-beta.2.0.2",
-    "glob": "^7.0.4",
+    "glob": "7.0.x",
     "parse5": "2.1.x",
     "template-lint": "0.7.x",
-    "typescript": "^1.8.10"
+    "typescript": "1.8.x"
   }
 }
