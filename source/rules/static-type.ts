@@ -15,7 +15,7 @@ import 'aurelia-polyfills';
 
 interface INodeVars {
     name: string,
-    type: string
+    type: any,
     override?: { any };
 }
 
@@ -23,9 +23,6 @@ interface INodeVars {
  *  Rule to ensure static type usage is valid
  */
 export class StaticTypeRule extends Rule {
-    private expInterp: RegExp = /\${.+}/
-    private base: string;
-
     private state: ParserState;
 
     private resources: ViewResources;
@@ -37,9 +34,7 @@ export class StaticTypeRule extends Rule {
     private viewModelSource: ts.SourceFile;
     private viewModelClassDecl: ts.ClassDeclaration;
 
-
-
-    constructor(private reflection: Reflection, public throws?:boolean) {
+    constructor(private reflection: Reflection, public throws?: boolean) {
         super();
 
         this.container = new Container();
@@ -59,9 +54,9 @@ export class StaticTypeRule extends Rule {
         if (!this.viewModelClassDecl)
             return;
 
-        parser.on("startTag", (name, attrs, selfClosing, location) => {  
+        parser.on("startTag", (name, attrs, selfClosing, location) => {
 
-            if(this.state.nextNode == null)
+            if (this.state.nextNode == null)
                 return;
 
             let node = this.state.nextNode;
@@ -78,7 +73,7 @@ export class StaticTypeRule extends Rule {
                     this.examineTag(context, decl, name, attrs, location.line);
                 } catch (error) {
 
-                    if(this. throws)
+                    if (this.throws)
                         throw error;
 
                     node.data.active = false;
@@ -89,18 +84,18 @@ export class StaticTypeRule extends Rule {
         parser.on("text", (text, location) => {
 
             let stack = this.state.stack;
-            if(stack.length == 0)
+            if (stack.length == 0)
                 return;
             let node = stack[stack.length - 1];
-            let context: { name: string, type: string }[] = node.data.context;
+            let context: INodeVars[] = node.data.context;
             let decl = node.data.decl;
             let active = node.data.active;
             if (active) {
                 try {
                     this.examineText(context, decl, text, location.line);
                 } catch (error) {
-                                        
-                    if(this. throws)
+
+                    if (this.throws)
                         throw error;
 
                     node.data.active = false;
@@ -119,7 +114,7 @@ export class StaticTypeRule extends Rule {
         return context;
     }
 
-    private inheritActive():boolean{
+    private inheritActive(): boolean {
         let stack = this.state.stack;
         for (let i = stack.length - 1; i >= 0; --i) {
             let node = stack[i];
@@ -131,7 +126,7 @@ export class StaticTypeRule extends Rule {
     }
 
     private inheritDecl(): ts.ClassDeclaration {
-        
+
         let stack = this.state.stack;
 
         for (let i = stack.length - 1; i >= 0; --i) {
@@ -176,7 +171,7 @@ export class StaticTypeRule extends Rule {
                         let iterator = <string>instruction.attributes['local'];
                         let source = instruction.attributes['items'];
                         let chain = this.flattenAccessChain(source.sourceExpression);
-                        let type = this.examineAccessMember(local, decl, chain, line, false);
+                        let type = this.examineAccessMember(local, decl, chain, line);
 
                         local.push(<INodeVars>{ name: iterator, type: type });
 
@@ -186,7 +181,7 @@ export class StaticTypeRule extends Rule {
 
                         let source = instruction.attributes['with'];
                         let chain = this.flattenAccessChain(source.sourceExpression);
-                        let typedecl = this.examineAccessMember(local, decl, chain, line, true);
+                        let typedecl = this.examineAccessMember(local, decl, chain, line);
 
                         if (typedecl != null)
                             this.state.nextNode.data.decl = typedecl;
@@ -196,7 +191,7 @@ export class StaticTypeRule extends Rule {
                     default: try {
                         let access = instruction.attributes[attrName].sourceExpression;
                         let chain = this.flattenAccessChain(access);
-                        this.examineAccessMember(local, this.viewModelClassDecl, chain, line, false);
+                        this.examineAccessMember(local, decl, chain, line);
                     } catch (ignore) { }
                 };
             };
@@ -215,7 +210,7 @@ export class StaticTypeRule extends Rule {
             if (part.name !== undefined) {
                 let chain = this.flattenAccessChain(part);
                 if (chain.length > 0)
-                    this.examineAccessMember(local, decl, chain, lineStart + lineOffset, false);
+                    this.examineAccessMember(local, decl, chain, lineStart + lineOffset);
             } else if (part.ancestor !== undefined) {
                 //this or ancestor access ($parent)
             }
@@ -228,7 +223,7 @@ export class StaticTypeRule extends Rule {
         });
     }
 
-    private examineAccessMember(local: { name: string, type: string }[], decl: ts.ClassDeclaration, chain: any[], line: number, returnDecl: boolean): string | ts.ClassDeclaration {
+    private examineAccessMember(local: INodeVars[], decl: ts.ClassDeclaration, chain: any[], line: number): string | ts.ClassDeclaration {
         let name = chain[0].name;
         let type = null;
 
@@ -236,8 +231,13 @@ export class StaticTypeRule extends Rule {
 
         if (local) {
             let localVar = local.find(x => x.name == name);
-            if (localVar)
-                type = localVar.type;
+            if (localVar) {
+                if (typeof localVar === 'string')
+                    type = localVar.type;
+                else if (localVar.type.kind !== undefined) {
+                    type = localVar.type.name.text;
+                }
+            }
 
             if (type == "$$$")
                 return type;
@@ -254,29 +254,56 @@ export class StaticTypeRule extends Rule {
                 return;
             }
 
-            if ((<any>member).type.typeName != undefined) {
-                type = (<any>member).type.typeName.text;
-            }
-            else if ((<any>member).type.elementType != undefined) {
-                type = (<any>member).type.elementType.typeName.text;
-            }
+            type = this.resolveElementType(member);
         }
 
         //member exists and access chain continues...
-        let typeDecl = this.reflection.getDeclForImportedType(
-            (<ts.SourceFile>decl.parent),
-            type);
+        let typeDecl = this.reflection.getDeclForImportedType((<ts.SourceFile>decl.parent), type);
 
         if (chain.length == 1) {
-            if (returnDecl)
+            if (typeDecl)
                 return typeDecl;
             return type;
         }
 
         if (typeDecl)
-            return this.examineAccessMember(null, typeDecl, chain.slice(1), line, returnDecl);
+            return this.examineAccessMember(null, typeDecl, chain.slice(1), line);
 
         return null;
+    }
+
+    private resolveElementType(node: ts.ClassElement): string {
+        switch (node.kind) {
+            case ts.SyntaxKind.PropertyDeclaration:
+                let prop = <ts.PropertyDeclaration>node
+                return this.resolveTypeName(prop.type);
+            case ts.SyntaxKind.MethodDeclaration:
+                let meth = <ts.MethodDeclaration>node
+                return this.resolveTypeName(meth.type);
+            default:
+                console.log(ts.SyntaxKind[node.kind]);
+                return null;
+        }
+    }
+
+    private resolveTypeName(node: ts.TypeNode): string {
+        switch (node.kind) {
+            case ts.SyntaxKind.ArrayType:
+                let arr = <ts.ArrayTypeNode>node;
+                return this.resolveTypeName(arr.elementType);
+            case ts.SyntaxKind.TypeReference:
+                let ref = <ts.TypeReferenceNode>node;
+                return ref.typeName.getText();
+            case ts.SyntaxKind.StringKeyword:
+                return 'string';
+            case ts.SyntaxKind.NumberKeyword:
+                return 'number';
+            case ts.SyntaxKind.BooleanKeyword:
+                return 'boolean';
+            default:
+                console.log(ts.SyntaxKind[node.kind]);
+                return null;
+        }
     }
 
     private flattenAccessChain(access) {
@@ -304,16 +331,20 @@ export class StaticTypeRule extends Rule {
         this.viewModelName = `${viewName}`; // convention for now
         this.viewModelClassDecl = <ts.ClassDeclaration>classes.find(x => (<ts.ClassDeclaration>x).name.text == this.viewModelName);
 
-        if(this.viewModelClassDecl!= null) return;
+        if (this.viewModelClassDecl != null) return;
 
         this.viewModelName = `${viewName}ViewModel`; // convention for now
         this.viewModelClassDecl = <ts.ClassDeclaration>classes.find(x => (<ts.ClassDeclaration>x).name.text == this.viewModelName);
 
-        if(this.viewModelClassDecl!= null) return;
-        
+        if (this.viewModelClassDecl != null) return;
+
         this.viewModelName = `${viewName}VM`; // convention for now
         this.viewModelClassDecl = <ts.ClassDeclaration>classes.find(x => (<ts.ClassDeclaration>x).name.text == this.viewModelName);
     }
+
+    private toCamel(text) {
+        return text.replace(/(\-[a-z])/g, function ($1) { return $1.toUpperCase().replace('-', ''); });
+    };
 
     private capitalize(text) {
         return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
