@@ -26,13 +26,15 @@ export class AureliaLinter {
     reflection: Reflection;
     config: Config;
 
+    private init: Promise<void>;
+
     constructor(config?: Config) {
 
         if (config == undefined)
             config = new Config();
 
         this.config = config;
-        this.reflection = new Reflection();   
+        this.reflection = new Reflection();
 
         let rules = [
             new SelfCloseRule(),
@@ -45,29 +47,30 @@ export class AureliaLinter {
             new RequireRule(),
             new SlotRule(config.templateControllers),
             new TemplateRule(config.containers),
-            new ConflictingAttributesRule(<ConflictingAttributes[]> config.conflictingAttributes),
+            new ConflictingAttributesRule(<ConflictingAttributes[]>config.conflictingAttributes),
             new RepeatForRule(),
             new StaticTypeRule(this.reflection, config.throwStaticTypingErrors)
 
         ].concat(config.customRules);
-       
+
         this.linter = new Linter(
             rules,
             config.scopes,
             config.voids);
+
+        if (this.config.useStaticTyping)
+            this.init = this.reflection.addGlob(this.config.sourceFileGlob);
     }
 
-    public initialise(sourceGlob:string): Promise<any> {
-        if(this.config.useStaticTyping)
-        {
-            return this.reflection.addGlob(sourceGlob);
-        }      
-        else{
-            return Promise.resolve();
+    public lint(html: string, path?: string): Promise<Issue[]> {
+        if (this.init) {
+            return this.init.then(() => {
+                this.init = null;
+                return this.linter.lint(html, path);
+            });
         }
-    }
-
-    public lint(html: string, path?:string ): Promise<Issue[]> {
-        return this.linter.lint(html, path);
+        else {
+            return this.linter.lint(html, path);
+        }
     }
 }

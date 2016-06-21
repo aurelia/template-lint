@@ -104,6 +104,7 @@ describe("StaticType Rule", () => {
       var reflection = new Reflection();
 
       await reflection.addGlob("example/**/*.ts");
+
       var viewPath = "./example/foo.html";
       let view = fs.readFileSync(viewPath, 'utf8');
 

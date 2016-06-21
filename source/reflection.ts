@@ -29,7 +29,12 @@ export class Reflection {
     }
 
     add(path: string, source: string) {
+
         let sourcePath = Path.normalize(path);
+
+        if(this.pathToSource[sourcePath] !== undefined)
+            return;
+
         let reflection = ts.createSourceFile(sourcePath, source, ts.ScriptTarget.Latest, true);
         this.sourceFiles.push(reflection);
         this.pathToSource[sourcePath] = reflection;
