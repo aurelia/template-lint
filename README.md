@@ -34,8 +34,8 @@ using the default config, the example:
 ***foo.html***
 ```html
  1:<template>
- 2: <require></require>
- 3: <div repeat="item of items"></div>
+ 2:  <require></require>
+ 3:  <div repeat="item of items"></div>
  4:  <div repeat.for="item of"></div>
  5:  <content></content>
  6:  <slot></slot>
@@ -55,6 +55,16 @@ using the default config, the example:
 20:    ${address.postcdo}  
 21:  </template>
 22:</etemps>
+```
+***foo.ts***
+```ts
+import {Person} from './my-types/person';
+import {Item} from './my-types/item';
+
+export class FooViewModel {
+  person: Person;
+  items: Item[];
+}
 ```
 
 will result in the following errors:
