@@ -28,7 +28,7 @@ See:
 *If you use this library directly, in a production environment (ci), then ensure you lock to a minor version as this library is under development and subject to breaking changes on minor versions*
 
 ##Example
-using the default config, the example:
+using the default config (plus type checking - *see below*), the example:
 
 
 ***foo.html***
@@ -88,6 +88,9 @@ cannot find 'sizeee' in type 'Data' [ln: 17 col: 0]
 cannot find 'postcdo' in type 'Address' [ln: 20 col: 0]
 mismatched close tag [ln: 22 col: 1]
 ```
+
+the full example is available in the repository. 
+
 ## Rules
 Rules used by default:
 
@@ -230,12 +233,11 @@ class Config {
 In order to use static type checking you must opt-in and call initialise with a globbing pattern to include *TypeScript* files. 
 You must pass the file name (relative) of the html file to the linter. 
 
-your templates (for now) must be side-by-side, i.e:
-    * "source/foo.html"
-    * "source/foo.ts" 
+your templates (for now) must be side-by-side, i.e: *"source/foo.html"* and *"source/foo.ts"* 
+plus they should export a class of the form *Foo* or *FooViewModel* or *FooVM*
 
 ```js
-const Config = require('aurelia-template-lint').Config
+var config = new Config();
 
 config.useStaticTyping = true;
 config.sourceFileGlob = "example/**/*.ts";
@@ -245,18 +247,17 @@ var linter = new AureliaLinter(config);
 var htmlpath = "./example/foo.html";
 var html = fs.readFileSync(htmlpath, 'utf8');
 
-linter
-  .initialise(config.sourceFileGlob)
-  .then(()=>linter.lint(html, htmlpath))
+linter.lint(html, htmlpath)
   .then((results) => {
     results.forEach(error => {
       console.log(`${error.message} [ln: ${error.line} col: ${error.column}]`);
       if (error.detail) console.log(`  * ${error.detail}`);
     });
   });
+
 ```
 
-please [report any false-negatives or code exceptions](https://github.com/MeirionHughes/aurelia-template-lint/issues/35) with an example of what (HTML/TS) causes the problem. 
+please [report any false-negatives, code exceptions or issues](https://github.com/MeirionHughes/aurelia-template-lint/issues/35) with an example of what (HTML/TS) causes the problem. 
 
 also note it will probably be far easier to use this via [gulp plugin](https://github.com/MeirionHughes/gulp-aurelia-template-lint), where you'll only need to pass the config object
 
