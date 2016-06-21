@@ -79,6 +79,10 @@ Rules used by default:
   * *identify obsolete tag usage*
 * **ObsoleteAttributes**
   * *identify obsolete attribute usage*
+* **AttributeValue**
+  * *ensure attributes exactly match an expected pattern*
+  * *ensure attributes don't contain any matches of an pattern*
+  * *ensure attribute is used for a tag*
 * **Slot**
   * *don't allow two, or more, slots to have the same name;*
   * *don't allow more than one default slot;*  
@@ -86,12 +90,15 @@ Rules used by default:
   * *ensure require elments have a 'from' attribute*
 * **RepeatFor**
   * *ensure loop is well formed*
-* **ConflictingAttributesRule**
+* **ConflictingAttributes**
   * *ensure element doesn't have attribute combination marked as conflicting.* 
   * *i.e. template controller attributes (`if.bind` and `repeat.for` on the same element)*
 * **Template**
   * *ensure root is a template element, unless its <html>*
   * *no more than one template element present*
+* **StaticType**
+  * **optional** *given a list of TypeScript source-files...*
+  * *ensure fields exist in known types*
 
 I'm more than happy to add or improve rules;
 so please feel free to [create an issue](https://github.com/MeirionHughes/aurelia-template-lint/labels/rule),
@@ -139,6 +146,27 @@ Config is an object type of the form and default:
 
 ```
 class Config {
+    
+    attributeValueRules: Array<{ attr: RegExp, is?: RegExp, not?: RegExp, msg?: string, tag?:string }> = [
+        {
+            attr:/^style$/,
+            not:/\${(.?)+}/,
+            msg:"interpolation not allowed for attribute"            
+        },
+        {
+            attr:/^bindable$/,
+            not:/[a-z][A-Z]/,
+            msg:"camelCase bindable is converted to camel-case",
+            tag:"template"         
+        },     
+        {
+            tag:"button",
+            attr:/^type$/,            
+            is:/^button$|^submit$|^reset$|^menu$/,            
+            msg:"button type invalid"
+        }  
+    ]   
+
     obsoleteTags: Array<{ tag: string, msg?: string }> = [
         {
             tag: 'content',
@@ -161,6 +189,10 @@ class Config {
         }
     ];
 
+    templateControllers: string[] = [
+        "repeat.for", "if.bind", "with.bind"
+    ]
+
     voids: Array<string> = ['area', 'base', 'br', 'col', 'embed', 'hr',
         'img', 'input', 'keygen', 'link', 'meta',
         'param', 'source', 'track', 'wbr'];
@@ -168,8 +200,28 @@ class Config {
     scopes: Array<string> = ['html', 'body', 'template', 'svg', 'math'];
     containers: Array<string> = ['table', 'select'];
     customRules: Rule[] = [];
+
+    useStaticTyping = false;
+    sourceFileGlob = "source/**/*.ts"
 }
 ```
+
+## Static Types
+In order to use static type checking you must opt-in:
+
+```
+const Config = require('aurelia-template-lint').Config
+
+var config = new Config();
+
+config.useStaticTyping = true;
+config.sourceFileGlob = "base/path/**/*.ts";
+
+var linter = new AureliaLinter(config);
+```
+
+please report any false-negatives or code exceptions with an example of what (HTML/TS) causes the problem. 
+
 ##Compiling
 Clone the repository. 
 In the project root run
