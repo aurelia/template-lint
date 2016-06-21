@@ -1,3 +1,11 @@
 <template>
-  <input type="text" ref="name"> ${name.value}
+  <input type="text" ref="name"> ${name.value} ${ame.value} 
+  <template repeat.for="moo of moos">
+    ${moo.choochoo} 
+    ${moo.choocho}
+  </template>
+  <template with.bind="person.role">
+    is admin: ${admin} 
+    is admin: ${admn}
+  </template>
 </template>

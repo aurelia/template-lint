@@ -59,4 +59,5 @@ export class Config {
     customRules: Rule[] = [];
 
     useStaticTyping = false;
+    sourceFileGlob = "source/**/*.ts"
 }

@@ -6,13 +6,14 @@ var fs = require('fs');
 var config = new Config();
 
 config.useStaticTyping = true;
+config.sourceFileGlob = "example/**/*.ts";
 
 var linter = new AureliaLinter(config);
 
 var htmlpath = "./example/foo.html";
 var html = fs.readFileSync(htmlpath, 'utf8');
 
-linter.initialise("example/**/*.ts")
+linter.initialise(config.sourceFileGlob)
   .then(() => {
     linter.lint(html, htmlpath).then((results) => {
       console.log(results);
