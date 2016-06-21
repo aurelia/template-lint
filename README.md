@@ -227,20 +227,38 @@ class Config {
 ```
 
 ## Static Types
-In order to use static type checking you must opt-in:
+In order to use static type checking you must opt-in and call initialise with a globbing pattern to include *TypeScript* files. 
+You must pass the file name (relative) of the html file to the linter. 
+
+your templates (for now) must be side-by-side, i.e:
+    * "source/foo.html"
+    * "source/foo.ts" 
 
 ```js
 const Config = require('aurelia-template-lint').Config
 
-var config = new Config();
-
 config.useStaticTyping = true;
-config.sourceFileGlob = "base/path/**/*.ts";
+config.sourceFileGlob = "example/**/*.ts";
 
 var linter = new AureliaLinter(config);
+
+var htmlpath = "./example/foo.html";
+var html = fs.readFileSync(htmlpath, 'utf8');
+
+linter
+  .initialise(config.sourceFileGlob)
+  .then(()=>linter.lint(html, htmlpath))
+  .then((results) => {
+    results.forEach(error => {
+      console.log(`${error.message} [ln: ${error.line} col: ${error.column}]`);
+      if (error.detail) console.log(`  * ${error.detail}`);
+    });
+  });
 ```
 
 please [report any false-negatives or code exceptions](https://github.com/MeirionHughes/aurelia-template-lint/issues/35) with an example of what (HTML/TS) causes the problem. 
+
+also note it will probably be far easier to use this via [gulp plugin](https://github.com/MeirionHughes/gulp-aurelia-template-lint), where you'll only need to pass the config object
 
 ##Compiling
 Clone the repository. 

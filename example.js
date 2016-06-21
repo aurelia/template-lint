@@ -13,12 +13,12 @@ var linter = new AureliaLinter(config);
 var htmlpath = "./example/foo.html";
 var html = fs.readFileSync(htmlpath, 'utf8');
 
-linter.initialise(config.sourceFileGlob)
-  .then(() => {
-    linter.lint(html, htmlpath).then((results) => {
-      results.forEach(error => {         
-         console.log(`${error.message} [ln: ${error.line} col: ${error.column}]`);
-             if(error.detail) console.log(`  * ${error.detail}`);
-      });
+linter
+  .initialise(config.sourceFileGlob)
+  .then(()=>linter.lint(html, htmlpath))
+  .then((results) => {
+    results.forEach(error => {
+      console.log(`${error.message} [ln: ${error.line} col: ${error.column}]`);
+      if (error.detail) console.log(`  * ${error.detail}`);
     });
   });
