@@ -187,9 +187,11 @@ export class StaticTypeRule extends Rule {
                         }
 
                         //this needs to override existing context.                        
-                        local.push(<INodeVars>{ name: "$index", type: 'number' });
-                        local.push(<INodeVars>{ name: "$odd", type: 'number' });                        
-                        local.push(<INodeVars>{ name: "$even", type: 'number' });
+                        local.push(<INodeVars>{ name: "$index", type: 'number' });                        
+                        local.push(<INodeVars>{ name: "$first", type: 'boolean' });                        
+                        local.push(<INodeVars>{ name: "$last", type: 'boolean' });
+                        local.push(<INodeVars>{ name: "$odd", type: 'boolean' });                        
+                        local.push(<INodeVars>{ name: "$even", type: 'boolean' });
 
                         break;
                     }
