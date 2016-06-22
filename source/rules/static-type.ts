@@ -351,7 +351,7 @@ export class StaticTypeRule extends Rule {
     }
 
     private reportAccessMemberIssue(member: string, decl: ts.ClassDeclaration, line: number) {
-        let msg = `cannot find '${member}' in type '${decl.name.text}'`;
+        let msg = `cannot find '${member}' in type '${decl.name.getText()}'`;
         let issue = new Issue({
             message: msg,
             line: line,

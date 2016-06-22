@@ -13,6 +13,7 @@ import {TemplateRule} from './rules/template';
 import {RepeatForRule} from './rules/repeatfor';
 import {StaticTypeRule} from './rules/static-type';
 import {ConflictingAttributesRule, ConflictingAttributes} from './rules/conflictingattributes';
+import {BindingSyntaxRule} from './rules/binding-syntax';
 
 import {Reflection} from './reflection';
 import {Config} from './config';
@@ -48,8 +49,9 @@ export class AureliaLinter {
             new SlotRule(config.templateControllers),
             new TemplateRule(config.containers),
             new ConflictingAttributesRule(<ConflictingAttributes[]>config.conflictingAttributes),
-            new RepeatForRule(),
-            new StaticTypeRule(this.reflection, config.throwStaticTypingErrors)
+            new RepeatForRule(),// remove on 0.8
+            new StaticTypeRule(this.reflection, config.throwStaticTypingErrors),
+            //new BindingSyntaxRule() //add on 0.8
 
         ].concat(config.customRules);
 
