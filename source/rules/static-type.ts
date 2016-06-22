@@ -148,10 +148,10 @@ export class StaticTypeRule extends Rule {
             let attrExpStr = attr.name;
             let attrValue = attr.value;
             let info: any = bindingLanguage.inspectAttribute(resources, tag, attrExpStr, attrValue);
-            let type = resources.getAttribute(info.attrName);
 
             if (!info) continue;
-
+                        
+            let type = resources.getAttribute(info.attrName);
             let instruction = bindingLanguage.createAttributeInstruction(resources, { tagName: tag }, info, undefined);
 
             if (!instruction) continue;
