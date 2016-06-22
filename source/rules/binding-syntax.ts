@@ -49,7 +49,7 @@ export class BindingSyntaxRule extends Rule {
 
                 if (!info) continue;
 
-                let instruction = bindingLanguage.createAttributeInstruction(resources, <any>{ tagName: tag }, info, undefined);
+                let instruction = bindingLanguage.createAttributeInstruction(resources, { tagName: tag }, info, undefined);
 
             } catch (error) {
                 this.reportSyntaxIssue(error, line, col);
