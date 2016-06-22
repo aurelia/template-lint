@@ -171,7 +171,7 @@ export class StaticTypeRule extends Rule {
                         let iterator = <string>instruction.attributes['local'];
                         let source = instruction.attributes['items'];
                         let chain = this.flattenAccessChain(source.sourceExpression);
-                        let type = this.examineAccessMember(local, decl, chain, line);
+                        let type = this.resolveAccessChainToType(local, decl, chain, line);
 
                         local.push(<INodeVars>{ name: iterator, type: type });
 
@@ -181,7 +181,7 @@ export class StaticTypeRule extends Rule {
 
                         let source = instruction.attributes['with'];
                         let chain = this.flattenAccessChain(source.sourceExpression);
-                        let typedecl = this.examineAccessMember(local, decl, chain, line);
+                        let typedecl = this.resolveAccessChainToType(local, decl, chain, line);
 
                         if (typedecl != null)
                             this.state.nextNode.data.decl = typedecl;
@@ -191,7 +191,7 @@ export class StaticTypeRule extends Rule {
                     default: try {
                         let access = instruction.attributes[attrName].sourceExpression;
                         let chain = this.flattenAccessChain(access);
-                        this.examineAccessMember(local, decl, chain, line);
+                        this.resolveAccessChainToType(local, decl, chain, line);
                     } catch (ignore) { }
                 };
             };
@@ -210,7 +210,7 @@ export class StaticTypeRule extends Rule {
             if (part.name !== undefined) {
                 let chain = this.flattenAccessChain(part);
                 if (chain.length > 0)
-                    this.examineAccessMember(local, decl, chain, lineStart + lineOffset);
+                    this.resolveAccessChainToType(local, decl, chain, lineStart + lineOffset);
             } else if (part.ancestor !== undefined) {
                 //this or ancestor access ($parent)
             }
@@ -223,7 +223,11 @@ export class StaticTypeRule extends Rule {
         });
     }
 
-    private examineAccessMember(local: INodeVars[], decl: ts.ClassDeclaration, chain: any[], line: number): string | ts.ClassDeclaration {
+    private resolveAccessChainToType(local: INodeVars[], decl: ts.ClassDeclaration, chain: any[], line: number): string | ts.ClassDeclaration {
+
+        if(chain == null || chain.length == 0)
+            return;
+
         let name = chain[0].name;
         let type = null;
 
@@ -231,6 +235,7 @@ export class StaticTypeRule extends Rule {
 
         if (local) {
             let localVar = local.find(x => x.name == name);
+            
             if (localVar) {
                 if (typeof localVar === 'string')
                     type = localVar.type;
@@ -267,7 +272,7 @@ export class StaticTypeRule extends Rule {
         }
 
         if (typeDecl)
-            return this.examineAccessMember(null, typeDecl, chain.slice(1), line);
+            return this.resolveAccessChainToType(null, typeDecl, chain.slice(1), line);
 
         return null;
     }
