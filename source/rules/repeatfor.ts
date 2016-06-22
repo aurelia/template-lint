@@ -3,7 +3,7 @@
 import {Rule, Parser, Issue, IssueSeverity} from 'template-lint';
 
 /**
- * Rule to ensure tags are properly closed. 
+ * /// OBSOLETE /// Rule to ensure tags are properly closed. 
  */
 export class RepeatForRule extends Rule {
 

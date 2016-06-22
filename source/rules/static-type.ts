@@ -152,7 +152,7 @@ export class StaticTypeRule extends Rule {
 
             if (!info) continue;
 
-            let instruction = bindingLanguage.createAttributeInstruction(resources, <any>{ tagName: tag }, info, undefined);
+            let instruction = bindingLanguage.createAttributeInstruction(resources, { tagName: tag }, info, undefined);
 
             if (!instruction) continue;
 
@@ -168,12 +168,28 @@ export class StaticTypeRule extends Rule {
             else {
                 switch (attrName) {
                     case "repeat": {
-                        let iterator = <string>instruction.attributes['local'];
+
+                        let varKey = <string>instruction.attributes['key'];
+                        let varValue = <string>instruction.attributes['value'];                        
+                        let varLocal = <string>instruction.attributes['local'];
                         let source = instruction.attributes['items'];
-                        let chain = this.flattenAccessChain(source.sourceExpression);
+                        let chain = this.flattenAccessChain(source.sourceExpression);    
                         let type = this.resolveAccessChainToType(local, decl, chain, line);
 
-                        local.push(<INodeVars>{ name: iterator, type: type });
+                        if(varKey && varValue)
+                        {                            
+                            local.push(<INodeVars>{ name: varKey, type: type });
+                            local.push(<INodeVars>{ name: varValue, type: type });
+                        }
+                        else
+                        {
+                            local.push(<INodeVars>{ name: varLocal, type: type });
+                        }
+
+                        //this needs to override existing context.                        
+                        local.push(<INodeVars>{ name: "$index", type: 'number' });
+                        local.push(<INodeVars>{ name: "$odd", type: 'number' });                        
+                        local.push(<INodeVars>{ name: "$even", type: 'number' });
 
                         break;
                     }
@@ -237,15 +253,12 @@ export class StaticTypeRule extends Rule {
             let localVar = local.find(x => x.name == name);
             
             if (localVar) {
-                if (typeof localVar === 'string')
-                    type = localVar.type;
+                if (typeof localVar.type === 'string')
+                    return type;
                 else if (localVar.type.kind !== undefined) {
                     type = localVar.type.name.text;
                 }
-            }
-
-            if (type == "$$$")
-                return type;
+            }            
         }
 
         if (!type) {
@@ -356,7 +369,7 @@ export class StaticTypeRule extends Rule {
     }
 
     private reportAccessMemberIssue(member: string, decl: ts.ClassDeclaration, line: number) {
-        let msg = `cannot find '${member}' in type '${decl.name.text}'`;
+        let msg = `cannot find '${member}' in type '${decl.name.getText()}'`;
         let issue = new Issue({
             message: msg,
             line: line,
