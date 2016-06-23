@@ -9,7 +9,7 @@ import * as Path from 'path';
 
 import {Rule, Parser, ParserState, Issue, IssueSeverity} from 'template-lint';
 import {Reflection} from '../reflection';
-import {Attribute} from 'parse5';
+import {Attribute, StartTagLocationInfo} from 'parse5';
 
 import 'aurelia-polyfills';
 
@@ -70,7 +70,7 @@ export class StaticTypeRule extends Rule {
 
             if (active) {
                 try {
-                    this.examineTag(context, decl, name, attrs, location.line);
+                    this.examineTag(context, decl, name, attrs, location);
                 } catch (error) {
 
                     if (this.throws)
@@ -138,7 +138,7 @@ export class StaticTypeRule extends Rule {
         return this.viewModelClassDecl;
     }
 
-    private examineTag(local: INodeVars[], decl: ts.ClassDeclaration, tag: string, attrs: Attribute[], line: number) {
+    private examineTag(local: INodeVars[], decl: ts.ClassDeclaration, tag: string, attrs: Attribute[], location: StartTagLocationInfo) {
 
         let bindingLanguage = this.bindingLanguage;
         let resources = this.resources;
@@ -148,6 +148,7 @@ export class StaticTypeRule extends Rule {
             let attrExpStr = attr.name;
             let attrValue = attr.value;
             let info: any = bindingLanguage.inspectAttribute(resources, tag, attrExpStr, attrValue);
+            let attrLoc = location.attrs[attrExpStr] 
 
             if (!info) continue;
                         
@@ -174,7 +175,7 @@ export class StaticTypeRule extends Rule {
                         let varLocal = <string>instruction.attributes['local'];
                         let source = instruction.attributes['items'];
                         let chain = this.flattenAccessChain(source.sourceExpression);    
-                        let type = this.resolveAccessChainToType(local, decl, chain, line);
+                        let type = this.resolveAccessChainToType(local, decl, chain, attrLoc.line, attrLoc.col + attrExpStr.length + 1);
 
                         if(varKey && varValue)
                         {                            
@@ -199,7 +200,7 @@ export class StaticTypeRule extends Rule {
 
                         let source = instruction.attributes['with'];
                         let chain = this.flattenAccessChain(source.sourceExpression);
-                        let typedecl = this.resolveAccessChainToType(local, decl, chain, line);
+                        let typedecl = this.resolveAccessChainToType(local, decl, chain, attrLoc.line, attrLoc.col);
 
                         if (typedecl != null)
                             this.state.nextNode.data.decl = typedecl;
@@ -209,7 +210,7 @@ export class StaticTypeRule extends Rule {
                     default: try {
                         let access = instruction.attributes[attrName].sourceExpression;
                         let chain = this.flattenAccessChain(access);
-                        this.resolveAccessChainToType(local, decl, chain, line);
+                        this.resolveAccessChainToType(local, decl, chain, attrLoc.line, attrLoc.col);
                     } catch (ignore) { }
                 };
             };
@@ -228,7 +229,7 @@ export class StaticTypeRule extends Rule {
             if (part.name !== undefined) {
                 let chain = this.flattenAccessChain(part);
                 if (chain.length > 0)
-                    this.resolveAccessChainToType(local, decl, chain, lineStart + lineOffset);
+                    this.resolveAccessChainToType(local, decl, chain, lineStart + lineOffset, 0);
             } else if (part.ancestor !== undefined) {
                 //this or ancestor access ($parent)
             }
@@ -241,7 +242,7 @@ export class StaticTypeRule extends Rule {
         });
     }
 
-    private resolveAccessChainToType(local: INodeVars[], decl: ts.ClassDeclaration, chain: any[], line: number): string | ts.ClassDeclaration {
+    private resolveAccessChainToType(local: INodeVars[], decl: ts.ClassDeclaration, chain: any[], line: number, column:number): string | ts.ClassDeclaration {
 
         if(chain == null || chain.length == 0)
             return;
@@ -270,7 +271,7 @@ export class StaticTypeRule extends Rule {
                 .find(x => (<any>x.name).text == name);
 
             if (!member) {
-                this.reportAccessMemberIssue(name, decl, line);
+                this.reportAccessMemberIssue(name, decl, line, column);
                 return;
             }
 
@@ -287,7 +288,7 @@ export class StaticTypeRule extends Rule {
         }
 
         if (typeDecl)
-            return this.resolveAccessChainToType(null, typeDecl, chain.slice(1), line);
+            return this.resolveAccessChainToType(null, typeDecl, chain.slice(1), line, column);
 
         return null;
     }
@@ -370,12 +371,12 @@ export class StaticTypeRule extends Rule {
         return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
     }
 
-    private reportAccessMemberIssue(member: string, decl: ts.ClassDeclaration, line: number) {
+    private reportAccessMemberIssue(member: string, decl: ts.ClassDeclaration, line: number, column:number) {
         let msg = `cannot find '${member}' in type '${decl.name.getText()}'`;
         let issue = new Issue({
             message: msg,
             line: line,
-            column: 0,
+            column: column,
             severity: IssueSeverity.Error
         });
 
