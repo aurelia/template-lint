@@ -40,7 +40,7 @@ export class Reflection {
         this.pathToSource[sourcePath] = reflection;
     }
 
-    getDeclForImportedType(source: ts.SourceFile, symbol: string): ts.ClassDeclaration {
+    getDeclForImportedType(source: ts.SourceFile, symbol: string): ts.DeclarationStatement {
 
         let base = Path.parse(source.fileName).dir;
 
@@ -71,12 +71,11 @@ export class Reflection {
         if (!sourceFile)
             return null;
 
-        let classes = sourceFile.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration);
+        let classes = sourceFile.statements.filter(x => 
+        x.kind == ts.SyntaxKind.ClassDeclaration ||
+        x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
-        return <ts.ClassDeclaration>classes.find(x => (<ts.ClassDeclaration>x).name.text == symbol);
+        return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == symbol);
     }
-
-
-
 }
 
