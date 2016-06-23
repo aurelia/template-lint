@@ -12,10 +12,11 @@ export class Reflection {
 
     addGlob(pattern?: string): Promise<any> {
         return new Promise((resolve, reject) => {
+            try{
             if (pattern) {
                 glob(pattern, {}, (er, files) => {
                     if(er)
-                       reject();
+                       reject(er);
 
                     files.forEach(path => {
                         let source = fs.readFileSync(path, 'utf8');
@@ -25,11 +26,15 @@ export class Reflection {
                     resolve();
                 });
             }
+            }catch(err)
+            {
+                reject(err)
+            }
         });
     }
 
     add(path: string, source: string) {
-
+        
         let sourcePath = Path.normalize(path);
 
         if(this.pathToSource[sourcePath] !== undefined)
@@ -40,7 +45,7 @@ export class Reflection {
         this.pathToSource[sourcePath] = reflection;
     }
 
-    getDeclForImportedType(source: ts.SourceFile, symbol: string): ts.ClassDeclaration {
+    getDeclForImportedType(source: ts.SourceFile, symbol: string): ts.DeclarationStatement {
 
         let base = Path.parse(source.fileName).dir;
 
@@ -71,12 +76,11 @@ export class Reflection {
         if (!sourceFile)
             return null;
 
-        let classes = sourceFile.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration);
+        let classes = sourceFile.statements.filter(x => 
+        x.kind == ts.SyntaxKind.ClassDeclaration ||
+        x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
-        return <ts.ClassDeclaration>classes.find(x => (<ts.ClassDeclaration>x).name.text == symbol);
+        return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == symbol);
     }
-
-
-
 }
 

@@ -16,4 +16,19 @@ describe("Failing Scenarios", () => {
                 done();
             });
     });*/
+
+    // #42
+    it("id contains illegal characters", (done) => {
+        var html = `
+        <template>
+          <div id="\${model.type}-\${model.id}-selected">
+          </div>
+        </template>`
+        linter.lint(html)
+            .then((issues) => {
+                console.log(issues);
+                expect(issues.length).toBe(0);
+                done();
+            });
+    });
 });

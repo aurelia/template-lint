@@ -13,7 +13,7 @@
     }
   ],
   "license": "(Apache-2.0)",
-  "version": "0.7.3",
+  "version": "0.7.5",
   "keywords": [
     "template",
     "html",
@@ -42,7 +42,7 @@
     "test": "gulp test"
   },
   "dependencies": {
-    "aurelia-pal-nodejs": "git+https://github.com/MeirionHughes/pal-nodejs.git",
+    "aurelia-pal-nodejs": "latest",
     "aurelia-polyfills": "latest",
     "aurelia-templating": "latest",
     "aurelia-templating-binding": "latest",
