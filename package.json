@@ -42,7 +42,7 @@
     "test": "gulp test"
   },
   "dependencies": {
-    "aurelia-pal-nodejs": "git+https://github.com/MeirionHughes/pal-nodejs.git",
+    "aurelia-pal-nodejs": "latest",
     "aurelia-polyfills": "latest",
     "aurelia-templating": "latest",
     "aurelia-templating-binding": "latest",
