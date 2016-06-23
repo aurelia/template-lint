@@ -12,10 +12,11 @@ export class Reflection {
 
     addGlob(pattern?: string): Promise<any> {
         return new Promise((resolve, reject) => {
+            try{
             if (pattern) {
                 glob(pattern, {}, (er, files) => {
                     if(er)
-                       reject();
+                       reject(er);
 
                     files.forEach(path => {
                         let source = fs.readFileSync(path, 'utf8');
@@ -25,11 +26,15 @@ export class Reflection {
                     resolve();
                 });
             }
+            }catch(err)
+            {
+                reject(err)
+            }
         });
     }
 
     add(path: string, source: string) {
-
+        
         let sourcePath = Path.normalize(path);
 
         if(this.pathToSource[sourcePath] !== undefined)

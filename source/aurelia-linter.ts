@@ -42,7 +42,6 @@ export class AureliaLinter {
             new StructureRule(),
             new ObsoleteAttributeRule(config.obsoleteAttributes),
             new ObsoleteTagRule(config.obsoleteTags),
-            new UniqueIdRule(),
             new AttributeValueRule(config.attributeValueRules),
 
             new RequireRule(),
