@@ -2,7 +2,7 @@
 
 import {TemplatingBindingLanguage, InterpolationBindingExpression} from 'aurelia-templating-binding';
 import {ViewResources, BindingLanguage, BehaviorInstruction} from 'aurelia-templating';
-import {AccessMember, AccessScope, AccessKeyed/*, AccessThis*/, NameExpression} from 'aurelia-binding';
+import {AccessMember, AccessScope, AccessKeyed/*, AccessThis*/, NameExpression, ValueConverter} from 'aurelia-binding';
 import {Container} from 'aurelia-dependency-injection';
 import * as ts from 'typescript';
 import * as Path from 'path';
@@ -245,6 +245,11 @@ export class StaticTypeRule extends Rule {
     private resolveAccessChainToType(local: INodeVars[], decl: ts.DeclarationStatement, chain: any[], line: number, column:number): string | ts.DeclarationStatement {
         if (chain == null || chain.length == 0)
             return;
+
+        let access = chain[0];
+
+        if(access instanceof ValueConverter)
+            return; // TODO: Convert Type and continue on... 
 
         let name = chain[0].name;
         let type = null;
