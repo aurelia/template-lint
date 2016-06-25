@@ -92,7 +92,7 @@ export class StaticTypeRule extends Rule {
             let active = node.data.active;
             if (active) {
                 try {
-                    this.examineText(context, decl, text, location.line);
+                    this.examineText(context, decl, text, location.line, location.col);
                 } catch (error) {
 
                     if (this.throws)
@@ -216,28 +216,32 @@ export class StaticTypeRule extends Rule {
         }
     }
 
-    private examineText(local: INodeVars[], decl: ts.DeclarationStatement, text: string, lineStart: number) {
+    private examineText(local: INodeVars[], decl: ts.DeclarationStatement, text: string, lineStart: number, columnStart) {
         let exp = this.bindingLanguage.inspectTextContent(this.resources, text);
 
         if (!exp)
             return;
 
         let lineOffset = 0;
+        let column = columnStart;
 
         exp.parts.forEach(part => {
             if (part.name !== undefined) {
                 let chain = this.flattenAccessChain(part);
 
                 if (chain.length > 0)
-                    this.resolveAccessChainToType(local, decl, chain, lineStart + lineOffset, 0);
+                    this.resolveAccessChainToType(local, decl, chain, lineStart + lineOffset, column);
             } else if (part.ancestor !== undefined) {
                 //this or ancestor access ($parent)
             }
             else if ((<string>part).match !== undefined) {
-                let newLines = (<string>part).match(/\n|\r/);
+                let lines = (<string>part).split(/\n|\r/);
+                console.log(lines);
 
-                if (newLines)
-                    lineOffset += newLines.length;
+                if (lines && lines.length > 1){
+                    lineOffset += lines.length;
+                    column = lines[lines.length - 1].length + 1;
+                }                    
             }
         });
     }
