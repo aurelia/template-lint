@@ -148,7 +148,7 @@ export class StaticTypeRule extends Rule {
             let attrExpStr = attr.name;
             let attrValue = attr.value;
             let info: any = bindingLanguage.inspectAttribute(resources, tag, attrExpStr, attrValue);
-            let attrLoc = location.attrs[attrExpStr] 
+            let attrLoc = location.attrs[attrExpStr]
 
             if (!info) continue;
 
@@ -207,7 +207,7 @@ export class StaticTypeRule extends Rule {
                     }
                     default: try {
                         let access = instruction.attributes[attrName].sourceExpression;
-                        let chain = this.flattenAccessChain(access);                       
+                        let chain = this.flattenAccessChain(access);
 
                         this.resolveAccessChainToType(local, decl, chain, attrLoc.line, attrLoc.col);
                     } catch (error) { if (this.throws) throw error }
@@ -236,23 +236,23 @@ export class StaticTypeRule extends Rule {
             }
             else if ((<string>part).match !== undefined) {
                 let lineCount = (<string>part).match(/\n|\r/);
-                lineOffset += (lineCount) ?  lineCount.length : 0;     
+                lineOffset += (lineCount) ? lineCount.length : 0;
 
                 let lines = (<string>part).split(/\n|\r/);
-                if (lines && lines.length > 1){                   
+                if (lines && lines.length > 1) {
                     column = lines[lines.length - 1].length + 1;
-                }                    
+                }
             }
         });
     }
 
-    private resolveAccessChainToType(local: INodeVars[], decl: ts.DeclarationStatement, chain: any[], line: number, column:number): string | ts.DeclarationStatement {
+    private resolveAccessChainToType(local: INodeVars[], decl: ts.DeclarationStatement, chain: any[], line: number, column: number): string | ts.DeclarationStatement {
         if (chain == null || chain.length == 0)
             return;
 
         let access = chain[0];
 
-        if(access instanceof ValueConverter)
+        if (access instanceof ValueConverter)
             return; // TODO: Convert Type and continue on... 
 
         let name = chain[0].name;
@@ -264,14 +264,14 @@ export class StaticTypeRule extends Rule {
             let localVar = local.find(x => x.name == name);
 
             if (localVar) {
-                if (typeof localVar.type === 'string')
-                {
+                if (typeof localVar.type === 'string') {
                     return type;
                 }
                 else if (localVar.type.kind !== undefined) {
-
-                if (localVar.type.kind == ts.SyntaxKind.ClassDeclaration)
-                    type = (<ts.ClassDeclaration>localVar.type).name.getText();
+                    if (localVar.type.kind == ts.SyntaxKind.ClassDeclaration)
+                        type = (<ts.ClassDeclaration>localVar.type).name.getText();
+                    else if (localVar.type.kind == ts.SyntaxKind.InterfaceDeclaration)
+                        type = (<ts.InterfaceDeclaration>localVar.type).name.getText();
                 }
             }
         }
@@ -291,9 +291,9 @@ export class StaticTypeRule extends Rule {
                         return;
                     }
 
-                    type = this.resolveClassElementType(member);                     
+                    type = this.resolveClassElementType(member);
                 }
-                break;
+                    break;
                 case ts.SyntaxKind.InterfaceDeclaration: {
 
                     let member = (<ts.InterfaceDeclaration>decl).members
@@ -307,15 +307,15 @@ export class StaticTypeRule extends Rule {
                         return;
                     }
 
-                    type = this.resolveTypeElementType(member);      
+                    type = this.resolveTypeElementType(member);
                 }
-                break;
+                    break;
                 default:
-                console.log("Unhandled Kind");
-                return;                
+                    console.log("resolveAccessChainToType unhandled: " + ts.SyntaxKind[decl.kind]);
+                    return;
             }
         }
-        
+
         //member exists and access chain continues...
         let typeDecl = this.reflection.getDeclForImportedType((<ts.SourceFile>decl.parent), type);
 
@@ -324,10 +324,10 @@ export class StaticTypeRule extends Rule {
                 return typeDecl;
             return type;
         }
-        if (typeDecl)            
+        if (typeDecl)
             return this.resolveAccessChainToType(null, typeDecl, chain.slice(1), line, column);
-        
-        return null;    
+
+        return null;
     }
 
     private resolveClassElementType(node: ts.ClassElement): string {
@@ -339,7 +339,7 @@ export class StaticTypeRule extends Rule {
                 let meth = <ts.MethodDeclaration>node
                 return this.resolveTypeName(meth.type);
             default:
-                console.log(ts.SyntaxKind[node.kind]);
+                console.log("resolveClassElementType unhandled: " + ts.SyntaxKind[node.kind]);
                 return null;
         }
     }
@@ -349,11 +349,12 @@ export class StaticTypeRule extends Rule {
             case ts.SyntaxKind.PropertySignature:
                 let prop = <ts.PropertySignature>node
                 return this.resolveTypeName(prop.type);
-            case ts.SyntaxKind.PropertySignature:
-                let meth = <ts.PropertySignature>node
+            case ts.SyntaxKind.MethodSignature:
+                let meth = <ts.MethodSignature>node
                 return this.resolveTypeName(meth.type);
             default:
-                console.log(ts.SyntaxKind[node.kind]);
+                //console.log(ts.SyntaxKind[node.kind]);
+                console.log("resolveTypeElementType unhandled: " + ts.SyntaxKind[node.kind]);
                 return null;
         }
     }
@@ -365,7 +366,7 @@ export class StaticTypeRule extends Rule {
                 return this.resolveTypeName(arr.elementType);
             case ts.SyntaxKind.TypeReference:
                 let ref = <ts.TypeReferenceNode>node;
-                return ref.typeName.getText();
+                return ref.typeName.getText();           
             case ts.SyntaxKind.StringKeyword:
                 return 'string';
             case ts.SyntaxKind.NumberKeyword:
@@ -373,7 +374,7 @@ export class StaticTypeRule extends Rule {
             case ts.SyntaxKind.BooleanKeyword:
                 return 'boolean';
             default:
-                console.log("Unable to handle: " + ts.SyntaxKind[node.kind]);
+                console.log("resolveTypeName unhandled: " + ts.SyntaxKind[node.kind]);
                 return null;
         }
     }
@@ -422,7 +423,7 @@ export class StaticTypeRule extends Rule {
         return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
     }
 
-    private reportAccessMemberIssue(member: string, decl: ts.DeclarationStatement, line: number, column:number) {
+    private reportAccessMemberIssue(member: string, decl: ts.DeclarationStatement, line: number, column: number) {
         let msg = `cannot find '${member}' in type '${decl.name.getText()}'`;
         let issue = new Issue({
             message: msg,
