@@ -42,6 +42,8 @@
     "test": "gulp test"
   },
   "dependencies": {
+    "aurelia-binding": "^1.0.0-rc.1.0.2",
+    "aurelia-dependency-injection": "^1.0.0-rc.1.0.0",
     "aurelia-pal-nodejs": "latest",
     "aurelia-polyfills": "latest",
     "aurelia-templating": "latest",
