@@ -177,5 +177,20 @@ describe("Aurelia Examples", () => {
                 expect(issues[0].message).toBe("replaceable attribute is obsolete");
                 done();
             });
-    });     
+    });
+
+    it("allows binding of id attribute", (done) => {
+        var config: Config = new Config();
+        var linter: AureliaLinter = new AureliaLinter(config);
+        var html = `
+        <template>
+          <div id="\${model.type}-\${model.id}-selected">
+          </div>
+        </template>`
+        linter.lint(html)
+            .then((issues) => {
+                expect(issues.length).toBe(0);
+                done();
+            });
+    });
 });

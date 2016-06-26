@@ -10,126 +10,239 @@ import {initialize} from 'aurelia-pal-nodejs';
 initialize();
 
 describe("StaticType Rule", () => {
-
-  describe("with Manual Reflection", () => {
-
-    var reflection = new Reflection();
-
-    let item = `   
-    export class Item
-    {
-      name:string;
+  it("accepts good attribute binding", (done) => {
+    let viewmodel = `
+    export class Foo{
+      name:string
     }`
-
-    let person = `
-    import {Address} from '../address';
-    export class Person
-    {
-      name:string;
-      address:Address;
-      age:number;
-    }
-    `
-    let address = `
-    export class Address
-    {    
-      address:string;
-      postcode:Address;
-    }
-    `
-
-    let viewModel = `
-    import {Person} from './person';
-    import {Item} from './nested/item'
-    export class FooViewModel
-    {    
-      person:Person
-      items:Item[];
-    }
-    `
-
     let view = `
     <template>
-      <input value.bind="peron.age"></input>
-      <div>
-        \${peron.nam}
-        \${person.nam}
-        \${person.address.poscoe}
-      </div>
-      <div repeat.for="item of ites">
-      </div>
-
-      <table>
-        <tr repeat.for="item of items">
-          <td>\${itm.name}</td>
-          <td>\${item.nme}</td>
-        </tr>
-      </table>
-    </template>
-    `
-    reflection.add("./dir/nested/item.ts", item);
-    reflection.add("./dir/person.ts", person);
-    reflection.add("./address.ts", address);
-    reflection.add("./dir/foo.ts", viewModel);
-
-    var linter: Linter = new Linter([
-      new StaticTypeRule(reflection)
-    ]);
-
-    it("raises issues if binding paths cannot be found", async (done) => {
-      try {
-        var issues = await linter.lint(view, "./dir/foo.html")
-
-        expect(issues.length).toBe(7);
-        
-        expect(issues[0].message).toBe("cannot find 'peron' in type 'FooViewModel'");
-        expect(issues[1].message).toBe("cannot find 'peron' in type 'FooViewModel'");
-        expect(issues[2].message).toBe("cannot find 'nam' in type 'Person'");
-        expect(issues[3].message).toBe("cannot find 'poscoe' in type 'Address'");        
-        expect(issues[4].message).toBe("cannot find 'ites' in type 'FooViewModel'");
-        expect(issues[5].message).toBe("cannot find 'itm' in type 'FooViewModel'");
-        expect(issues[6].message).toBe("cannot find 'nme' in type 'Item'");
-      }
-      catch (error) {
-        expect(error).toBeUndefined();
-      }
-      finally {
-        done();
-      }
-    });
+      \${name}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new StaticTypeRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);
+        } finally { done(); }
+      })
   });
 
+  it("rejects bad attribute binding", (done) => {
+    let viewmodel = `
+    export class Foo{
+      name:string
+    }`
+    let view = `
+    <template>
+      \${nam}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new StaticTypeRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1)
+          expect(issues[0].message).toBe("cannot find 'nam' in type 'Foo'");
+        } finally { done(); }
+      })
+  });
 
-  describe("with Directory Glob Reflection", () => {
-    it("raises issues if binding paths cannot be found", async (done) => {
-      var reflection = new Reflection();
+  it("accepts good attribute binding to imported type", (done) => {
+    let item = `
+    export class Item{
+      info:string;
+    }`;
 
-      await reflection.addGlob("example/**/*.ts");
+    let viewmodel = `
+    import {Item} from './path/item
+    export class Foo{
+      item:Item
+    }`
+    let view = `
+    <template>
+      \${item.info}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new StaticTypeRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./path/item.ts", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);
+        } finally { done(); }
+      })
+  });
 
-      var viewPath = "./example/foo.html";
-      let view = fs.readFileSync(viewPath, 'utf8');
+  it("rejects bad attribute binding to imported type", (done) => {
+    let item = `
+    export class Item{
+      info:string;
+    }`;
+    let viewmodel = `
+    import {Item} from './path/item
+    export class Foo{
+      item:Item
+    }`;
+    let view = `
+    <template>
+      \${item.infooo}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new StaticTypeRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./path/item.ts", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'infooo' in type 'Item'");
+        } finally { done(); }
+      })
+  });
 
-      var linter: Linter = new Linter([
-        new StaticTypeRule(reflection)
-      ]);
+  it("accepts good with.bind attribute value", (done) => {
+    let item = `
+    export class Item{
+      info:string;
+    }`;
 
-      try {
-        var issues = await linter.lint(view, viewPath)
+    let viewmodel = `
+    import {Item} from './path/item
+    export class Foo{
+      item:Item
+    }`
+    let view = `
+    <template with.bind="item"></template>`
+    let reflection = new Reflection();
+    let rule = new StaticTypeRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./path/item.ts", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);
+        } finally { done(); }
+      })
+  });
 
-        expect(issues.length).toBe(5);
+  it("rejects bad with.bind attribute value", (done) => {
+    let item = `
+    export class Item{
+      info:string;
+    }`;
 
-        expect(issues[0].message).toBe("cannot find 'ino' in type 'Item'");
-        expect(issues[1].message).toBe("cannot find 'isAdmn' in type 'Role'");
-        expect(issues[2].message).toBe("cannot find 'sizeee' in type 'Data'");
-        expect(issues[3].message).toBe("cannot find 'postcdo' in type 'Address'");
-        expect(issues[4].message).toBe("cannot find 'nme' in type 'Item'");
-      }
-      catch (error) {
-        expect(error).toBeUndefined();
-      }
-      finally {
-        done();
-      }
-    });
+    let viewmodel = `
+    import {Item} from './path/item
+    export class Foo{
+      item:Item
+    }`
+    let view = `
+    <template with.bind="itm"></template>`
+    let reflection = new Reflection();
+    let rule = new StaticTypeRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./path/item.ts", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'itm' in type 'Foo'");
+        } finally { done(); }
+      })
+  });
+
+  it("accepts good repeat.for attribute value", (done) => {
+    let item = `
+    export class Item{
+      info:string;
+    }`;
+
+    let viewmodel = `
+    import {Item} from './path/item
+    export class Foo{
+      items:Item[]
+    }`
+    let view = `
+    <template repeat.for="item of items">    
+      \${item}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new StaticTypeRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./path/item.ts", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);
+        } finally { done(); }
+      })
+  });
+
+  it("accepts good repeat.for attribute valid of imported interface", (done) => {
+    let item = `
+    export interface Item{
+      info:string;
+    }`;
+
+    let viewmodel = `
+    import {Item} from './path/item
+    export class Foo{
+      items:Item[]
+    }`
+    let view = `
+    <template repeat.for="item of items">
+      \${item}
+      \${item.info}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new StaticTypeRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./path/item.ts", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);
+        } finally { done(); }
+      })
+  });
+
+  it("rejects bad with.bind attribute value", (done) => {
+    let item = `
+    export class Item{
+      info:string;
+    }`;
+
+    let viewmodel = `
+    import {item} from './path/item
+    export class Foo{
+      items:Item
+    }`
+    let view = `
+    <template repeat.for="item of itms"></template>`
+    let reflection = new Reflection();
+    let rule = new StaticTypeRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./path/item.ts", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'itms' in type 'Foo'");
+        } finally { done(); }
+      })
   });
 });
