@@ -235,11 +235,11 @@ export class StaticTypeRule extends Rule {
                 //this or ancestor access ($parent)
             }
             else if ((<string>part).match !== undefined) {
-                let lines = (<string>part).split(/\n|\r/);
-                console.log(lines);
+                let lineCount = (<string>part).match(/\n|\r/);
+                lineOffset += (lineCount) ?  lineCount.length : 0;     
 
-                if (lines && lines.length > 1){
-                    lineOffset += lines.length;
+                let lines = (<string>part).split(/\n|\r/);
+                if (lines && lines.length > 1){                   
                     column = lines[lines.length - 1].length + 1;
                 }                    
             }

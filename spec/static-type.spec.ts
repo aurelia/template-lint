@@ -10,6 +10,7 @@ import {initialize} from 'aurelia-pal-nodejs';
 initialize();
 
 describe("StaticType Rule", () => {
+
   describe("with Manual Reflection", () => {
 
     var reflection = new Reflection();
@@ -80,7 +81,7 @@ describe("StaticType Rule", () => {
         var issues = await linter.lint(view, "./dir/foo.html")
 
         expect(issues.length).toBe(7);
-
+        
         expect(issues[0].message).toBe("cannot find 'peron' in type 'FooViewModel'");
         expect(issues[1].message).toBe("cannot find 'peron' in type 'FooViewModel'");
         expect(issues[2].message).toBe("cannot find 'nam' in type 'Person'");
