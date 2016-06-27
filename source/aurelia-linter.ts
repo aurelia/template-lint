@@ -11,9 +11,8 @@ import {RequireRule} from './rules/require';
 import {SlotRule} from './rules/slot';
 import {TemplateRule} from './rules/template';
 import {RepeatForRule} from './rules/repeatfor';
-import {StaticTypeRule} from './rules/static-type';
+import {SyntaxRule} from './rules/syntax';
 import {ConflictingAttributesRule, ConflictingAttributes} from './rules/conflictingattributes';
-import {BindingSyntaxRule} from './rules/binding-syntax';
 
 import {Reflection} from './reflection';
 import {Config} from './config';
@@ -49,7 +48,7 @@ export class AureliaLinter {
             new TemplateRule(config.containers),
             new ConflictingAttributesRule(<ConflictingAttributes[]>config.conflictingAttributes),
             new RepeatForRule(),// remove on 0.8
-            new StaticTypeRule(this.reflection, config.throwStaticTypingErrors),
+            new SyntaxRule(this.reflection),
             //new BindingSyntaxRule() //add on 0.8
 
         ].concat(config.customRules);

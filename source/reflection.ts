@@ -12,32 +12,31 @@ export class Reflection {
 
     addGlob(pattern?: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            try{
-            if (pattern) {
-                glob(pattern, {}, (er, files) => {
-                    if(er)
-                       reject(er);
+            try {
+                if (pattern) {
+                    glob(pattern, {}, (er, files) => {
+                        if (er)
+                            reject(er);
 
-                    files.forEach(path => {
-                        let source = fs.readFileSync(path, 'utf8');
-                        this.add(path, source);
+                        files.forEach(path => {
+                            let source = fs.readFileSync(path, 'utf8');
+                            this.add(path, source);
+                        });
+
+                        resolve();
                     });
-
-                    resolve();
-                });
-            }
-            }catch(err)
-            {
+                }
+            } catch (err) {
                 reject(err)
             }
         });
     }
 
     add(path: string, source: string) {
-        
+
         let sourcePath = Path.normalize(path);
 
-        if(this.pathToSource[sourcePath] !== undefined)
+        if (this.pathToSource[sourcePath] !== undefined)
             return;
 
         let reflection = ts.createSourceFile(sourcePath, source, ts.ScriptTarget.Latest, true);
@@ -46,6 +45,7 @@ export class Reflection {
     }
 
     getDeclForImportedType(source: ts.SourceFile, symbol: string): ts.DeclarationStatement {
+        if(!source || !symbol)return null;
 
         let base = Path.parse(source.fileName).dir;
 
@@ -76,11 +76,62 @@ export class Reflection {
         if (!sourceFile)
             return null;
 
-        let classes = sourceFile.statements.filter(x => 
-        x.kind == ts.SyntaxKind.ClassDeclaration ||
-        x.kind == ts.SyntaxKind.InterfaceDeclaration);
+        let classes = sourceFile.statements.filter(x =>
+            x.kind == ts.SyntaxKind.ClassDeclaration ||
+            x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
         return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == symbol);
+    }
+
+    public resolveClassElementType(node: ts.ClassElement): string {
+        if(!node)return null;
+        switch (node.kind) {
+            case ts.SyntaxKind.PropertyDeclaration:
+                let prop = <ts.PropertyDeclaration>node
+                return this.resolveTypeName(prop.type);
+            case ts.SyntaxKind.MethodDeclaration:
+                let meth = <ts.MethodDeclaration>node
+                return this.resolveTypeName(meth.type);
+            default:
+                console.log(ts.SyntaxKind[node.kind]);
+                return null;
+        }
+    }
+
+    public resolveTypeElementType(node: ts.TypeElement): string {
+        if(!node)return null;
+        switch (node.kind) {
+            case ts.SyntaxKind.PropertySignature:
+                let prop = <ts.PropertySignature>node
+                return this.resolveTypeName(prop.type);
+            case ts.SyntaxKind.PropertySignature:
+                let meth = <ts.PropertySignature>node
+                return this.resolveTypeName(meth.type);
+            default:
+                console.log(ts.SyntaxKind[node.kind]);
+                return null;
+        }
+    }
+
+    public resolveTypeName(node: ts.TypeNode): string {
+        if(!node)return null;
+        switch (node.kind) {
+            case ts.SyntaxKind.ArrayType:
+                let arr = <ts.ArrayTypeNode>node;
+                return this.resolveTypeName(arr.elementType);
+            case ts.SyntaxKind.TypeReference:
+                let ref = <ts.TypeReferenceNode>node;
+                return ref.typeName.getText();
+            case ts.SyntaxKind.StringKeyword:
+                return 'string';
+            case ts.SyntaxKind.NumberKeyword:
+                return 'number';
+            case ts.SyntaxKind.BooleanKeyword:
+                return 'boolean';
+            default:
+                console.log("Unable to handle: " + ts.SyntaxKind[node.kind]);
+                return null;
+        }
     }
 }
 

@@ -13,7 +13,7 @@
     }
   ],
   "license": "(Apache-2.0)",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "keywords": [
     "template",
     "html",
@@ -42,10 +42,12 @@
     "test": "gulp test"
   },
   "dependencies": {
-    "aurelia-pal-nodejs": "latest",
-    "aurelia-polyfills": "latest",
-    "aurelia-templating": "latest",
-    "aurelia-templating-binding": "latest",
+    "aurelia-binding": "1.0.0-rc.1.0.0",
+    "aurelia-dependency-injection": "1.0.0-rc.1.0.0",
+    "aurelia-pal-nodejs": "0.1.5",
+    "aurelia-polyfills": "1.0.0-rc.1.0.0",
+    "aurelia-templating": "1.0.0-rc.1.0.0",
+    "aurelia-templating-binding": "1.0.0-rc.1.0.0",
     "glob": "7.0.x",
     "parse5": "2.1.x",
     "template-lint": "0.7.x",

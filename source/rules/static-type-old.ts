@@ -434,4 +434,3 @@ export class StaticTypeRule extends Rule {
         this.reportIssue(issue);
     }
 }
-
