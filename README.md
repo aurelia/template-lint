@@ -33,37 +33,44 @@ using the default config (plus type checking - *see below*), the example:
 
 ***foo.html***
 ```html
- 1:<template>
- 2:  <require></require>
- 3:  <div repeat="item of items"></div>
- 4:  <div repeat.for="item of"></div>
- 5:  <content></content>
- 6:  <slot></slot>
- 7:  <slot></slot>
- 8:  <table>
- 9:    <template></template>
-10:  </table>
-11:  <div style="width: ${width}px; height: ${height}px;"></div>
-12:  <div repeat.for="item of items" with.bind="items">    
-13:  </div>
-14:  <template repeat.for="item of items">
-15:    ${item.ino}  
-16:    ${item.role.isAdmn}
-17:    ${item.update().sizeee}      
+01:<template>
+02:  <require/>
+03:  <div repeat.for="item of"></div>
+04:  <content></content>
+05:  <slot></slot><slot></slot>
+06:  <table>
+07:    <template></template>
+08:  </table>
+09:  <div style="width: ${width}px; height: ${height}px;"></div>
+10:  <div repeat.for="item of items" with.bind="items"></div>
+11:  <template repeat.for="item of items">
+12:    ${item.ino} 
+13:    ${item.role.isAdmn} 
+14:    ${item.update().sizeee}
+15:  </template>
+16:  <template with.bind="person">
+17:    ${address.postcdo}
 18:  </template>
-19:  <template with.bind="person">
-20:    ${address.postcdo}  
-21:  </template>
-22:</etemps>
+19:  <table>
+20:    <tr repeat.for="item of items">
+21:      <td>${item.nme}</td>
+22:    </tr>
+23:  </table>
+24:  <div value.bind="car.modl"></div>
+25:</etemps>
 ```
 ***foo.ts***
 ```ts
 import {Person} from './my-types/person';
 import {Item} from './my-types/item';
+import {Car} from 'my-lib';
 
 export class FooViewModel {
   person: Person;
   items: Item[];
+  car: Car;
+  width:number;
+  height:number;
 }
 ```
 
@@ -73,23 +80,25 @@ will result in the following errors:
 suspected unclosed element detected [ln: 1 col: 1]
 self-closing element [ln: 2 col: 3]
 require tag is missing a 'from' attribute [ln: 2 col: 3]
-did you miss `.for` on repeat? [ln: 3 col: 3]
-repeat syntax should be of form `* of *` [ln: 4 col: 3]
-<content> is obsolete [ln: 5 col: 3]
+Incorrect syntax for "for" [ln: 3 col: 8]
+  * The form is: "$local of $items" or "[$key, $value] of $items",
+<content> is obsolete [ln: 4 col: 3]
   * use slot instead
-more than one default slot detected [ln: 7 col: 3]
-template as child of <table> not allowed [ln: 9 col: 5]
-interpolation not allowed in style attribute [ln: 11 col: 3]
-conflicting attributes: [repeat.for, with.bind] [ln: 12 col: 3]
+more than one default slot detected [ln: 5 col: 16]
+template as child of <table> not allowed [ln: 7 col: 5]
+interpolation not allowed in style attribute [ln: 9 col: 3]
+conflicting attributes: [repeat.for, with.bind] [ln: 10 col: 3]
   * template controllers shouldn't be placed on the same element
-cannot find 'ino' in type 'Item' [ln: 15 col: 0]
-cannot find 'isAdmn' in type 'Role' [ln: 16 col: 0]
-cannot find 'sizeee' in type 'Data' [ln: 17 col: 0]
-cannot find 'postcdo' in type 'Address' [ln: 20 col: 0]
-mismatched close tag [ln: 22 col: 1]
+cannot find 'ino' in type 'Item' [ln: 13 col: 5]
+cannot find 'isAdmn' in type 'Role' [ln: 15 col: 5]
+cannot find 'sizeee' in type 'Data' [ln: 17 col: 5]
+cannot find 'postcdo' in type 'Address' [ln: 18 col: 5]
+cannot find 'nme' in type 'Item' [ln: 21 col: 11]
+cannot find 'modl' in type 'Car' [ln: 24 col: 8]
+mismatched close tag [ln: 25 col: 3]
 ```
 
-the full example is available in the repository. 
+The full example is available in the repository; including the custom typings. 
 
 ## Rules
 Rules used by default:
@@ -111,8 +120,6 @@ Rules used by default:
   * *don't allow more than one default slot;*  
 * **Require**
   * *ensure require elments have a 'from' attribute*
-* **RepeatFor**
-  * *ensure loop is well formed*
 * **ConflictingAttributes**
   * *ensure element doesn't have attribute combination marked as conflicting.* 
   * *i.e. template controller attributes (`if.bind` and `repeat.for` on the same element)*
@@ -120,7 +127,7 @@ Rules used by default:
   * *ensure root is a template element, unless its <html>*
   * *no more than one template element present*
 * **StaticType**
-  * **optional** *given a list of TypeScript source-files...*
+  * *given a list of TypeScript source-files...*
   * *ensure fields exist in known types*
 
 I'm more than happy to add or improve rules;
@@ -144,8 +151,7 @@ var linter = new AureliaLinter();
 var html = "<template></template>"
 
 linter.lint(html)
-  .then((errors) => {    
-      errors = errors.sort((a,b)=> a.line - b.line);          
+  .then((errors) => {           
       errors.forEach(error => {         
          console.log(`${error.message} [ln: ${error.line} col: ${error.column}]`);
              if(error.detail) console.log(`  * ${error.detail}`);
@@ -174,7 +180,7 @@ class Config {
         {
             attr:/^style$/,
             not:/\${(.?)+}/,
-            msg:"interpolation not allowed for attribute"            
+            msg:"interpolation not allowed in style attribute"            
         },
         {
             attr:/^bindable$/,
@@ -224,8 +230,12 @@ class Config {
     containers: Array<string> = ['table', 'select'];
     customRules: Rule[] = [];
 
-    useStaticTyping = false;
-    sourceFileGlob = "source/**/*.ts"
+    useStaticTyping = false;    
+    throwStaticTypingErrors = false;
+    errorOnNonPublicAccess = true;
+    
+    sourceFileGlob = "source/**/*.ts";
+    typingsFileGlob = "typings/**/*.d.ts"; 
 }
 ```
 
@@ -233,8 +243,9 @@ class Config {
 In order to use static type checking you must opt-in and call initialise with a globbing pattern to include *TypeScript* files. 
 You must pass the file name (relative) of the html file to the linter. 
 
-your templates (for now) must be side-by-side, i.e: *"source/foo.html"* and *"source/foo.ts"* 
-plus they should export a class of the form *Foo* or *FooViewModel* or *FooVM*
+your templates (for now) must be side-by-side, i.e: *"source/foo.html"* and *"source/foo.ts"*. 
+It is also posible to change the glob configuration to include `js` files instead; but this can only 
+check first-depth access. 
 
 ```js
 var config = new Config();

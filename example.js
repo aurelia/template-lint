@@ -7,6 +7,7 @@ var config = new Config();
 
 config.useStaticTyping = true;
 config.sourceFileGlob = "example/**/*.ts";
+config.typingsFileGlob = "typings/my-lib.d.ts"
 
 var linter = new AureliaLinter(config);
 
