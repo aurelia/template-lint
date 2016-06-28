@@ -30,7 +30,7 @@ describe("BindingSyntax Rule", () => {
       });
   });
 
-  it("accepts good attribute binding", (done) => {
+  it("accepts good interpolation binding", (done) => {
     let viewmodel = `
     export class Foo{
       name:string
@@ -53,7 +53,9 @@ describe("BindingSyntax Rule", () => {
       })
   });
 
-  it("rejects bad attribute binding", (done) => {
+
+
+  it("rejects bad interpolation binding", (done) => {
     let viewmodel = `
     export class Foo{
       name:string
@@ -76,6 +78,30 @@ describe("BindingSyntax Rule", () => {
         finally { done(); }
       })
   });
+
+    it("accepts good attribute binding", (done) => {
+    let viewmodel = `
+    export class Foo{
+      name:string
+    }`
+    let view = `
+    <template>
+      <input type="text" value.bind="name">
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);
+        }
+        catch(error){expect(error).toBeUndefined()}
+        finally { done(); }
+      })
+  });
+
 
   it("accepts good attribute binding to imported type", (done) => {
     let item = `
@@ -285,28 +311,65 @@ describe("BindingSyntax Rule", () => {
   });
 
   it("correctly finds view-model with camel-case path", (done) => {
-    let item = `
-    export class CamelCase{
-      info:string;
+    let viewmodel = `
+    export class FooCamel{
+      name:string
+    }`
+    let view = `
+    <template>
+      <input type="text" value.bind="name">
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo-camel.ts", viewmodel);
+    linter.lint(view, "./foo-camel.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);
+        } 
+        catch(error){expect(error).toBeUndefined()}
+        finally { done(); }
+      })
+  });
+
+  it("supports generics", (done) => {
+    
+    let cat = `
+    export class Cat{
+      color:string;      
+    }`;
+    let person = `
+    export class Person<T>{
+      name:string;
+      pet:T;
     }`;
 
     let viewmodel = `
-    import {CamelCase} from './path/camel-case
+    import {Person} from './path/person'
+    import {Cat} from './path/cat'
     export class Foo{
-      item:CamelCase
+      person:Person<Cat>
     }`
     let view = `
-    <template><div value.bind="item.inf"></div></template>`
+    <template>
+      \${person}
+      \${person.pet}      
+      \${person.pet.color}        
+      \${person.pet.colr}
+    </template>`
     let reflection = new Reflection();
     let rule = new SyntaxRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
-    reflection.add("./path/camel-case.ts", item);
+    reflection.add("./path/person.ts", person);    
+    reflection.add("./path/cat.ts", cat);
     linter.lint(view, "./foo.html")
       .then((issues) => {
         try {
-          expect(issues.length).toBe(1);
-          expect(issues[0].message).toBe("cannot find 'inf' in type 'Foo'")
+          expect(issues.length).toBe(2);
+          expect(issues[0].message).toBe("cannot find 'colr' in type 'Pet'")
+          expect(issues[1].message).toBe("cannot find 'corl' in type 'Pet'")
         } 
         catch(error){expect(error).toBeUndefined()}
         finally { done(); }

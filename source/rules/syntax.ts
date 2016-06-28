@@ -266,6 +266,11 @@ export class SyntaxRule extends ASTBuilder {
 
         let typeDecl = this.reflection.getDeclForImportedType((<ts.SourceFile>decl.parent), resolvedTypeName);
 
+        //TODO:
+        //let typeArgs = <args:ts.TypeReference[]> member.type.typeArguments;
+        //The simpler solution here might be to create a copy of the generic type declaration and
+        //replace the generic references with the arguments. 
+
         return new ASTContext({ type: resolvedTypeName, typeDecl: typeDecl });
     }
 
