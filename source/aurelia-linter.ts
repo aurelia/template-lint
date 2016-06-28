@@ -10,7 +10,6 @@ import {AttributeValueRule} from 'template-lint';
 import {RequireRule} from './rules/require';
 import {SlotRule} from './rules/slot';
 import {TemplateRule} from './rules/template';
-import {RepeatForRule} from './rules/repeatfor';
 import {SyntaxRule} from './rules/syntax';
 import {ConflictingAttributesRule, ConflictingAttributes} from './rules/conflictingattributes';
 
@@ -47,9 +46,7 @@ export class AureliaLinter {
             new SlotRule(config.templateControllers),
             new TemplateRule(config.containers),
             new ConflictingAttributesRule(<ConflictingAttributes[]>config.conflictingAttributes),
-            new RepeatForRule(),// remove on 0.8
-            new SyntaxRule(this.reflection),
-            //new BindingSyntaxRule() //add on 0.8
+            new SyntaxRule(this.reflection)
 
         ].concat(config.customRules);
 

@@ -1,11 +1,11 @@
 
 import {Linter, Rule} from 'template-lint';
-import {RepeatForRule} from '../source/rules/repeatfor';
+import {ASTBuilder} from '../source/ast';
 
-describe("RepeatFor Rule", () => {
+describe("RepeatFor Testing", () => {
 
   var linter: Linter = new Linter([
-    new RepeatForRule()
+    new ASTBuilder()
   ]);
 
   it("will pass item of items", (done) => {
@@ -48,8 +48,16 @@ describe("RepeatFor Rule", () => {
       });
   });
 
+  it("will fail [foo, boo] items", (done) => {
+    linter.lint('<div repeat.for="[foo, boo] items"></div>')
+      .then((issues) => {
+        expect(issues.length).toBeGreaterThan(0);
+        done();
+      });
+  });
+
   it("will reject item of", (done) => {
-    linter.lint('<div repeat.for="item of  "></div>')
+    linter.lint('<div repeat.for="item of"></div>')
       .then((issues) => {
         expect(issues.length).toBeGreaterThan(0);
         done();
@@ -57,7 +65,7 @@ describe("RepeatFor Rule", () => {
   });
 
   it("will reject item", (done) => {
-    linter.lint('<div repeat.for="item "></div>')
+    linter.lint('<div repeat.for="item"></div>')
       .then((issues) => {
         expect(issues.length).toBeGreaterThan(0);
         done();
