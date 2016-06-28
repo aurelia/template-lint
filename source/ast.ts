@@ -13,8 +13,7 @@ import {
 from 'aurelia-templating';
 
 export class ASTBuilder extends Rule {
-    protected root: ASTNode;
-
+    public root: ASTNode;
     private resources: ViewResources;
     private bindingLanguage: TemplatingBindingLanguage;
     private container: Container;
@@ -114,10 +113,10 @@ export class FileLoc {
 }
 
 export class ASTContext {
-    name: string;
-    type: string;
-    typeDecl: ts.DeclarationStatement;
-    typeValue: Object;
+    name: string = null;
+    type: string = null;
+    typeDecl: ts.DeclarationStatement = null;
+    typeValue: Object = null;
 
     constructor(init?: {
         name?: string,
@@ -125,34 +124,60 @@ export class ASTContext {
         typeDecl?: ts.DeclarationStatement,
         typeValue?: Object,
     }) {
-        this.name = null;
-        this.type = null;
-        this.typeDecl = null;
-        this.typeValue = null;
-
         if (init)
             Object.assign(this, init);
     }
 }
 
 export class ASTNode {
-    public context: ASTContext;
-    public locals: ASTContext[];
-    public parent: ASTNode;
-    public children: ASTNode[];
-    public location: FileLoc;
+    public context: ASTContext = null;
+    public locals: ASTContext[] = [];
+    public parent: ASTNode = null;
+    public children: ASTNode[] = [];
+    public location: FileLoc = null;
 
-    constructor() {
-        this.parent = null;
-        this.children = [];
-        this.locals = [];
-        this.context = null;
-        this.location = null;
+    constructor(init?: {
+        context?: ASTContext,
+        locals?: ASTContext[],
+        parent?: ASTNode,
+        children?: ASTNode[],
+        location?: FileLoc,
+    }) {
+        if (init) 
+            Object.assign(this, init);
     }
 
     addChild(node: ASTNode) {
-        if (this.children.indexOf(node) == -1)
+        if (this.children.indexOf(node) == -1){
             this.children.push(node);
+            node.parent = this;
+        }
+    }
+
+    public static inheritLocals(node: ASTNode): ASTContext[] {
+        let locals: ASTContext[] = [];
+
+        while (node != null) {
+            node.locals.forEach(x => {
+                let index = locals.findIndex(y => y.name == x.name);
+
+                if (index == -1)
+                    locals.push(x);
+            });
+
+            node = node.parent;
+        }
+
+        return locals;
+    }
+
+    public static inheritContext(node: ASTNode): ASTContext {
+        while (node != null) {
+            if (node.context != null)
+                return node.context;
+            node = node.parent;
+        }
+        return null;
     }
 }
 
@@ -194,8 +219,4 @@ export interface BehaviorInstruction {
     type: HtmlBehaviorResource;
     attrName: string;
     inheritBindingContext: boolean;
-}
-
-export interface InterpolationBindingExpression {
-
 }

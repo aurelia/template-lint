@@ -71,8 +71,8 @@ export class SyntaxRule extends ASTBuilder {
         if (instruction == null)
             return;
 
-        let context = this.inheritContext(node);
-        let locals = this.inheritLocals(node);
+        let context = ASTNode.inheritContext(node);
+        let locals = ASTNode.inheritLocals(node);
 
         let attrName = instruction.attrName;
         let attrLoc = attr.location;
@@ -135,8 +135,8 @@ export class SyntaxRule extends ASTBuilder {
 
         let lineOffset = 0;
         let column = node.location.column;
-        let context = this.inheritContext(node);
-        let locals = this.inheritLocals(node);
+        let context = ASTNode.inheritContext(node);
+        let locals = ASTNode.inheritLocals(node);
 
         exp.parts.forEach(part => {
             if (part.name !== undefined) {
@@ -156,33 +156,6 @@ export class SyntaxRule extends ASTBuilder {
                 }
             }
         });
-    }
-
-    private inheritLocals(node: ASTNode): ASTContext[] {
-        let locals: ASTContext[] = [];
-
-        while (node != null) {
-            node.locals.forEach(x => {
-                let index = locals.findIndex(y => y.name == x.name);
-
-                if (index >= 0)
-                    locals[index] = x;
-                else locals.push(x);
-            });
-
-            node = node.parent;
-        }
-
-        return locals;
-    }
-
-    private inheritContext(node: ASTNode): ASTContext {
-        while (node != null) {
-            if (node.context != null)
-                return node.context;
-            node = node.parent;
-        }
-        return null;
     }
 
     private resolveViewModel(path: string): ASTContext {
