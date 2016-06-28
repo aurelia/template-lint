@@ -83,7 +83,7 @@ export class Reflection {
     }
 
     public resolveClassElementType(node: ts.ClassElement): string {
-        if(!node)return null;
+        if(!node) return null;
         switch (node.kind) {
             case ts.SyntaxKind.PropertyDeclaration:
                 let prop = <ts.PropertyDeclaration>node
@@ -103,8 +103,8 @@ export class Reflection {
             case ts.SyntaxKind.PropertySignature:
                 let prop = <ts.PropertySignature>node
                 return this.resolveTypeName(prop.type);
-            case ts.SyntaxKind.PropertySignature:
-                let meth = <ts.PropertySignature>node
+            case ts.SyntaxKind.MethodSignature:
+                let meth = <ts.MethodSignature>node
                 return this.resolveTypeName(meth.type);
             default:
                 console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveTypeElementType`);
