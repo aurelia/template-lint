@@ -59,7 +59,6 @@ export class Reflection {
             let importModule = (<any>x).moduleSpecifier.text;
 
             let isMatch = importSymbols.findIndex(importSymbol => {
-
                 return importSymbol.name.text == symbol;
             });
 
@@ -93,7 +92,7 @@ export class Reflection {
                 let meth = <ts.MethodDeclaration>node
                 return this.resolveTypeName(meth.type);
             default:
-                console.log(ts.SyntaxKind[node.kind]);
+                console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveClassElementType`);
                 return null;
         }
     }
@@ -108,7 +107,7 @@ export class Reflection {
                 let meth = <ts.PropertySignature>node
                 return this.resolveTypeName(meth.type);
             default:
-                console.log(ts.SyntaxKind[node.kind]);
+                console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveTypeElementType`);
                 return null;
         }
     }
@@ -129,7 +128,7 @@ export class Reflection {
             case ts.SyntaxKind.BooleanKeyword:
                 return 'boolean';
             default:
-                console.log("Unable to handle: " + ts.SyntaxKind[node.kind]);
+                console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveTypeName`);
                 return null;
         }
     }
