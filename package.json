@@ -42,12 +42,12 @@
     "test": "gulp test"
   },
   "dependencies": {
-    "aurelia-binding": "1.0.0-rc.1.0.0",
-    "aurelia-dependency-injection": "1.0.0-rc.1.0.0",
+    "aurelia-binding": "^1.0.0-rc.1.0.2",
+    "aurelia-dependency-injection": "^1.0.0-rc.1.0.0",
     "aurelia-pal-nodejs": "0.1.5",
-    "aurelia-polyfills": "1.0.0-rc.1.0.0",
-    "aurelia-templating": "1.0.0-rc.1.0.0",
-    "aurelia-templating-binding": "1.0.0-rc.1.0.0",
+    "aurelia-polyfills": "^1.0.0-rc.1.0.0",
+    "aurelia-templating": "^1.0.0-rc.1.0.0",
+    "aurelia-templating-binding": "^1.0.0-rc.1.0.0",
     "glob": "7.0.x",
     "parse5": "2.1.x",
     "template-lint": "0.7.x",
