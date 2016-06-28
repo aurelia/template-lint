@@ -36,7 +36,8 @@ export class SyntaxRule extends ASTBuilder {
 
     finalise(): Issue[] {
         try {
-            this.examineNode(this.root);
+            if (this.root.context != null)
+                this.examineNode(this.root);
         } catch (error) {
             console.log(error);
         }
@@ -84,21 +85,21 @@ export class SyntaxRule extends ASTBuilder {
                 let varLocal = <string>instruction.attributes['local'];
                 let source = instruction.attributes['items'];
                 let chain = this.flattenAccessChain(source.sourceExpression);
-                
+
                 let resolved = this.resolveAccessChainToType(context, locals, chain, new FileLoc(attrLoc.line, attrLoc.column));
 
-                if(!resolved)
+                if (!resolved)
                     return;
 
                 if (varKey && varValue) {
-                    node.locals.push(new ASTContext({ name: varKey, type: 'string'}));
-                    node.locals.push(new ASTContext({name:varValue, type:resolved.type, typeDecl:resolved.typeDecl}));                    
+                    node.locals.push(new ASTContext({ name: varKey, type: 'string' }));
+                    node.locals.push(new ASTContext({ name: varValue, type: resolved.type, typeDecl: resolved.typeDecl }));
                 }
                 else {
-                    node.locals.push(new ASTContext({name:varLocal, type:resolved.type, typeDecl:resolved.typeDecl}));
+                    node.locals.push(new ASTContext({ name: varLocal, type: resolved.type, typeDecl: resolved.typeDecl }));
                 }
-                 
-                node.locals.push(new ASTContext({ name: "$index", type: 'number'  }));
+
+                node.locals.push(new ASTContext({ name: "$index", type: 'number' }));
                 node.locals.push(new ASTContext({ name: "$first", type: 'boolean' }));
                 node.locals.push(new ASTContext({ name: "$last", type: 'boolean' }));
                 node.locals.push(new ASTContext({ name: "$odd", type: 'boolean' }));
@@ -237,12 +238,12 @@ export class SyntaxRule extends ASTBuilder {
         if (chain.length == 1) {
             return resolved;
         }
-        
+
         return this.resolveAccessChainToType(resolved, null, chain.slice(1), loc);
     }
 
     private resolveLocalType(locals: ASTContext[], memberName: string): ASTContext {
-        
+
         if (!locals)
             return null;
 
@@ -253,7 +254,7 @@ export class SyntaxRule extends ASTBuilder {
 
     private resolveStaticType(context: ASTContext, memberName: string): ASTContext {
 
-        if(context == null || context.typeDecl == null)
+        if (context == null || context.typeDecl == null)
             return null;
 
         let decl = context.typeDecl;
@@ -262,14 +263,14 @@ export class SyntaxRule extends ASTBuilder {
         switch (decl.kind) {
             case ts.SyntaxKind.ClassDeclaration: {
                 let member = (<ts.ClassDeclaration>decl).members
-                    .filter(x =>                                        
+                    .filter(x =>
                         x.kind == ts.SyntaxKind.PropertyDeclaration ||
                         x.kind == ts.SyntaxKind.MethodDeclaration)
                     .find(x => (<any>x.name).text == memberName);
-                    if(!member)
+                if (!member)
                     break;
-                
-                resolvedTypeName = this.reflection.resolveClassElementType(member);       
+
+                resolvedTypeName = this.reflection.resolveClassElementType(member);
             } break;
             case ts.SyntaxKind.InterfaceDeclaration: {
                 let member = (<ts.InterfaceDeclaration>decl).members
@@ -277,10 +278,10 @@ export class SyntaxRule extends ASTBuilder {
                         x.kind == ts.SyntaxKind.PropertySignature ||
                         x.kind == ts.SyntaxKind.MethodSignature)
                     .find(x => (<any>x.name).text == memberName);
-                     if(!member)
+                if (!member)
                     break;
-                
-                resolvedTypeName = this.reflection.resolveTypeElementType(member);                
+
+                resolvedTypeName = this.reflection.resolveTypeElementType(member);
             } break;
             default:
                 console.log("Unhandled Kind");
