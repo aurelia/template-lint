@@ -1,7 +1,7 @@
 import {Config} from '../source/config';
 import {AureliaLinter} from '../source/aurelia-linter';
 
-describe("Aurelia Examples", () => {
+describe("AttributeValue Rule", () => {
 
     var config: Config = new Config();
     var linter: AureliaLinter = new AureliaLinter(config);

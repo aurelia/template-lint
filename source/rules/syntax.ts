@@ -171,22 +171,18 @@ export class SyntaxRule extends ASTBuilder {
         if (!viewModelSource)
             return null;
 
-        let classes = viewModelSource.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration);
+        let classes = <ts.ClassDeclaration[]>viewModelSource.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration);
+        
+        if(classes.length > 1)
+        {
+            this.reportIssue(new Issue({message:"view-model file should only have one class", line:-1, column:-1, severity:IssueSeverity.Warning}))
+        }
 
+        let first = classes[0];        
         let context = new ASTContext();
 
-        context.name = `${viewName}`; // convention for now
-        context.typeDecl = <ts.ClassDeclaration>classes.find(x => (<ts.ClassDeclaration>x).name.text == context.name);
-
-        if (context.typeDecl != null) return context;
-
-        context.name = `${viewName}ViewModel`; // convention for now
-        context.typeDecl = <ts.ClassDeclaration>classes.find(x => (<ts.ClassDeclaration>x).name.text == context.name);
-
-        if (context.typeDecl != null) return context;
-
-        context.name = `${viewName}VM`; // convention for now
-        context.typeDecl = <ts.ClassDeclaration>classes.find(x => (<ts.ClassDeclaration>x).name.text == context.name);
+        context.name = first.name.getText();
+        context.typeDecl = first;
 
         return context;
     }

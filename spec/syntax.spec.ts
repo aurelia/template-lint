@@ -4,7 +4,7 @@ import {SyntaxRule} from '../source/rules/syntax';
 import {Reflection} from '../source/reflection';
 import {ASTNode} from '../source/ast';
 
-describe("BindingSyntax Rule", () => {
+describe("Syntax and Static Typing Rule", () => {
 
   it("will fail bad repeat.for syntax", (done) => {
     var linter: Linter = new Linter([
@@ -48,7 +48,7 @@ describe("BindingSyntax Rule", () => {
         try {
           expect(issues.length).toBe(0);
         }
-        catch(error){expect(error).toBeUndefined()}
+        catch (error) { expect(error).toBeUndefined() }
         finally { done(); }
       })
   });
@@ -74,12 +74,12 @@ describe("BindingSyntax Rule", () => {
           expect(issues.length).toBe(1)
           expect(issues[0].message).toBe("cannot find 'nam' in type 'Foo'");
         }
-        catch(error){expect(error).toBeUndefined()}
+        catch (error) { expect(error).toBeUndefined() }
         finally { done(); }
       })
   });
 
-    it("accepts good attribute binding", (done) => {
+  it("accepts good attribute binding", (done) => {
     let viewmodel = `
     export class Foo{
       name:string
@@ -97,7 +97,7 @@ describe("BindingSyntax Rule", () => {
         try {
           expect(issues.length).toBe(0);
         }
-        catch(error){expect(error).toBeUndefined()}
+        catch (error) { expect(error).toBeUndefined() }
         finally { done(); }
       })
   });
@@ -128,7 +128,7 @@ describe("BindingSyntax Rule", () => {
         try {
           expect(issues.length).toBe(0);
         }
-        catch(error){expect(error).toBeUndefined()}
+        catch (error) { expect(error).toBeUndefined() }
         finally { done(); }
       })
   });
@@ -158,7 +158,7 @@ describe("BindingSyntax Rule", () => {
           expect(issues.length).toBe(1);
           expect(issues[0].message).toBe("cannot find 'infooo' in type 'Item'");
         }
-        catch(error){expect(error).toBeUndefined()}
+        catch (error) { expect(error).toBeUndefined() }
         finally { done(); }
       })
   });
@@ -185,8 +185,8 @@ describe("BindingSyntax Rule", () => {
       .then((issues) => {
         try {
           expect(issues.length).toBe(0);
-        } 
-        catch(error){expect(error).toBeUndefined()}
+        }
+        catch (error) { expect(error).toBeUndefined() }
         finally { done(); }
       })
   });
@@ -215,7 +215,7 @@ describe("BindingSyntax Rule", () => {
           expect(issues.length).toBe(1);
           expect(issues[0].message).toBe("cannot find 'itm' in type 'Foo'");
         }
-        catch(error){expect(error).toBeUndefined()} 
+        catch (error) { expect(error).toBeUndefined() }
         finally { done(); }
       })
   });
@@ -244,8 +244,8 @@ describe("BindingSyntax Rule", () => {
       .then((issues) => {
         try {
           expect(issues.length).toBe(0);
-        } 
-        catch(error){expect(error).toBeUndefined()}
+        }
+        catch (error) { expect(error).toBeUndefined() }
         finally { done(); }
       })
   });
@@ -275,8 +275,8 @@ describe("BindingSyntax Rule", () => {
       .then((issues) => {
         try {
           expect(issues.length).toBe(0);
-        } 
-        catch(error){expect(error).toBeUndefined()}
+        }
+        catch (error) { expect(error).toBeUndefined() }
         finally { done(); }
       })
   });
@@ -304,20 +304,21 @@ describe("BindingSyntax Rule", () => {
         try {
           expect(issues.length).toBe(1);
           expect(issues[0].message).toBe("cannot find 'itms' in type 'Foo'");
-        } 
-        catch(error){expect(error).toBeUndefined()}
+        }
+        catch (error) { expect(error).toBeUndefined() }
         finally { done(); }
       })
   });
 
-  it("correctly finds view-model with camel-case path", (done) => {
+  it("correctly find view-model regardless of class name", (done) => {
     let viewmodel = `
-    export class FooCamel{
+    export class ChooChoo{
       name:string
     }`
     let view = `
     <template>
       <input type="text" value.bind="name">
+      \${nam}
     </template>`
     let reflection = new Reflection();
     let rule = new SyntaxRule(reflection);
@@ -325,15 +326,38 @@ describe("BindingSyntax Rule", () => {
     reflection.add("./foo-camel.ts", viewmodel);
     linter.lint(view, "./foo-camel.html")
       .then((issues) => {
-        try {
-          expect(issues.length).toBe(0);
-        } 
-        catch(error){expect(error).toBeUndefined()}
-        finally { done(); }
+        expect(issues.length).toBe(1);
+        if (issues.length === 1) {
+          expect(issues[0].message).toBe("cannot find 'nam' in type 'ChooChoo'");
+        }
+        done();
       })
   });
 
-  it("supports generics", (done) => {
+  it("rejects more than one class in view-model file", (done) => {
+    let viewmodel = `
+    export class ChooChoo{
+      name:string
+    }
+    export class Moo{}`
+    let view = `
+    <template>
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        if (issues.length === 1) {
+          expect(issues[0].message).toBe("view-model file should only have one class");
+        }
+        done();
+      })
+  });
+
+  /*it("supports generics", (done) => {
     
     let cat = `
     export class Cat{
@@ -368,11 +392,11 @@ describe("BindingSyntax Rule", () => {
       .then((issues) => {
         try {
           expect(issues.length).toBe(2);
-          expect(issues[0].message).toBe("cannot find 'colr' in type 'Pet'")
-          expect(issues[1].message).toBe("cannot find 'corl' in type 'Pet'")
+          expect(issues[0].message).toBe("cannot find 'colr' in type 'Cat'")
+          expect(issues[1].message).toBe("cannot find 'corl' in type 'Cat'")
         } 
         catch(error){expect(error).toBeUndefined()}
         finally { done(); }
       })
-  });
+  });*/
 });
