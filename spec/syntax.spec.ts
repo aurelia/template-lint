@@ -334,7 +334,7 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
-  it("rejects more than one class in view-model file", (done) => {
+  /*it("rejects more than one class in view-model file", (done) => {
     let viewmodel = `
     export class ChooChoo{
       name:string
@@ -355,7 +355,7 @@ describe("Syntax and Static Typing Rule", () => {
         }
         done();
       })
-  });
+  });*/
 
   /*it("supports generics", (done) => {
     

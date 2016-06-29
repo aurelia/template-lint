@@ -71,9 +71,6 @@ export class SyntaxRule extends ASTBuilder {
         if (instruction == null)
             return;
 
-        let context = ASTNode.inheritContext(node);
-        let locals = ASTNode.inheritLocals(node);
-
         let attrName = instruction.attrName;
         let attrLoc = attr.location;
 
@@ -86,7 +83,7 @@ export class SyntaxRule extends ASTBuilder {
                 let source = instruction.attributes['items'];
                 let chain = this.flattenAccessChain(source.sourceExpression);
 
-                let resolved = this.resolveAccessChainToType(context, locals, chain, new FileLoc(attrLoc.line, attrLoc.column));
+                let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
 
                 if (!resolved)
                     return;
@@ -111,7 +108,7 @@ export class SyntaxRule extends ASTBuilder {
 
                 let source = instruction.attributes['with'];
                 let chain = this.flattenAccessChain(source.sourceExpression);
-                let resolved = this.resolveAccessChainToType(context, locals, chain, new FileLoc(attrLoc.line, attrLoc.column));
+                let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
 
                 if (resolved != null)
                     node.context = resolved;
@@ -121,7 +118,7 @@ export class SyntaxRule extends ASTBuilder {
             default: try {
                 let access = instruction.attributes[attrName].sourceExpression;
                 let chain = this.flattenAccessChain(access);
-                let resolved = this.resolveAccessChainToType(context, locals, chain, new FileLoc(attrLoc.line, attrLoc.column));
+                let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
             } catch (error) { throw error }
         };
     }
@@ -134,18 +131,14 @@ export class SyntaxRule extends ASTBuilder {
             return;
 
         let lineOffset = 0;
-        let column = node.location.column;
-        let context = ASTNode.inheritContext(node);
-        let locals = ASTNode.inheritLocals(node);
+        let column = node.location.column;     
 
         exp.parts.forEach(part => {
             if (part.name !== undefined) {
                 let chain = this.flattenAccessChain(part);
                 if (chain.length > 0)
-                    this.resolveAccessChainToType(context, locals, chain, new FileLoc(node.location.line + lineOffset, column));
+                    this.resolveAccessScopeToType(node, chain, new FileLoc(node.location.line + lineOffset, column));
 
-            } else if (part.ancestor !== undefined) {
-                //this or ancestor access ($parent)
             }
             else if ((<string>part).match !== undefined) {
                 let lines = (<string>part).split(/\n|\r/);
@@ -154,7 +147,9 @@ export class SyntaxRule extends ASTBuilder {
                     lineOffset += lines.length;
                     column = lines[lines.length - 1].length + 1;
                 }
-            }
+            }/*else{
+                console.log("unhandled");
+            }*/
         });
     }
 
@@ -173,10 +168,10 @@ export class SyntaxRule extends ASTBuilder {
 
         let classes = <ts.ClassDeclaration[]>viewModelSource.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration);
         
-        if(classes.length > 1)
+        /*if(classes.length > 1) // http://stackoverflow.com/questions/29101883/aurelia-view-model-class-naming
         {
             this.reportIssue(new Issue({message:"view-model file should only have one class", line:-1, column:-1, severity:IssueSeverity.Warning}))
-        }
+        }*/
 
         let first = classes[0];        
         let context = new ASTContext();
@@ -187,11 +182,23 @@ export class SyntaxRule extends ASTBuilder {
         return context;
     }
 
+    private resolveAccessScopeToType(node:ASTNode, chain: any[], loc: FileLoc): ASTContext {
+        let access = chain[0];
+        let ancestor = <number> access.ancestor;
+
+        let context = ASTNode.inheritContext(node, ancestor);
+        let locals = ASTNode.inheritLocals(node, ancestor);
+
+        return this.resolveAccessChainToType(context, locals, chain, loc);
+
+    }
+
     private resolveAccessChainToType(context: ASTContext, locals: ASTContext[], chain: any[], loc: FileLoc): ASTContext {
         if (chain == null || chain.length == 0)
             return;
 
-        let name = chain[0].name;
+        let access = chain[0];
+        let name = access.name;
         let decl = context.typeDecl;
 
         let resolved = this.resolveLocalType(locals, name);

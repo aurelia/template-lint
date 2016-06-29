@@ -154,8 +154,15 @@ export class ASTNode {
         }
     }
 
-    public static inheritLocals(node: ASTNode): ASTContext[] {
+    public static inheritLocals(node: ASTNode, ancestor?:number): ASTContext[] {
         let locals: ASTContext[] = [];
+
+        if(ancestor){           
+            while (node != null && ancestor >= 0) {
+                node = node.parent;
+                ancestor-=1;
+            }
+        }
 
         while (node != null) {
             node.locals.forEach(x => {
@@ -171,7 +178,14 @@ export class ASTNode {
         return locals;
     }
 
-    public static inheritContext(node: ASTNode): ASTContext {
+    public static inheritContext(node: ASTNode, ancestor?:number): ASTContext { 
+        if(ancestor){           
+            while (node != null && ancestor >= 0) {
+                node = node.parent;
+                ancestor-=1;
+            }
+        }
+
         while (node != null) {
             if (node.context != null)
                 return node.context;
