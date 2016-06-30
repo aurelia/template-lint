@@ -334,6 +334,44 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
+  it("supports $parent access scope", (done) => {
+    let role = `
+    export class Role{
+      isAdmin:boolean;      
+    }
+    `
+    let person = `    
+    import {Role} from './role';   
+    export class Person{    
+       role:Role; 
+    }`
+    let viewmodel = ` 
+    import {Person} from './person';   
+    export class Foo{
+      person:Person; 
+    }`
+    let view = `
+    <template with.bind="person">
+      <template with.bind="role">
+        \${$parent.$parent.person.role.isAdmn}
+        \${$parent.$parent.person.role.isAdmin}
+        \${$parent.role.isAdmin} 
+      </template>
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);    
+    reflection.add("./person.ts", person);    
+    reflection.add("./role.ts", role);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toBe("cannot find 'isAdmn' in type 'Role'");
+        done();
+      })
+  });
+
   /*it("rejects more than one class in view-model file", (done) => {
     let viewmodel = `
     export class ChooChoo{
