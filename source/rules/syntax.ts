@@ -82,7 +82,6 @@ export class SyntaxRule extends ASTBuilder {
                 let varLocal = <string>instruction.attributes['local'];
                 let source = instruction.attributes['items'];
                 let chain = this.flattenAccessChain(source.sourceExpression);
-
                 let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
 
                 if (!resolved)
@@ -131,7 +130,7 @@ export class SyntaxRule extends ASTBuilder {
             return;
 
         let lineOffset = 0;
-        let column = node.location.column;     
+        let column = node.location.column;
 
         exp.parts.forEach(part => {
             if (part.name !== undefined) {
@@ -167,13 +166,13 @@ export class SyntaxRule extends ASTBuilder {
             return null;
 
         let classes = <ts.ClassDeclaration[]>viewModelSource.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration);
-        
+
         /*if(classes.length > 1) // http://stackoverflow.com/questions/29101883/aurelia-view-model-class-naming
         {
             this.reportIssue(new Issue({message:"view-model file should only have one class", line:-1, column:-1, severity:IssueSeverity.Warning}))
         }*/
 
-        let first = classes[0];        
+        let first = classes[0];
         let context = new ASTContext();
 
         context.name = first.name.getText();
@@ -182,15 +181,14 @@ export class SyntaxRule extends ASTBuilder {
         return context;
     }
 
-    private resolveAccessScopeToType(node:ASTNode, chain: any[], loc: FileLoc): ASTContext {
+    private resolveAccessScopeToType(node: ASTNode, chain: any[], loc: FileLoc): ASTContext {
         let access = chain[0];
-        let ancestor = <number> access.ancestor;
+        let ancestor = <number>access.ancestor;
 
         let context = ASTNode.inheritContext(node, ancestor);
         let locals = ASTNode.inheritLocals(node, ancestor);
 
         return this.resolveAccessChainToType(context, locals, chain, loc);
-
     }
 
     private resolveAccessChainToType(context: ASTContext, locals: ASTContext[], chain: any[], loc: FileLoc): ASTContext {
@@ -204,12 +202,11 @@ export class SyntaxRule extends ASTBuilder {
         let resolved = this.resolveLocalType(locals, name);
 
         if (!resolved)
-            resolved = this.resolveStaticType(context, name);
+            resolved = this.resolveStaticType(context, name, loc);
 
-        if (!resolved) {
-            this.reportAccessMemberIssue(name, decl, loc.line, loc.column);
+        if (!resolved) {            
             return null;
-        }
+        }      
 
         if (chain.length == 1) {
             return resolved;
@@ -228,17 +225,18 @@ export class SyntaxRule extends ASTBuilder {
         return localVar;
     }
 
-    private resolveStaticType(context: ASTContext, memberName: string): ASTContext {
+    private resolveStaticType(context: ASTContext, memberName: string, loc:FileLoc): ASTContext {
 
         if (context == null || context.typeDecl == null)
             return null;
 
         let decl = context.typeDecl;
-        let resolvedTypeName;
+        let resolvedTypeName;    
+        let member = null;    
 
         switch (decl.kind) {
             case ts.SyntaxKind.ClassDeclaration: {
-                let member = (<ts.ClassDeclaration>decl).members
+                member = (<ts.ClassDeclaration>decl).members
                     .filter(x =>
                         x.kind == ts.SyntaxKind.PropertyDeclaration ||
                         x.kind == ts.SyntaxKind.MethodDeclaration)
@@ -249,7 +247,7 @@ export class SyntaxRule extends ASTBuilder {
                 resolvedTypeName = this.reflection.resolveClassElementType(member);
             } break;
             case ts.SyntaxKind.InterfaceDeclaration: {
-                let member = (<ts.InterfaceDeclaration>decl).members
+                member = (<ts.InterfaceDeclaration>decl).members
                     .filter(x =>
                         x.kind == ts.SyntaxKind.PropertySignature ||
                         x.kind == ts.SyntaxKind.MethodSignature)
@@ -261,11 +259,21 @@ export class SyntaxRule extends ASTBuilder {
             } break;
             default:
                 console.log("Unhandled Kind");
-                return null;
         }
 
         if (!resolvedTypeName)
+        {
+            this.reportUnresolvedAccessMemberIssue(memberName, decl, loc);
             return null;
+        }
+
+        if(member.flags & ts.NodeFlags.Private || 
+           member.flags & ts.NodeFlags.Protected)
+        {
+            this.reportPrivateAccessMemberIssue(memberName, decl, loc);
+            return null;            
+        }
+
 
         let typeDecl = this.reflection.getDeclForImportedType((<ts.SourceFile>decl.parent), resolvedTypeName);
 
@@ -305,12 +313,24 @@ export class SyntaxRule extends ASTBuilder {
         return value.replace(/([a-z][A-Z])/g, function (g) { return g[0] + '-' + g[1].toLowerCase() });
     }
 
-    private reportAccessMemberIssue(member: string, decl: ts.Declaration, line: number, column: number) {
+    private reportUnresolvedAccessMemberIssue(member: string, decl: ts.Declaration, loc:FileLoc) {
         let msg = `cannot find '${member}' in type '${decl.name.getText()}'`;
         let issue = new Issue({
             message: msg,
-            line: line,
-            column: column,
+            line: loc.line,
+            column: loc.column,
+            severity: IssueSeverity.Error
+        });
+
+        this.reportIssue(issue);
+    }
+
+    private reportPrivateAccessMemberIssue(member: string, decl: ts.Declaration, loc:FileLoc) {
+        let msg = `field '${member}' in type '${decl.name.getText()}' is private`;
+        let issue = new Issue({
+            message: msg,
+            line: loc.line,
+            column: loc.column,
             severity: IssueSeverity.Error
         });
 

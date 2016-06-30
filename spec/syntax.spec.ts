@@ -361,8 +361,8 @@ describe("Syntax and Static Typing Rule", () => {
     let reflection = new Reflection();
     let rule = new SyntaxRule(reflection);
     let linter = new Linter([rule]);
-    reflection.add("./foo.ts", viewmodel);    
-    reflection.add("./person.ts", person);    
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./person.ts", person);
     reflection.add("./role.ts", role);
     linter.lint(view, "./foo.html")
       .then((issues) => {
@@ -371,6 +371,89 @@ describe("Syntax and Static Typing Rule", () => {
         done();
       })
   });
+
+  it("will accept use of local created in same element", (done) => {
+    let person = `      
+    export class Person{           
+       id:number;
+       fullName:string;
+    }`
+    let viewmodel = ` 
+    import {Person} from './person';   
+    export class Foo{
+      employees:Person[]; 
+    }`
+    let view = `
+    <template>
+        <option repeat.for="employee of employees" model.bind = "employee.id" > 
+          \${employee.fullName } 
+        </option>
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./person.ts", person);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(0);
+        done();
+      })
+  });
+
+  it("will reject use of local created in same element, before it is created", (done) => {
+    let person = `      
+    export class Person{           
+       id:number;
+       fullName:string;
+    }`
+    let viewmodel = ` 
+    import {Person} from './person';   
+    export class Foo{
+      employees:Person[]; 
+    }`
+    let view = `
+    <template>
+        <option model.bind = "employee.id" repeat.for="employee of employees"  > 
+          \${employee.fullName } 
+        </option>
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./person.ts", person);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toBe("cannot find 'employee' in type 'Foo'");
+        done();
+      })
+  });
+
+  it("will reject access of private member", (done) => {
+    let viewmodel = `
+    export class Foo{
+      private name:string;
+    }`
+    let view = `
+    <template>
+      <input type="text" value.bind="name">
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        console.log(issues);
+        
+        expect(issues[0].message).toBe("field 'name' in type 'Foo' is private");
+        
+        done();
+      })
+  });  
 
   /*it("rejects more than one class in view-model file", (done) => {
     let viewmodel = `
