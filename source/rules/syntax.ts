@@ -71,7 +71,7 @@ export class SyntaxRule extends ASTBuilder {
 
         if (instruction == null)
             return;
-            
+
         let attrName = instruction.attrName;
         let attrLoc = attr.location;
 
@@ -301,8 +301,12 @@ export class SyntaxRule extends ASTBuilder {
         let chain = [];
 
         while (access !== undefined) {
-            chain.push(access);
-            access = access.object;
+            if (access.constructor.name == "PrefixNot")
+                access = access.expression;
+            else {
+                chain.push(access);
+                access = access.object;
+            }
         }
 
         return chain.reverse();

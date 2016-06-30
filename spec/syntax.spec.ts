@@ -74,7 +74,7 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
-    it("rejects bad interpolation within attribute value", (done) => {
+  it("rejects bad interpolation within attribute value", (done) => {
     let viewmodel = `
     export class Foo{
       width:number;
@@ -97,9 +97,6 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
-
-
-
   it("rejects bad interpolation binding", (done) => {
     let viewmodel = `
     export class Foo{
@@ -121,6 +118,46 @@ describe("Syntax and Static Typing Rule", () => {
         }
         catch (error) { expect(error).toBeUndefined() }
         finally { done(); }
+      })
+  });
+
+  it("accepts good if.bind", (done) => {
+    let viewmodel = `
+    export class Foo{
+      condition:boolean
+    }`
+    let view = `
+    <template>
+      <div if.bind="condition"></div>
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(0);
+        done();
+      })
+  });
+
+  it("accepts good negated if.bind", (done) => {
+    let viewmodel = `
+    export class Foo{
+      condition:boolean
+    }`
+    let view = `
+    <template>
+      <div if.bind="!condition"></div>
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(0);
+        done();
       })
   });
 
@@ -372,7 +409,7 @@ describe("Syntax and Static Typing Rule", () => {
     linter.lint(view, "./foo-camel.html")
       .then((issues) => {
         expect(issues.length).toBe(1);
-        expect(issues[0].message).toBe("cannot find 'nam' in type 'ChooChoo'");        
+        expect(issues[0].message).toBe("cannot find 'nam' in type 'ChooChoo'");
         done();
       })
   });
@@ -489,11 +526,11 @@ describe("Syntax and Static Typing Rule", () => {
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
       .then((issues) => {
-        expect(issues.length).toBe(1);        
-        expect(issues[0].message).toBe("field 'name' in type 'Foo' is private");        
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toBe("field 'name' in type 'Foo' is private");
         done();
       })
-  }); 
+  });
 
   it("supports custom typings", (done) => {
     let lib = `
@@ -520,7 +557,7 @@ describe("Syntax and Static Typing Rule", () => {
     linter.lint(view, "./path/foo.html")
       .then((issues) => {
         expect(issues.length).toBe(1);
-        expect(issues[0].message).toBe("cannot find 'nme' in type 'Person'");        
+        expect(issues[0].message).toBe("cannot find 'nme' in type 'Person'");
         done();
       })
   });
