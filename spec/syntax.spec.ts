@@ -327,9 +327,7 @@ describe("Syntax and Static Typing Rule", () => {
     linter.lint(view, "./foo-camel.html")
       .then((issues) => {
         expect(issues.length).toBe(1);
-        if (issues.length === 1) {
-          expect(issues[0].message).toBe("cannot find 'nam' in type 'ChooChoo'");
-        }
+        expect(issues[0].message).toBe("cannot find 'nam' in type 'ChooChoo'");        
         done();
       })
   });
@@ -446,11 +444,39 @@ describe("Syntax and Static Typing Rule", () => {
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
       .then((issues) => {
+        expect(issues.length).toBe(1);        
+        expect(issues[0].message).toBe("field 'name' in type 'Foo' is private");        
+        done();
+      })
+  }); 
+
+  it("supports custom typings", (done) => {
+    let lib = `
+    declare module 'my-lib' {
+        export interface Person{
+          name:string;
+        }
+    }`
+    let viewmodel = `
+    import {Person} from 'my-lib';
+    export class Foo{
+      person:Person;
+    }`
+    let view = `
+    <template>
+      \${person.name}
+      \${person.nme}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.addTypings(lib);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
         expect(issues.length).toBe(1);
-        console.log(issues);
-        
-        expect(issues[0].message).toBe("field 'name' in type 'Foo' is private");
-        
+        console.log(issues);       
+        expect(issues[0].message).toBe("cannot find 'nme' in type 'Person'");        
         done();
       })
   });  

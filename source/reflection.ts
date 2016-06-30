@@ -34,18 +34,35 @@ export class Reflection {
 
     add(path: string, source: string) {
 
-        let sourcePath = Path.normalize(path);
+        let parsed = Path.parse(Path.normalize(path));
+        let moduleName = Path.join(parsed.dir, parsed.name);
 
-        if (this.pathToSource[sourcePath] !== undefined)
+        if (this.pathToSource[moduleName] !== undefined)
             return;
 
-        let reflection = ts.createSourceFile(sourcePath, source, ts.ScriptTarget.Latest, true);
+        let reflection = ts.createSourceFile(moduleName, source, ts.ScriptTarget.Latest, true);
         this.sourceFiles.push(reflection);
-        this.pathToSource[sourcePath] = reflection;
+        this.pathToSource[moduleName] = reflection;
     }
 
-    getDeclForImportedType(source: ts.SourceFile, symbol: string): ts.DeclarationStatement {
-        if(!source || !symbol)return null;
+    addTypings(source: string) {
+        let reflection = ts.createSourceFile("", source, ts.ScriptTarget.Latest, true);
+
+        let modules = reflection.statements
+            .filter(x => x.kind == ts.SyntaxKind.ModuleDeclaration)
+            .map(x => <ts.ModuleDeclaration>x);
+
+        modules.forEach(module => {
+            let moduleName = module.name.getText();
+            console.log(`adding module ${moduleName}`);
+            this.pathToSource[moduleName] = module;
+        });
+    }
+
+    getDeclForImportedType(sourceDecl: ts.Declaration, symbol: string): ts.DeclarationStatement {
+        if (!sourceDecl || !symbol) return null;
+
+        let source = <ts.SourceFile>sourceDecl;
 
         let base = Path.parse(source.fileName).dir;
 
@@ -68,22 +85,57 @@ export class Reflection {
         if (!match)
             return null;
 
-        let importModule = (<any>match).moduleSpecifier.text;
-        let sourceFilePath = Path.normalize(Path.join(base, `${importModule}.ts`));
-        let sourceFile = this.pathToSource[sourceFilePath];
+        console.log(symbol);
 
-        if (!sourceFile)
+        let importModule = (<any>match).moduleSpecifier.text;
+        let inportSourceFilePath = Path.normalize(Path.join(base, `${importModule}`));
+        let inportSourceFile = this.pathToSource[inportSourceFilePath];
+
+        console.log(this.pathToSource);
+
+        console.log(`import of '${inportSourceFilePath}' okay? ${inportSourceFile != null}`);
+        
+        if (!inportSourceFile)
             return null;
 
-        let classes = sourceFile.statements.filter(x =>
+        console.log(inportSourceFile.kind);
+
+        if(inportSourceFile.kind == ts.SyntaxKind.SourceFile)
+        {
+            let classes = inportSourceFile.statements.filter(x =>
+
             x.kind == ts.SyntaxKind.ClassDeclaration ||
             x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
-        return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == symbol);
+            return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == symbol);
+        }        
+        else if (sourceDecl.kind == ts.SyntaxKind.ModuleDeclaration) {
+            let module = <ts.ModuleDeclaration>sourceDecl;
+            let body = module.body;
+
+            console.log("module kind");
+
+            if (module.body.kind == ts.SyntaxKind.ModuleBlock) {
+                let moduleBlock = <ts.ModuleBlock>body;
+
+                console.log("module body");
+
+                let classes = moduleBlock.statements.filter(x =>
+                    x.kind == ts.SyntaxKind.ClassDeclaration ||
+                    x.kind == ts.SyntaxKind.InterfaceDeclaration);
+
+                console.log(classes);
+
+                return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == symbol);
+            }
+        }
+        else{
+            console.log("Unknown kind");
+        }
     }
 
     public resolveClassElementType(node: ts.ClassElement): string {
-        if(!node) return null;
+        if (!node) return null;
         switch (node.kind) {
             case ts.SyntaxKind.PropertyDeclaration:
                 let prop = <ts.PropertyDeclaration>node
@@ -98,7 +150,7 @@ export class Reflection {
     }
 
     public resolveTypeElementType(node: ts.TypeElement): string {
-        if(!node)return null;
+        if (!node) return null;
         switch (node.kind) {
             case ts.SyntaxKind.PropertySignature:
                 let prop = <ts.PropertySignature>node
@@ -113,7 +165,7 @@ export class Reflection {
     }
 
     public resolveTypeName(node: ts.TypeNode): string {
-        if(!node)return null;
+        if (!node) return null;
         switch (node.kind) {
             case ts.SyntaxKind.ArrayType:
                 let arr = <ts.ArrayTypeNode>node;

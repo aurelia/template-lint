@@ -157,7 +157,7 @@ export class SyntaxRule extends ASTBuilder {
             return null;
 
         let viewFileInfo = Path.parse(path);
-        let viewModelFile = Path.join(viewFileInfo.dir, `${viewFileInfo.name}.ts`);
+        let viewModelFile = Path.join(viewFileInfo.dir, `${viewFileInfo.name}`);
         let viewName = this.toSymbol(viewFileInfo.name);
 
         let viewModelSource = this.reflection.pathToSource[viewModelFile];
