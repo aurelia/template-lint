@@ -25,8 +25,9 @@ import {
  */
 export class SyntaxRule extends ASTBuilder {
 
-    constructor(private reflection: Reflection) {
+    constructor(private reflection: Reflection, private controllers?:string[]) {
         super();
+        this.controllers = this.controllers || ["repeat.for", "if.bind", "with.bind"];
     }
 
     init(parser: Parser, path?: string) {
@@ -60,8 +61,10 @@ export class SyntaxRule extends ASTBuilder {
     }
 
     private examineElementNode(node: ASTElementNode) {
-        for (let i = 0, ii = node.attrs.length; i < ii; ++i) {
-            let attr = node.attrs[i];
+        let attrs = node.attrs.sort(x=>(this.controllers.indexOf(x.name) != -1)?0:1);
+
+        for (let i = 0, ii = attrs.length; i < ii; ++i) {
+            let attr = attrs[i];
             this.examineAttribute(node, attr);
         }
     }

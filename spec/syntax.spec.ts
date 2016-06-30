@@ -481,7 +481,7 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
-  it("will reject use of local created in same element, before it is created", (done) => {
+  it("will accept use of local created in same element, before it is created", (done) => {
     let person = `      
     export class Person{           
        id:number;
@@ -505,8 +505,7 @@ describe("Syntax and Static Typing Rule", () => {
     reflection.add("./person.ts", person);
     linter.lint(view, "./foo.html")
       .then((issues) => {
-        expect(issues.length).toBe(1);
-        expect(issues[0].message).toBe("cannot find 'employee' in type 'Foo'");
+        expect(issues.length).toBe(0);        
         done();
       })
   });
