@@ -32,6 +32,28 @@ export class Reflection {
         });
     }
 
+    addTypingsGlob(pattern?: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+            try {
+                if (pattern) {
+                    glob(pattern, {}, (er, files) => {
+                        if (er)
+                            reject(er);
+
+                        files.forEach(path => {
+                            let source = fs.readFileSync(path, 'utf8');
+                            this.addTypings(source);
+                        });
+
+                        resolve();
+                    });
+                }
+            } catch (err) {
+                reject(err)
+            }
+        });
+    }
+
     add(path: string, source: string) {
 
         let parsed = Path.parse(Path.normalize(path));
@@ -53,8 +75,7 @@ export class Reflection {
             .map(x => <ts.ModuleDeclaration>x);
 
         modules.forEach(module => {
-            let moduleName = module.name.getText();
-            console.log(`adding module ${moduleName}`);
+            let moduleName = module.name.getText().replace(/\'|\"|\`/g, '');
             this.pathToSource[moduleName] = module;
         });
     }
@@ -64,14 +85,9 @@ export class Reflection {
 
         let source = <ts.SourceFile>sourceDecl;
 
-        let base = Path.parse(source.fileName).dir;
-
-        let imports = source.statements
-            .filter(x => x.kind == ts.SyntaxKind.ImportDeclaration)
-
+        let imports = source.statements.filter(x => x.kind == ts.SyntaxKind.ImportDeclaration)
         let map: { [id: string]: ts.SourceFile } = {}
-
-        let match = imports.find(x => {
+        let symbolImportDecl = imports.find(x => {
             let importSymbols = (<any>x).importClause.namedBindings.elements;
             let importModule = (<any>x).moduleSpecifier.text;
 
@@ -82,55 +98,47 @@ export class Reflection {
             return isMatch != -1;
         });
 
-        if (!match)
+        if (!symbolImportDecl)
             return null;
 
-        console.log(symbol);
+        let importModule = (<any>symbolImportDecl).moduleSpecifier.text;
+        let isRelative = importModule.startsWith(".");
+        let inportSourceModule = importModule;
 
-        let importModule = (<any>match).moduleSpecifier.text;
-        let inportSourceFilePath = Path.normalize(Path.join(base, `${importModule}`));
-        let inportSourceFile = this.pathToSource[inportSourceFilePath];
+        if (isRelative) {
+            let base = Path.parse(source.fileName).dir;
+            inportSourceModule = Path.normalize(Path.join(base, `${importModule}`));
+        }
 
-        console.log(this.pathToSource);
+        let inportSourceFile = this.pathToSource[inportSourceModule];
 
-        console.log(`import of '${inportSourceFilePath}' okay? ${inportSourceFile != null}`);
-        
         if (!inportSourceFile)
             return null;
 
-        console.log(inportSourceFile.kind);
-
-        if(inportSourceFile.kind == ts.SyntaxKind.SourceFile)
-        {
+        if (inportSourceFile.kind == ts.SyntaxKind.SourceFile) {
             let classes = inportSourceFile.statements.filter(x =>
 
-            x.kind == ts.SyntaxKind.ClassDeclaration ||
-            x.kind == ts.SyntaxKind.InterfaceDeclaration);
+                x.kind == ts.SyntaxKind.ClassDeclaration ||
+                x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
             return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == symbol);
-        }        
-        else if (sourceDecl.kind == ts.SyntaxKind.ModuleDeclaration) {
-            let module = <ts.ModuleDeclaration>sourceDecl;
+        }
+        else if (inportSourceFile.kind == ts.SyntaxKind.ModuleDeclaration) {
+            let module = <ts.ModuleDeclaration>inportSourceFile;
             let body = module.body;
-
-            console.log("module kind");
 
             if (module.body.kind == ts.SyntaxKind.ModuleBlock) {
                 let moduleBlock = <ts.ModuleBlock>body;
-
-                console.log("module body");
 
                 let classes = moduleBlock.statements.filter(x =>
                     x.kind == ts.SyntaxKind.ClassDeclaration ||
                     x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
-                console.log(classes);
-
                 return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == symbol);
             }
         }
-        else{
-            console.log("Unknown kind");
+        else {
+            console.log("getDeclForImportedType - Unknown kind - " + sourceDecl.kind);
         }
     }
 

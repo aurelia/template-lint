@@ -53,6 +53,51 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
+  it("accepts good interpolation within attribute value", (done) => {
+    let viewmodel = `
+    export class Foo{
+      width:number;
+      height:number;
+    }`
+    let view = `
+    <template>
+      <div css="width: \${width}px; height: \${height}px;"></div>
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(0);
+        done();
+      })
+  });
+
+    it("rejects bad interpolation within attribute value", (done) => {
+    let viewmodel = `
+    export class Foo{
+      width:number;
+      height:number;
+    }`
+    let view = `
+    <template>
+      <div css="width: \${widt}px; height: \${hight}px;"></div>
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(2);
+        expect(issues[0].message).toBe("cannot find 'widt' in type 'Foo'");
+        expect(issues[1].message).toBe("cannot find 'hight' in type 'Foo'");
+        done();
+      })
+  });
+
+
 
 
   it("rejects bad interpolation binding", (done) => {
@@ -470,16 +515,15 @@ describe("Syntax and Static Typing Rule", () => {
     let reflection = new Reflection();
     let rule = new SyntaxRule(reflection);
     let linter = new Linter([rule]);
-    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./path/foo.ts", viewmodel);
     reflection.addTypings(lib);
-    linter.lint(view, "./foo.html")
+    linter.lint(view, "./path/foo.html")
       .then((issues) => {
         expect(issues.length).toBe(1);
-        console.log(issues);       
         expect(issues[0].message).toBe("cannot find 'nme' in type 'Person'");        
         done();
       })
-  });  
+  });
 
   /*it("rejects more than one class in view-model file", (done) => {
     let viewmodel = `

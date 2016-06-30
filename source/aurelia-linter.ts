@@ -56,7 +56,8 @@ export class AureliaLinter {
             config.voids);
 
         if (this.config.useStaticTyping)
-            this.init = this.reflection.addGlob(this.config.sourceFileGlob);
+            this.init = this.reflection.addGlob(this.config.sourceFileGlob).then(
+                ()=>this.reflection.addTypingsGlob(this.config.typingsFileGlob));
     }
 
     public lint(html: string, path?: string): Promise<Issue[]> {

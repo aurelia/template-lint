@@ -60,6 +60,6 @@ export class Config {
 
     useStaticTyping = false;
     throwStaticTypingErrors = false;
-    sourceFileGlob = "source/**/*.ts"
-    
+    sourceFileGlob = "source/**/*.ts";
+    typingsFileGlob = "typings/**/*.d.ts"; 
 }

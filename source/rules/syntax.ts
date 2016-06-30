@@ -2,9 +2,9 @@
 
 import 'aurelia-polyfills';
 
-import {TemplatingBindingLanguage, InterpolationBindingExpression} from 'aurelia-templating-binding';
+import {TemplatingBindingLanguage, /*InterpolationBindingExpression*/} from 'aurelia-templating-binding';
 import {ViewResources, BindingLanguage, BehaviorInstruction} from 'aurelia-templating';
-import {AccessMember, AccessScope, AccessKeyed/*, AccessThis*/, NameExpression, ValueConverter} from 'aurelia-binding';
+import {AccessMember, AccessScope, AccessKeyed, Expression, NameExpression, ValueConverter} from 'aurelia-binding';
 import {Container} from 'aurelia-dependency-injection';
 import * as ts from 'typescript';
 import * as Path from 'path';
@@ -39,7 +39,7 @@ export class SyntaxRule extends ASTBuilder {
             if (this.root.context != null)
                 this.examineNode(this.root);
         } catch (error) {
-            console.log(error);
+            this.reportIssue(new Issue({ message: error, line: -1, column: -1 }));
         }
         return super.finalise();
     }
@@ -68,9 +68,10 @@ export class SyntaxRule extends ASTBuilder {
 
     private examineAttribute(node: ASTElementNode, attr: ASTAttribute) {
         let instruction = attr.instruction;
+
         if (instruction == null)
             return;
-
+            
         let attrName = instruction.attrName;
         let attrLoc = attr.location;
 
@@ -115,18 +116,32 @@ export class SyntaxRule extends ASTBuilder {
                 break;
             }
             default: try {
+
+                let attrExp = instruction.attributes[attrName];
                 let access = instruction.attributes[attrName].sourceExpression;
-                let chain = this.flattenAccessChain(access);
-                let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
+
+                if (attrExp.constructor.name == "InterpolationBindingExpression")
+                    this.examineInterpolationExpression(node, attrExp);
+                else {
+                    let chain = this.flattenAccessChain(access);
+                    let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
+                }
             } catch (error) { throw error }
         };
     }
 
     private examineTextNode(node: ASTTextNode) {
-
         let exp = <any>node.expression;
 
         if (!exp)
+            return;
+
+        if (exp.constructor.name == "InterpolationBindingExpression")
+            this.examineInterpolationExpression(node, exp);
+    }
+
+    private examineInterpolationExpression(node: ASTNode, exp: any) {
+        if (!exp || !node)
             return;
 
         let lineOffset = 0;
@@ -146,9 +161,7 @@ export class SyntaxRule extends ASTBuilder {
                     lineOffset += lines.length;
                     column = lines[lines.length - 1].length + 1;
                 }
-            }/*else{
-                console.log("unhandled");
-            }*/
+            }
         });
     }
 
@@ -204,9 +217,9 @@ export class SyntaxRule extends ASTBuilder {
         if (!resolved)
             resolved = this.resolveStaticType(context, name, loc);
 
-        if (!resolved) {            
+        if (!resolved) {
             return null;
-        }      
+        }
 
         if (chain.length == 1) {
             return resolved;
@@ -225,14 +238,14 @@ export class SyntaxRule extends ASTBuilder {
         return localVar;
     }
 
-    private resolveStaticType(context: ASTContext, memberName: string, loc:FileLoc): ASTContext {
+    private resolveStaticType(context: ASTContext, memberName: string, loc: FileLoc): ASTContext {
 
         if (context == null || context.typeDecl == null)
             return null;
 
         let decl = context.typeDecl;
-        let resolvedTypeName;    
-        let member = null;    
+        let resolvedTypeName;
+        let member = null;
 
         switch (decl.kind) {
             case ts.SyntaxKind.ClassDeclaration: {
@@ -261,21 +274,20 @@ export class SyntaxRule extends ASTBuilder {
                 console.log("Unhandled Kind");
         }
 
-        if (!resolvedTypeName)
-        {
+        if (!resolvedTypeName) {
             this.reportUnresolvedAccessMemberIssue(memberName, decl, loc);
             return null;
         }
 
-        if(member.flags & ts.NodeFlags.Private || 
-           member.flags & ts.NodeFlags.Protected)
-        {
+        if (member.flags & ts.NodeFlags.Private ||
+            member.flags & ts.NodeFlags.Protected) {
             this.reportPrivateAccessMemberIssue(memberName, decl, loc);
-            return null;            
+            return null;
         }
 
 
         let typeDecl = this.reflection.getDeclForImportedType((<ts.SourceFile>decl.parent), resolvedTypeName);
+
 
         //TODO:
         //let typeArgs = <args:ts.TypeReference[]> member.type.typeArguments;
@@ -313,7 +325,7 @@ export class SyntaxRule extends ASTBuilder {
         return value.replace(/([a-z][A-Z])/g, function (g) { return g[0] + '-' + g[1].toLowerCase() });
     }
 
-    private reportUnresolvedAccessMemberIssue(member: string, decl: ts.Declaration, loc:FileLoc) {
+    private reportUnresolvedAccessMemberIssue(member: string, decl: ts.Declaration, loc: FileLoc) {
         let msg = `cannot find '${member}' in type '${decl.name.getText()}'`;
         let issue = new Issue({
             message: msg,
@@ -325,7 +337,7 @@ export class SyntaxRule extends ASTBuilder {
         this.reportIssue(issue);
     }
 
-    private reportPrivateAccessMemberIssue(member: string, decl: ts.Declaration, loc:FileLoc) {
+    private reportPrivateAccessMemberIssue(member: string, decl: ts.Declaration, loc: FileLoc) {
         let msg = `field '${member}' in type '${decl.name.getText()}' is private`;
         let issue = new Issue({
             message: msg,
