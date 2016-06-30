@@ -562,6 +562,38 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
+  it("supports keyed-access (expression)", (done) => {
+    let item = `
+    export class Item{
+      info:string;
+    }`;
+
+    let viewmodel = `
+    import {Item} from './path/item
+    export class Foo{
+      items:Item[]
+      index:number;
+    }`
+    let view = `
+    <template>    
+      \${items[index].info}
+      \${items[indx].inf}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./path/item.ts", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(2);
+          expect(issues[0].message).toBe("cannot find 'indx' in type 'Foo'");
+          expect(issues[1].message).toBe("cannot find 'inf' in type 'Item'");
+        }finally { done(); }
+      })
+  });
+
   /*it("rejects more than one class in view-model file", (done) => {
     let viewmodel = `
     export class ChooChoo{

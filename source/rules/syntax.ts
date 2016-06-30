@@ -149,7 +149,9 @@ export class SyntaxRule extends ASTBuilder {
 
         exp.parts.forEach(part => {
             if (part.name !== undefined) {
-                let chain = this.flattenAccessChain(part);
+
+                let chain = this.flattenAccessChain(part);           
+
                 if (chain.length > 0)
                     this.resolveAccessScopeToType(node, chain, new FileLoc(node.location.line + lineOffset, column));
 
@@ -201,21 +203,35 @@ export class SyntaxRule extends ASTBuilder {
         let context = ASTNode.inheritContext(node, ancestor);
         let locals = ASTNode.inheritLocals(node, ancestor);
 
-        return this.resolveAccessChainToType(context, locals, chain, loc);
+        return this.resolveAccessChainToType(node, context, locals, chain, loc);
     }
 
-    private resolveAccessChainToType(context: ASTContext, locals: ASTContext[], chain: any[], loc: FileLoc): ASTContext {
+    private resolveAccessChainToType(node: ASTNode, context: ASTContext, locals: ASTContext[], chain: any[], loc: FileLoc): ASTContext {
         if (chain == null || chain.length == 0)
             return;
 
-        let access = chain[0];
-        let name = access.name;
         let decl = context.typeDecl;
+        let access = chain[0];
+        let resolved = null;
 
-        let resolved = this.resolveLocalType(locals, name);
+        if(access.constructor.name == "AccessMember" || 
+           access.constructor.name == "AccessScope")
+        {
+            let name = access.name;
 
-        if (!resolved)
-            resolved = this.resolveStaticType(context, name, loc);
+            resolved = this.resolveLocalType(locals, name);           
+
+            if (!resolved) 
+                resolved = this.resolveStaticType(context, name, loc);
+        }
+        else if(access.constructor.name == "AccessKeyed")
+        {
+            let keyAccess = access.key;
+            let keyChain = this.flattenAccessChain(keyAccess);
+            let keyTypeDecl = this.resolveAccessScopeToType(node, keyChain, loc);
+
+            resolved = context;
+        }
 
         if (!resolved) {
             return null;
@@ -225,7 +241,7 @@ export class SyntaxRule extends ASTBuilder {
             return resolved;
         }
 
-        return this.resolveAccessChainToType(resolved, null, chain.slice(1), loc);
+        return this.resolveAccessChainToType(node, resolved, null, chain.slice(1), loc);
     }
 
     private resolveLocalType(locals: ASTContext[], memberName: string): ASTContext {
