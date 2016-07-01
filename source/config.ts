@@ -56,7 +56,8 @@ export class Config {
     containers: Array<string> = ['table', 'select'];
     customRules: Rule[] = [];
 
-    useStaticTyping = false;    
+    useStaticTyping = false;
+    useCustomTypings = false; 
     throwStaticTypingErrors = false;
     errorOnNonPublicAccess = true;
     
