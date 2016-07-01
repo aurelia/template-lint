@@ -1,6 +1,4 @@
 import {Rule} from 'template-lint';
-import {ConflictingAttributesRule} from './rules/conflictingattributes';
-
 
 export class Config {
     
@@ -58,8 +56,10 @@ export class Config {
     containers: Array<string> = ['table', 'select'];
     customRules: Rule[] = [];
 
-    useStaticTyping = false;
+    useStaticTyping = false;    
     throwStaticTypingErrors = false;
-    sourceFileGlob = "source/**/*.ts"
+    errorOnNonPublicAccess = true;
     
+    sourceFileGlob = "source/**/*.ts";
+    typingsFileGlob = "typings/**/*.d.ts"; 
 }

@@ -6,14 +6,12 @@ import {ObsoleteTagRule} from 'template-lint';
 import {ObsoleteAttributeRule} from 'template-lint';
 import {UniqueIdRule} from 'template-lint';
 import {AttributeValueRule} from 'template-lint';
+import {ConflictingAttributesRule, ConflictingAttributes} from 'template-lint';
 
 import {RequireRule} from './rules/require';
 import {SlotRule} from './rules/slot';
 import {TemplateRule} from './rules/template';
-import {RepeatForRule} from './rules/repeatfor';
-import {StaticTypeRule} from './rules/static-type';
-import {ConflictingAttributesRule, ConflictingAttributes} from './rules/conflictingattributes';
-import {BindingSyntaxRule} from './rules/binding-syntax';
+import {SyntaxRule} from './rules/syntax';
 
 import {Reflection} from './reflection';
 import {Config} from './config';
@@ -35,7 +33,7 @@ export class AureliaLinter {
             config = new Config();
 
         this.config = config;
-        this.reflection = new Reflection();
+        this.reflection = new Reflection();              
 
         let rules = [
             new SelfCloseRule(),
@@ -48,9 +46,7 @@ export class AureliaLinter {
             new SlotRule(config.templateControllers),
             new TemplateRule(config.containers),
             new ConflictingAttributesRule(<ConflictingAttributes[]>config.conflictingAttributes),
-            new RepeatForRule(),// remove on 0.8
-            new StaticTypeRule(this.reflection, config.throwStaticTypingErrors),
-            //new BindingSyntaxRule() //add on 0.8
+            new SyntaxRule(this.reflection, config)
 
         ].concat(config.customRules);
 
@@ -60,7 +56,8 @@ export class AureliaLinter {
             config.voids);
 
         if (this.config.useStaticTyping)
-            this.init = this.reflection.addGlob(this.config.sourceFileGlob);
+            this.init = this.reflection.addGlob(this.config.sourceFileGlob).then(
+                ()=>this.reflection.addTypingsGlob(this.config.typingsFileGlob));
     }
 
     public lint(html: string, path?: string): Promise<Issue[]> {
