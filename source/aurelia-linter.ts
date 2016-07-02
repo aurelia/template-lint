@@ -6,12 +6,12 @@ import {ObsoleteTagRule} from 'template-lint';
 import {ObsoleteAttributeRule} from 'template-lint';
 import {UniqueIdRule} from 'template-lint';
 import {AttributeValueRule} from 'template-lint';
+import {ConflictingAttributesRule, ConflictingAttributes} from 'template-lint';
 
 import {RequireRule} from './rules/require';
 import {SlotRule} from './rules/slot';
 import {TemplateRule} from './rules/template';
 import {SyntaxRule} from './rules/syntax';
-import {ConflictingAttributesRule, ConflictingAttributes} from './rules/conflictingattributes';
 
 import {Reflection} from './reflection';
 import {Config} from './config';
@@ -33,7 +33,7 @@ export class AureliaLinter {
             config = new Config();
 
         this.config = config;
-        this.reflection = new Reflection();
+        this.reflection = new Reflection();              
 
         let rules = [
             new SelfCloseRule(),
@@ -46,7 +46,7 @@ export class AureliaLinter {
             new SlotRule(config.templateControllers),
             new TemplateRule(config.containers),
             new ConflictingAttributesRule(<ConflictingAttributes[]>config.conflictingAttributes),
-            new SyntaxRule(this.reflection)
+            new SyntaxRule(this.reflection, config)
 
         ].concat(config.customRules);
 

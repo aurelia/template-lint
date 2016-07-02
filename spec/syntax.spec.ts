@@ -414,6 +414,44 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
+  it("supports chain traversal via method return type", (done) => {
+    let role = `
+    export class Role{
+      isAdmin:boolean;      
+    }
+    `
+    let person = `    
+    import {Role} from './role';   
+    export class Person{    
+       getRole():Role{}
+    }`
+    let viewmodel = ` 
+    import {Person} from './nested/person';   
+    export class Foo{
+      getPerson():Person{}
+    }`
+    let view = `
+    <template>     
+        \${getPerson().getRole().isAdmin}
+        \${getPerson().getRole().isAdmi}
+        \${getPerson().rol}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./nested/person.ts", person);
+    reflection.add("./nested/role.ts", role);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(2);
+        try{
+        expect(issues[0].message).toBe("cannot find 'isAdmi' in type 'Role'");
+        expect(issues[1].message).toBe("cannot find 'rol' in type 'Person'");
+        }finally{done();}
+      })
+  });
+
   it("supports $parent access scope", (done) => {
     let role = `
     export class Role{
@@ -505,7 +543,7 @@ describe("Syntax and Static Typing Rule", () => {
     reflection.add("./person.ts", person);
     linter.lint(view, "./foo.html")
       .then((issues) => {
-        expect(issues.length).toBe(0);        
+        expect(issues.length).toBe(0);
         done();
       })
   });
@@ -561,6 +599,50 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
+  it("supports bindable field", (done) => {
+    let viewmodel = `
+    import {bindable} from "aurelia-templating";
+    export class ItemCustomElement {
+        @bindable value: string;
+    }`
+    let view = `
+    <template>
+      \${value}
+      \${valu}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toBe("cannot find 'valu' in type 'ItemCustomElement'");
+        done();
+      })
+  });
+
+  //Make sure it doesn't blow up for the time-being. 
+  it("it will silently ignore unknown converters", (done) => {
+    let viewmodel = `
+    export class Foo {
+        value: string;
+    }`
+    let view = `
+    <template>
+      \${value | booboo}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(0);
+        done();
+      })
+  });
+
   it("supports keyed-access (expression)", (done) => {
     let item = `
     export class Item{
@@ -589,7 +671,37 @@ describe("Syntax and Static Typing Rule", () => {
           expect(issues.length).toBe(2);
           expect(issues[0].message).toBe("cannot find 'indx' in type 'Foo'");
           expect(issues[1].message).toBe("cannot find 'inf' in type 'Item'");
-        }finally { done(); }
+        } finally { done(); }
+      })
+  });
+
+  it("support javascript (untyped) source", (done) => {
+    let viewmodel = `
+    export class Foo{
+      items;
+      index;
+    }`
+    let view = `
+    <template> 
+      \${items};
+      \${index};
+      \${item};
+      \${indx};
+      \${items[index]}
+      \${items[index].info}
+      \${index.will.never.know.how.wrong.this.is}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.js", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(2);
+          expect(issues[0].message).toBe("cannot find 'item' in type 'Foo'");
+          expect(issues[1].message).toBe("cannot find 'indx' in type 'Foo'");
+        } finally { done(); }
       })
   });
 

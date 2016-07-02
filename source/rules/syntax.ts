@@ -25,9 +25,22 @@ import {
  */
 export class SyntaxRule extends ASTBuilder {
 
-    constructor(private reflection: Reflection, private controllers?:string[]) {
+    public controllers: string[] =  ["repeat.for", "if.bind", "with.bind"];
+    public errorOnNonPublicAccess: boolean = true;
+    public throwStaticTypingErrors: boolean = false;
+
+    constructor(private reflection: Reflection, opt?:{
+        templateControllers?:string[]
+        errorOnNonPublicAccess?:boolean,
+        throwStaticTypingErrors?:boolean
+    }) {
         super();
-        this.controllers = this.controllers || ["repeat.for", "if.bind", "with.bind"];
+        if(opt)
+        {
+            if(opt.templateControllers) this.controllers = opt.templateControllers;
+            if(opt.errorOnNonPublicAccess) this.errorOnNonPublicAccess = opt.errorOnNonPublicAccess;
+            if(opt.throwStaticTypingErrors) this.throwStaticTypingErrors = opt.throwStaticTypingErrors;
+        }
     }
 
     init(parser: Parser, path?: string) {
@@ -40,7 +53,8 @@ export class SyntaxRule extends ASTBuilder {
             if (this.root.context != null)
                 this.examineNode(this.root);
         } catch (error) {
-            this.reportIssue(new Issue({ message: error, line: -1, column: -1 }));
+            if (this.throwStaticTypingErrors)
+                this.reportIssue(new Issue({ message: error, line: -1, column: -1 }));
         }
         return super.finalise();
     }
@@ -61,7 +75,7 @@ export class SyntaxRule extends ASTBuilder {
     }
 
     private examineElementNode(node: ASTElementNode) {
-        let attrs = node.attrs.sort(x=>(this.controllers.indexOf(x.name) != -1)?0:1);
+        let attrs = node.attrs.sort(x => (this.controllers.indexOf(x.name) != -1) ? 0 : 1);
 
         for (let i = 0, ii = attrs.length; i < ii; ++i) {
             let attr = attrs[i];
@@ -153,7 +167,7 @@ export class SyntaxRule extends ASTBuilder {
         exp.parts.forEach(part => {
             if (part.name !== undefined) {
 
-                let chain = this.flattenAccessChain(part);           
+                let chain = this.flattenAccessChain(part);
 
                 if (chain.length > 0)
                     this.resolveAccessScopeToType(node, chain, new FileLoc(node.location.line + lineOffset, column));
@@ -217,18 +231,18 @@ export class SyntaxRule extends ASTBuilder {
         let access = chain[0];
         let resolved = null;
 
-        if(access.constructor.name == "AccessMember" || 
-           access.constructor.name == "AccessScope")
-        {
+        if (access.constructor.name == "AccessMember" ||        
+            access.constructor.name == "AccessScope" ||             
+            access.constructor.name == "CallMember" || 
+            access.constructor.name == "CallScope") {
             let name = access.name;
 
-            resolved = this.resolveLocalType(locals, name);           
+            resolved = this.resolveLocalType(locals, name);
 
-            if (!resolved) 
+            if (!resolved)
                 resolved = this.resolveStaticType(context, name, loc);
         }
-        else if(access.constructor.name == "AccessKeyed")
-        {
+        else if (access.constructor.name == "AccessKeyed") {
             let keyAccess = access.key;
             let keyChain = this.flattenAccessChain(keyAccess);
             let keyTypeDecl = this.resolveAccessScopeToType(node, keyChain, loc);
@@ -293,20 +307,22 @@ export class SyntaxRule extends ASTBuilder {
                 console.log("Unhandled Kind");
         }
 
-        if (!resolvedTypeName) {
+        if (!member) {
             this.reportUnresolvedAccessMemberIssue(memberName, decl, loc);
             return null;
         }
 
-        if (member.flags & ts.NodeFlags.Private ||
-            member.flags & ts.NodeFlags.Protected) {
+        if(!resolvedTypeName)
+            return null;
+            
+        if ((this.errorOnNonPublicAccess) && (
+            member.flags & ts.NodeFlags.Private ||
+            member.flags & ts.NodeFlags.Protected)) {
             this.reportPrivateAccessMemberIssue(memberName, decl, loc);
             return null;
         }
 
-
         let typeDecl = this.reflection.getDeclForImportedType((<ts.SourceFile>decl.parent), resolvedTypeName);
-
 
         //TODO:
         //let typeArgs = <args:ts.TypeReference[]> member.type.typeArguments;

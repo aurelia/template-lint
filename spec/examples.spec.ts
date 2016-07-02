@@ -193,4 +193,20 @@ describe("Aurelia Examples", () => {
                 done();
             });
     });
+
+    it("will reject more than one template-controller on same element", (done) => {
+        var config: Config = new Config();
+        var linter: AureliaLinter = new AureliaLinter(config);
+        var html = `
+        <template>
+          <div repeat.for="item of item" with.bind="item">
+          </div>
+        </template>`
+        linter.lint(html)
+            .then((issues) => {
+                expect(issues.length).toBe(1);
+                expect(issues[0].message).toBe("conflicting attributes: [repeat.for, with.bind]");
+                done();
+            });
+    });
 });
