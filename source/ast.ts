@@ -45,7 +45,8 @@ export class ASTBuilder extends Rule {
             });
 
             current.children.push(next);
-            current = next;
+            if(!parser.isVoid(tag))
+                current = next;
         });
 
         parser.on("endTag", (tag, attrs, selfClosing, loc) => {
