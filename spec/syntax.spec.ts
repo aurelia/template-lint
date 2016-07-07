@@ -445,10 +445,10 @@ describe("Syntax and Static Typing Rule", () => {
     linter.lint(view, "./foo.html")
       .then((issues) => {
         expect(issues.length).toBe(2);
-        try{
-        expect(issues[0].message).toBe("cannot find 'isAdmi' in type 'Role'");
-        expect(issues[1].message).toBe("cannot find 'rol' in type 'Person'");
-        }finally{done();}
+        try {
+          expect(issues[0].message).toBe("cannot find 'isAdmi' in type 'Role'");
+          expect(issues[1].message).toBe("cannot find 'rol' in type 'Person'");
+        } finally { done(); }
       })
   });
 
@@ -622,26 +622,6 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
-  //Make sure it doesn't blow up for the time-being. 
-  it("it will silently ignore unknown converters", (done) => {
-    let viewmodel = `
-    export class Foo {
-        value: string;
-    }`
-    let view = `
-    <template>
-      \${value | booboo}
-    </template>`
-    let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
-    let linter = new Linter([rule]);
-    reflection.add("./path/foo.ts", viewmodel);
-    linter.lint(view, "./path/foo.html")
-      .then((issues) => {
-        expect(issues.length).toBe(0);
-        done();
-      })
-  });
 
   it("supports keyed-access (expression)", (done) => {
     let item = `

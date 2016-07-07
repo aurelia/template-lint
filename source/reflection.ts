@@ -138,7 +138,7 @@ export class Reflection {
             }
         }
         else {
-            console.log("getDeclForImportedType - Unknown kind - " + sourceDecl.kind);
+            //console.log("getDeclForImportedType - Unknown kind - " + sourceDecl.kind);
         }
     }
 
@@ -152,7 +152,7 @@ export class Reflection {
                 let meth = <ts.MethodDeclaration>node
                 return this.resolveTypeName(meth.type);
             default:
-                console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveClassElementType`);
+                //console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveClassElementType`);
                 return null;
         }
     }
@@ -167,7 +167,7 @@ export class Reflection {
                 let meth = <ts.MethodSignature>node
                 return this.resolveTypeName(meth.type);
             default:
-                console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveTypeElementType`);
+                //console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveTypeElementType`);
                 return null;
         }
     }
@@ -181,14 +181,17 @@ export class Reflection {
             case ts.SyntaxKind.TypeReference:
                 let ref = <ts.TypeReferenceNode>node;
                 return ref.typeName.getText();
+            case ts.SyntaxKind.TypeLiteral:
+                let lit = <ts.TypeLiteralNode>node;
+                return lit.name.getText();
             case ts.SyntaxKind.StringKeyword:
                 return 'string';
             case ts.SyntaxKind.NumberKeyword:
                 return 'number';
             case ts.SyntaxKind.BooleanKeyword:
                 return 'boolean';
-            default:
-                console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveTypeName`);
+            default:                
+                //console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveTypeName`);
                 return null;
         }
     }

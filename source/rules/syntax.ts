@@ -304,7 +304,7 @@ export class SyntaxRule extends ASTBuilder {
                 resolvedTypeName = this.reflection.resolveTypeElementType(member);
             } break;
             default:
-                console.log("Unhandled Kind");
+                //console.log("Unhandled Kind");
         }
 
         if (!member) {
