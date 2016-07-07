@@ -655,6 +655,38 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
+  //#59
+  it("supports getters", (done) => {
+    let item = `
+    export class Item{
+      value:string;
+    }`;
+
+    let viewmodel = `
+    import {Item} from './path/item
+    export class Foo{
+      get item(): Item {}
+    }`
+    let view = `
+    <template>    
+      \${item}
+      \${item.value}
+      \${item.vale}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./path/item", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'vale' in type 'Item'");
+        } finally { fail(); done(); }
+      })
+  });
+
   it("support javascript (untyped) source", (done) => {
     let viewmodel = `
     export class Foo{
