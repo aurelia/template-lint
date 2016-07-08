@@ -118,12 +118,14 @@ export class ASTContext {
     type: string = null;
     typeDecl: ts.DeclarationStatement = null;
     typeValue: Object = null;
+    isArray:boolean = false;
 
     constructor(init?: {
         name?: string,
         type?: string,
         typeDecl?: ts.DeclarationStatement,
         typeValue?: Object,
+        isArray?:boolean
     }) {
         if (init)
             Object.assign(this, init);

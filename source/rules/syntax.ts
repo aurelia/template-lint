@@ -25,21 +25,20 @@ import {
  */
 export class SyntaxRule extends ASTBuilder {
 
-    public controllers: string[] =  ["repeat.for", "if.bind", "with.bind"];
+    public controllers: string[] = ["repeat.for", "if.bind", "with.bind"];
     public errorOnNonPublicAccess: boolean = true;
     public throwStaticTypingErrors: boolean = false;
 
-    constructor(private reflection: Reflection, opt?:{
-        templateControllers?:string[]
-        errorOnNonPublicAccess?:boolean,
-        throwStaticTypingErrors?:boolean
+    constructor(private reflection: Reflection, opt?: {
+        templateControllers?: string[]
+        errorOnNonPublicAccess?: boolean,
+        throwStaticTypingErrors?: boolean
     }) {
         super();
-        if(opt)
-        {
-            if(opt.templateControllers) this.controllers = opt.templateControllers;
-            if(opt.errorOnNonPublicAccess) this.errorOnNonPublicAccess = opt.errorOnNonPublicAccess;
-            if(opt.throwStaticTypingErrors) this.throwStaticTypingErrors = opt.throwStaticTypingErrors;
+        if (opt) {
+            if (opt.templateControllers) this.controllers = opt.templateControllers;
+            if (opt.errorOnNonPublicAccess) this.errorOnNonPublicAccess = opt.errorOnNonPublicAccess;
+            if (opt.throwStaticTypingErrors) this.throwStaticTypingErrors = opt.throwStaticTypingErrors;
         }
     }
 
@@ -226,40 +225,59 @@ export class SyntaxRule extends ASTBuilder {
 
         let decl = context.typeDecl;
         let access = chain[0];
-        let resolved:ASTContext = null;
+        let resolved: ASTContext = null;
 
-        if (access.constructor.name == "AccessMember" ||        
-            access.constructor.name == "AccessScope" ||             
-            access.constructor.name == "CallMember" || 
+        if (access.constructor.name == "AccessMember" ||
+            access.constructor.name == "AccessScope" ||
+            access.constructor.name == "CallMember" ||
             access.constructor.name == "CallScope") {
             let name = access.name;
 
-            resolved = this.resolveLocalType(locals, name);
+            if (context.typeValue) {
+                resolved = this.resolveValueContext(context.typeValue, name, loc);
+            } else {
+                if (!resolved)
+                    resolved = this.resolveLocalType(locals, name);
 
-            if (!resolved)
-                resolved = this.resolveStaticType(context, name, loc);
+                if (!resolved)
+                    resolved = this.resolveStaticType(context, name, loc);
+            };
         }
         else if (access.constructor.name == "AccessKeyed") {
             let keyAccess = access.key;
             let keyChain = this.flattenAccessChain(keyAccess);
             let keyTypeDecl = this.resolveAccessScopeToType(node, keyChain, loc);
 
-            resolved = context;
+            resolved = new ASTContext({ name: context.name, type: context.type, typeDecl: context.typeDecl });
         }
 
         if (!resolved) {
             return null;
         }
 
-        if (resolved.typeDecl == null) {
-            return null;
-        }        
-
         if (chain.length == 1) {
             return resolved;
         }
 
+        if (resolved.typeDecl == null) {
+            return null;
+        }
+
         return this.resolveAccessChainToType(node, resolved, null, chain.slice(1), loc);
+    }
+
+    private resolveValueContext(value: any, memberName: string, loc: FileLoc): ASTContext {
+        if (!value)
+            return null;
+
+        let resolved = value[memberName];
+
+        if (resolved === undefined){
+           this.reportUnresolvedAccessObjectIssue(memberName, value.constructor.name, loc);
+           return null;
+        }
+
+        return new ASTContext({ name: memberName /*,typeValue: resolved*/ });
     }
 
     private resolveLocalType(locals: ASTContext[], memberName: string): ASTContext {
@@ -307,7 +325,7 @@ export class SyntaxRule extends ASTBuilder {
                 resolvedTypeName = this.reflection.resolveTypeElementType(member);
             } break;
             default:
-                //console.log("Unhandled Kind");
+            //console.log("Unhandled Kind");
         }
 
         if (!member) {
@@ -315,9 +333,9 @@ export class SyntaxRule extends ASTBuilder {
             return null;
         }
 
-        if(!resolvedTypeName)
+        if (!resolvedTypeName)
             return null;
-            
+
         if ((this.errorOnNonPublicAccess) && (
             member.flags & ts.NodeFlags.Private ||
             member.flags & ts.NodeFlags.Protected)) {
@@ -326,13 +344,14 @@ export class SyntaxRule extends ASTBuilder {
         }
 
         let typeDecl = this.reflection.getDeclForImportedType((<ts.SourceFile>decl.parent), resolvedTypeName);
+        let memberIsArray = member.type.kind == ts.SyntaxKind.ArrayType;
 
         //TODO:
         //let typeArgs = <args:ts.TypeReference[]> member.type.typeArguments;
         //The simpler solution here might be to create a copy of the generic type declaration and
         //replace the generic references with the arguments. 
 
-        return new ASTContext({ type: resolvedTypeName, typeDecl: typeDecl });
+        return new ASTContext({ type: resolvedTypeName, typeDecl: typeDecl, isArray: memberIsArray, typeValue: memberIsArray ? [] : null });
     }
 
     private flattenAccessChain(access) {
@@ -365,6 +384,18 @@ export class SyntaxRule extends ASTBuilder {
 
     private toDashCase(value: string) {
         return value.replace(/([a-z][A-Z])/g, function (g) { return g[0] + '-' + g[1].toLowerCase() });
+    }
+
+    private reportUnresolvedAccessObjectIssue(member: string, objectName: string, loc: FileLoc) {
+        let msg = `cannot find '${member}' in object '${objectName}'`;
+        let issue = new Issue({
+            message: msg,
+            line: loc.line,
+            column: loc.column,
+            severity: IssueSeverity.Error
+        });
+
+        this.reportIssue(issue);
     }
 
     private reportUnresolvedAccessMemberIssue(member: string, decl: ts.Declaration, loc: FileLoc) {

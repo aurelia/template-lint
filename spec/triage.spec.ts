@@ -88,31 +88,28 @@ describe("Triage", () => {
   });
 
   //#58
-  it("it will silently ignore access to array fields", (done) => {
-    let item = `
-    export interface Item{
-      value:string;
-    }`;
-
+  it("it will silently ignore access to untyped Array-object members", (done) => {
     let viewmodel = `
-    import {Item} from './item
     export class Foo{
-      items: Item[];
+      items:[];
     }`
     let view = `
     <template>    
       \${items.length}
+      \${items.lengh}
     </template>`
     let reflection = new Reflection();
     let rule = new SyntaxRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
-    reflection.add("./item", item);
     linter.lint(view, "./foo.html")
       .then((issues) => {
         try {
           expect(issues.length).toBe(0);
-        } finally { fail(); done(); }
+          //expect(issues[0].message).toBe("cannot find 'lengh' in object 'Array'")
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
       })
   });
 });
