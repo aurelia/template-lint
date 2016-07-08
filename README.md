@@ -291,9 +291,10 @@ Once installed, you can use make use of Visual Studio Code launcher (`ctrl + f5`
   
 
 ## Contributors
-Special thanks to code / test contributors: 
+Special thanks to:
 
 * **atsu85** - https://github.com/atsu85
+* **Jan Žák** - https://github.com/zakjan
 
 If you would like to contribute code or failing tests (for rules you'd like) you are most welcome to do so. 
 Please feel free to PR or raise an issue. :)  
