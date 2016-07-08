@@ -49,9 +49,8 @@ describe("Triage", () => {
 
   it("it will silently ignore literal-typed fields", (done) => {
     let viewmodel = `
-    export type Moo = "moo";
     export class Foo {
-        value: Moo;
+        value: {name:string};
     }`
     let view = `
     <template>

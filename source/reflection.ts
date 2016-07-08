@@ -151,6 +151,9 @@ export class Reflection {
             case ts.SyntaxKind.MethodDeclaration:
                 let meth = <ts.MethodDeclaration>node
                 return this.resolveTypeName(meth.type);
+            case ts.SyntaxKind.GetAccessor:
+                let get = <ts.GetAccessorDeclaration>node
+                return this.resolveTypeName(get.type);
             default:
                 //console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveClassElementType`);
                 return null;

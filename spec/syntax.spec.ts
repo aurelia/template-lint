@@ -363,6 +363,38 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
+  it("supports repeat.for when iterating an unknown", (done) => {
+
+    let viewmodel = `
+    import {Router} from 'not-defined'
+    export class Foo{
+       @bindable router: Router;
+    }`
+    let view = `
+    <template>    
+      <li repeat.for="row of router.navigation">
+          <a href.bind="row.href">\${row.title}</a>
+      </li>
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);
+        } 
+        catch(error)
+        {
+          fail(error);
+        }
+        finally{
+          done();
+        }     
+      })
+  });
+  
   it("rejects bad with.bind attribute value", (done) => {
     let item = `
     export class Item{
@@ -600,24 +632,33 @@ describe("Syntax and Static Typing Rule", () => {
   });
 
   it("supports bindable field", (done) => {
+    let item = `      
+    export class Item{           
+       name:string;
+    }`
     let viewmodel = `
-    import {bindable} from "aurelia-templating";
+    import {bindable} from "aurelia-framework";
+    import {Item} from './item'
     export class ItemCustomElement {
-        @bindable value: string;
+        @bindable value: Item;
     }`
     let view = `
     <template>
       \${value}
       \${valu}
+      \${value.name}      
+      \${value.nae}
     </template>`
     let reflection = new Reflection();
     let rule = new SyntaxRule(reflection);
     let linter = new Linter([rule]);
-    reflection.add("./path/foo.ts", viewmodel);
-    linter.lint(view, "./path/foo.html")
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./item.ts", item);
+    linter.lint(view, "./foo.html")
       .then((issues) => {
-        expect(issues.length).toBe(1);
-        expect(issues[0].message).toBe("cannot find 'valu' in type 'ItemCustomElement'");
+        expect(issues.length).toBe(2);
+        expect(issues[0].message).toBe("cannot find 'valu' in type 'ItemCustomElement'");        
+        expect(issues[1].message).toBe("cannot find 'nae' in type 'Item'");
         done();
       })
   });
@@ -683,7 +724,9 @@ describe("Syntax and Static Typing Rule", () => {
         try {
           expect(issues.length).toBe(1);
           expect(issues[0].message).toBe("cannot find 'vale' in type 'Item'");
-        } finally { fail(); done(); }
+        } 
+        catch(err){fail(err);}
+        finally { done(); }
       })
   });
 

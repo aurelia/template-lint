@@ -102,9 +102,6 @@ export class SyntaxRule extends ASTBuilder {
                 let chain = this.flattenAccessChain(source.sourceExpression);
                 let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
 
-                if (!resolved)
-                    return;
-
                 if (varKey && varValue) {
                     node.locals.push(new ASTContext({ name: varKey, type: 'string' }));
                     node.locals.push(new ASTContext({ name: varValue, type: resolved.type, typeDecl: resolved.typeDecl }));
@@ -229,7 +226,7 @@ export class SyntaxRule extends ASTBuilder {
 
         let decl = context.typeDecl;
         let access = chain[0];
-        let resolved = null;
+        let resolved:ASTContext = null;
 
         if (access.constructor.name == "AccessMember" ||        
             access.constructor.name == "AccessScope" ||             
@@ -253,6 +250,10 @@ export class SyntaxRule extends ASTBuilder {
         if (!resolved) {
             return null;
         }
+
+        if (resolved.typeDecl == null) {
+            return null;
+        }        
 
         if (chain.length == 1) {
             return resolved;
@@ -285,7 +286,8 @@ export class SyntaxRule extends ASTBuilder {
                 member = (<ts.ClassDeclaration>decl).members
                     .filter(x =>
                         x.kind == ts.SyntaxKind.PropertyDeclaration ||
-                        x.kind == ts.SyntaxKind.MethodDeclaration)
+                        x.kind == ts.SyntaxKind.MethodDeclaration ||
+                        x.kind == ts.SyntaxKind.GetAccessor)
                     .find(x => (<any>x.name).text == memberName);
                 if (!member)
                     break;
@@ -296,7 +298,8 @@ export class SyntaxRule extends ASTBuilder {
                 member = (<ts.InterfaceDeclaration>decl).members
                     .filter(x =>
                         x.kind == ts.SyntaxKind.PropertySignature ||
-                        x.kind == ts.SyntaxKind.MethodSignature)
+                        x.kind == ts.SyntaxKind.MethodSignature ||
+                        x.kind == ts.SyntaxKind.GetAccessor)
                     .find(x => (<any>x.name).text == memberName);
                 if (!member)
                     break;
