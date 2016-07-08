@@ -128,8 +128,7 @@ export class SyntaxRule extends ASTBuilder {
 
                 break;
             }
-            default: try {
-
+            default:
                 let attrExp = instruction.attributes[attrName];
                 let access = instruction.attributes[attrName].sourceExpression;
 
@@ -139,7 +138,6 @@ export class SyntaxRule extends ASTBuilder {
                     let chain = this.flattenAccessChain(access);
                     let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
                 }
-            } catch (error) { throw error }
         };
     }
 
@@ -273,8 +271,8 @@ export class SyntaxRule extends ASTBuilder {
         let resolved = value[memberName];
 
         if (resolved === undefined){
-           this.reportUnresolvedAccessObjectIssue(memberName, value.constructor.name, loc);
-           return null;
+            this.reportUnresolvedAccessObjectIssue(memberName, value.constructor.name, loc);
+            return null;
         }
 
         return new ASTContext({ name: memberName /*,typeValue: resolved*/ });
