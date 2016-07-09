@@ -11,6 +11,8 @@ import * as Path from 'path';
 
 import {Rule, Parser, ParserState, Issue, IssueSeverity} from 'template-lint';
 import {Reflection} from '../reflection';
+import {RestrictAccess, RestrictedAccessOption} from '../config';
+
 import {
     ASTBuilder,
     ASTElementNode,
@@ -26,12 +28,12 @@ import {
 export class SyntaxRule extends ASTBuilder {
 
     public controllers: string[] = ["repeat.for", "if.bind", "with.bind"];
-    public errorOnNonPublicAccess: boolean = true;
+    public errorOnNonPublicAccess: RestrictAccess = true;
     public throwStaticTypingErrors: boolean = false;
 
     constructor(private reflection: Reflection, opt?: {
         templateControllers?: string[]
-        errorOnNonPublicAccess?: boolean,
+        errorOnNonPublicAccess?: RestrictAccess,
         throwStaticTypingErrors?: boolean
     }) {
         super();
@@ -355,10 +357,28 @@ export class SyntaxRule extends ASTBuilder {
             const isPrivate = member.flags & ts.NodeFlags.Private;
             const isProtected = member.flags & ts.NodeFlags.Protected;
             if (isPrivate || isProtected) {
-                const accessModifier = isPrivate ? "private" : "protected";
-                this.reportPrivateAccessMemberIssue(memberName, decl, loc, accessModifier);
-            return null;
-        }
+                let reportPrivate = false;
+                let reportProtected = false;
+                if(Array.isArray(this.errorOnNonPublicAccess)) {
+                    const accessModifiers = <RestrictedAccessOption[]>this.errorOnNonPublicAccess;
+                    if(accessModifiers.indexOf("protected") >= 0) {
+                        // if accessModifiers contains "protected", then "private" is inferred
+                        reportPrivate = true;
+                        reportProtected = true;
+                    } else if(accessModifiers.indexOf("private") >= 0) {
+                        reportPrivate = true;
+                        reportProtected = false;
+                    }
+                } else if(this.errorOnNonPublicAccess){
+                    reportPrivate = true;
+                    reportProtected = true;
+                }
+                if(isPrivate && reportPrivate || isProtected && reportProtected) {
+                    const accessModifier = isPrivate ? "private" : "protected";
+                    this.reportPrivateAccessMemberIssue(memberName, decl, loc, accessModifier);
+                }
+                return null;
+            }
         }
 
         let typeDecl = this.reflection.getDeclForImportedType((<ts.SourceFile>decl.parent), resolvedTypeName);
@@ -439,5 +459,5 @@ export class SyntaxRule extends ASTBuilder {
 
         this.reportIssue(issue);
     }
-}
 
+}

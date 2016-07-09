@@ -601,7 +601,7 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
-  it("will reject access of protected member", (done) => {
+  it("will reject access of protected member (with default settings)", (done) => {
     let viewmodel = `
     export class Foo{
       protected name:string;
@@ -618,6 +618,29 @@ describe("Syntax and Static Typing Rule", () => {
       .then((issues) => {
         expect(issues.length).toBe(1);
         expect(issues[0].message).toBe("field 'name' in type 'Foo' has protected access modifier");
+        done();
+      })
+  });
+
+  it("will not reject access of protected member if only private access modifier is restricted", (done) => {
+    let viewmodel = `
+    export class Foo{
+        private privateMember:string;
+        protected protectedMember:string;
+    }`
+    let view = `
+    <template>
+      <input type="text" value.bind="privateMember">
+      <input type="text" value.bind="protectedMember">
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection, {errorOnNonPublicAccess: ["private"]});
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toBe("field 'privateMember' in type 'Foo' has private access modifier");
         done();
       })
   });
