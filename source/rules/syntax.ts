@@ -25,21 +25,20 @@ import {
  */
 export class SyntaxRule extends ASTBuilder {
 
-    public controllers: string[] =  ["repeat.for", "if.bind", "with.bind"];
+    public controllers: string[] = ["repeat.for", "if.bind", "with.bind"];
     public errorOnNonPublicAccess: boolean = true;
     public throwStaticTypingErrors: boolean = false;
 
-    constructor(private reflection: Reflection, opt?:{
-        templateControllers?:string[]
-        errorOnNonPublicAccess?:boolean,
-        throwStaticTypingErrors?:boolean
+    constructor(private reflection: Reflection, opt?: {
+        templateControllers?: string[]
+        errorOnNonPublicAccess?: boolean,
+        throwStaticTypingErrors?: boolean
     }) {
         super();
-        if(opt)
-        {
-            if(opt.templateControllers) this.controllers = opt.templateControllers;
-            if(opt.errorOnNonPublicAccess) this.errorOnNonPublicAccess = opt.errorOnNonPublicAccess;
-            if(opt.throwStaticTypingErrors) this.throwStaticTypingErrors = opt.throwStaticTypingErrors;
+        if (opt) {
+            if (opt.templateControllers) this.controllers = opt.templateControllers;
+            if (opt.errorOnNonPublicAccess) this.errorOnNonPublicAccess = opt.errorOnNonPublicAccess;
+            if (opt.throwStaticTypingErrors) this.throwStaticTypingErrors = opt.throwStaticTypingErrors;
         }
     }
 
@@ -102,9 +101,6 @@ export class SyntaxRule extends ASTBuilder {
                 let chain = this.flattenAccessChain(source.sourceExpression);
                 let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
 
-                if (!resolved)
-                    return;
-
                 if (varKey && varValue) {
                     node.locals.push(new ASTContext({ name: varKey, type: 'string' }));
                     node.locals.push(new ASTContext({ name: varValue, type: resolved.type, typeDecl: resolved.typeDecl }));
@@ -132,8 +128,7 @@ export class SyntaxRule extends ASTBuilder {
 
                 break;
             }
-            default: try {
-
+            default:
                 let attrExp = instruction.attributes[attrName];
                 let access = instruction.attributes[attrName].sourceExpression;
 
@@ -143,7 +138,6 @@ export class SyntaxRule extends ASTBuilder {
                     let chain = this.flattenAccessChain(access);
                     let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
                 }
-            } catch (error) { throw error }
         };
     }
 
@@ -229,25 +223,30 @@ export class SyntaxRule extends ASTBuilder {
 
         let decl = context.typeDecl;
         let access = chain[0];
-        let resolved = null;
+        let resolved: ASTContext = null;
 
-        if (access.constructor.name == "AccessMember" ||        
-            access.constructor.name == "AccessScope" ||             
-            access.constructor.name == "CallMember" || 
+        if (access.constructor.name == "AccessMember" ||
+            access.constructor.name == "AccessScope" ||
+            access.constructor.name == "CallMember" ||
             access.constructor.name == "CallScope") {
             let name = access.name;
 
-            resolved = this.resolveLocalType(locals, name);
+            if (context.typeValue) {
+                resolved = this.resolveValueContext(context.typeValue, name, loc);
+            } else {
+                if (!resolved)
+                    resolved = this.resolveLocalType(locals, name);
 
-            if (!resolved)
-                resolved = this.resolveStaticType(context, name, loc);
+                if (!resolved)
+                    resolved = this.resolveStaticType(context, name, loc);
+            };
         }
         else if (access.constructor.name == "AccessKeyed") {
             let keyAccess = access.key;
             let keyChain = this.flattenAccessChain(keyAccess);
             let keyTypeDecl = this.resolveAccessScopeToType(node, keyChain, loc);
 
-            resolved = context;
+            resolved = new ASTContext({ name: context.name, type: context.type, typeDecl: context.typeDecl });
         }
 
         if (!resolved) {
@@ -258,7 +257,25 @@ export class SyntaxRule extends ASTBuilder {
             return resolved;
         }
 
+        if (resolved.typeDecl == null) {
+            return null;
+        }
+
         return this.resolveAccessChainToType(node, resolved, null, chain.slice(1), loc);
+    }
+
+    private resolveValueContext(value: any, memberName: string, loc: FileLoc): ASTContext {
+        if (!value)
+            return null;
+
+        let resolved = value[memberName];
+
+        if (resolved === undefined){
+            this.reportUnresolvedAccessObjectIssue(memberName, value.constructor.name, loc);
+            return null;
+        }
+
+        return new ASTContext({ name: memberName /*,typeValue: resolved*/ });
     }
 
     private resolveLocalType(locals: ASTContext[], memberName: string): ASTContext {
@@ -282,21 +299,40 @@ export class SyntaxRule extends ASTBuilder {
 
         switch (decl.kind) {
             case ts.SyntaxKind.ClassDeclaration: {
-                member = (<ts.ClassDeclaration>decl).members
+                const classDeclMembers = (<ts.ClassDeclaration>decl).members;
+                member = classDeclMembers
                     .filter(x =>
                         x.kind == ts.SyntaxKind.PropertyDeclaration ||
-                        x.kind == ts.SyntaxKind.MethodDeclaration)
+                        x.kind == ts.SyntaxKind.MethodDeclaration ||
+                        x.kind == ts.SyntaxKind.GetAccessor)
                     .find(x => (<any>x.name).text == memberName);
+
+                if (member) {
+                  resolvedTypeName = this.reflection.resolveClassElementType(member);
+                } else {
+                  const constr = <ts.ConstructorDeclaration>classDeclMembers.find(ce => ce.kind == ts.SyntaxKind.Constructor);
+                  if(constr) {
+                    const param: ts.ParameterDeclaration = constr.parameters.find(parameter => parameter.name.getText() === memberName);
+                    if(param && param.flags) {
+                      // Constructor parameters that have public/protected/private modifier, are class members.
+                      // Looks like there is no need to inspect `param.modifiers`, because
+                      // 1) access restriction is checked bellow
+                      // 2) to my understanding, access modifiers are the only flags that can be used on constructor parameters
+                      member = param;
+                      resolvedTypeName = this.reflection.resolveTypeName(param.type);
+                    }
+                  }
+                }
+
                 if (!member)
                     break;
-
-                resolvedTypeName = this.reflection.resolveClassElementType(member);
             } break;
             case ts.SyntaxKind.InterfaceDeclaration: {
                 member = (<ts.InterfaceDeclaration>decl).members
                     .filter(x =>
                         x.kind == ts.SyntaxKind.PropertySignature ||
-                        x.kind == ts.SyntaxKind.MethodSignature)
+                        x.kind == ts.SyntaxKind.MethodSignature ||
+                        x.kind == ts.SyntaxKind.GetAccessor)
                     .find(x => (<any>x.name).text == memberName);
                 if (!member)
                     break;
@@ -304,7 +340,7 @@ export class SyntaxRule extends ASTBuilder {
                 resolvedTypeName = this.reflection.resolveTypeElementType(member);
             } break;
             default:
-                console.log("Unhandled Kind");
+            //console.log("Unhandled Kind");
         }
 
         if (!member) {
@@ -312,9 +348,9 @@ export class SyntaxRule extends ASTBuilder {
             return null;
         }
 
-        if(!resolvedTypeName)
+        if (!resolvedTypeName)
             return null;
-            
+
         if ((this.errorOnNonPublicAccess) && (
             member.flags & ts.NodeFlags.Private ||
             member.flags & ts.NodeFlags.Protected)) {
@@ -323,13 +359,14 @@ export class SyntaxRule extends ASTBuilder {
         }
 
         let typeDecl = this.reflection.getDeclForImportedType((<ts.SourceFile>decl.parent), resolvedTypeName);
+        let memberIsArray = member.type.kind == ts.SyntaxKind.ArrayType;
 
         //TODO:
         //let typeArgs = <args:ts.TypeReference[]> member.type.typeArguments;
         //The simpler solution here might be to create a copy of the generic type declaration and
-        //replace the generic references with the arguments. 
+        //replace the generic references with the arguments.
 
-        return new ASTContext({ type: resolvedTypeName, typeDecl: typeDecl });
+        return new ASTContext({ type: resolvedTypeName, typeDecl: typeDecl, isArray: memberIsArray, typeValue: memberIsArray ? [] : null });
     }
 
     private flattenAccessChain(access) {
@@ -362,6 +399,18 @@ export class SyntaxRule extends ASTBuilder {
 
     private toDashCase(value: string) {
         return value.replace(/([a-z][A-Z])/g, function (g) { return g[0] + '-' + g[1].toLowerCase() });
+    }
+
+    private reportUnresolvedAccessObjectIssue(member: string, objectName: string, loc: FileLoc) {
+        let msg = `cannot find '${member}' in object '${objectName}'`;
+        let issue = new Issue({
+            message: msg,
+            line: loc.line,
+            column: loc.column,
+            severity: IssueSeverity.Error
+        });
+
+        this.reportIssue(issue);
     }
 
     private reportUnresolvedAccessMemberIssue(member: string, decl: ts.Declaration, loc: FileLoc) {

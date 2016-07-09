@@ -33,7 +33,7 @@ export class AureliaLinter {
             config = new Config();
 
         this.config = config;
-        this.reflection = new Reflection();              
+        this.reflection = new Reflection();
 
         let rules = [
             new SelfCloseRule(),
@@ -56,8 +56,12 @@ export class AureliaLinter {
             config.voids);
 
         if (this.config.useStaticTyping)
-            this.init = this.reflection.addGlob(this.config.sourceFileGlob).then(
-                ()=>this.reflection.addTypingsGlob(this.config.typingsFileGlob));
+            this.init = this.reflection.addGlob(this.config.sourceFileGlob)
+                .then(() => {
+                    if (this.config.useCustomTypings)
+                        return this.reflection.addTypingsGlob(this.config.typingsFileGlob);
+                    else return Promise.resolve();
+                });
     }
 
     public lint(html: string, path?: string): Promise<Issue[]> {

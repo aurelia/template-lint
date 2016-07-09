@@ -363,6 +363,38 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
+  it("supports repeat.for when iterating an unknown", (done) => {
+
+    let viewmodel = `
+    import {Router} from 'not-defined'
+    export class Foo{
+       @bindable router: Router;
+    }`
+    let view = `
+    <template>    
+      <li repeat.for="row of router.navigation">
+          <a href.bind="row.href">\${row.title}</a>
+      </li>
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);
+        } 
+        catch(error)
+        {
+          fail(error);
+        }
+        finally{
+          done();
+        }     
+      })
+  });
+  
   it("rejects bad with.bind attribute value", (done) => {
     let item = `
     export class Item{
@@ -445,10 +477,10 @@ describe("Syntax and Static Typing Rule", () => {
     linter.lint(view, "./foo.html")
       .then((issues) => {
         expect(issues.length).toBe(2);
-        try{
-        expect(issues[0].message).toBe("cannot find 'isAdmi' in type 'Role'");
-        expect(issues[1].message).toBe("cannot find 'rol' in type 'Person'");
-        }finally{done();}
+        try {
+          expect(issues[0].message).toBe("cannot find 'isAdmi' in type 'Role'");
+          expect(issues[1].message).toBe("cannot find 'rol' in type 'Person'");
+        } finally { done(); }
       })
   });
 
@@ -600,45 +632,57 @@ describe("Syntax and Static Typing Rule", () => {
   });
 
   it("supports bindable field", (done) => {
+    let item = `      
+    export class Item{           
+       name:string;
+    }`
     let viewmodel = `
-    import {bindable} from "aurelia-templating";
+    import {bindable} from "aurelia-framework";
+    import {Item} from './item'
     export class ItemCustomElement {
-        @bindable value: string;
+        @bindable value: Item;
     }`
     let view = `
     <template>
       \${value}
       \${valu}
+      \${value.name}      
+      \${value.nae}
     </template>`
     let reflection = new Reflection();
     let rule = new SyntaxRule(reflection);
     let linter = new Linter([rule]);
-    reflection.add("./path/foo.ts", viewmodel);
-    linter.lint(view, "./path/foo.html")
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./item.ts", item);
+    linter.lint(view, "./foo.html")
       .then((issues) => {
-        expect(issues.length).toBe(1);
-        expect(issues[0].message).toBe("cannot find 'valu' in type 'ItemCustomElement'");
+        expect(issues.length).toBe(2);
+        expect(issues[0].message).toBe("cannot find 'valu' in type 'ItemCustomElement'");        
+        expect(issues[1].message).toBe("cannot find 'nae' in type 'Item'");
         done();
       })
   });
 
-  //Make sure it doesn't blow up for the time-being. 
-  it("it will silently ignore unknown converters", (done) => {
+  it("supports public property from constructor argument", (done) => {
     let viewmodel = `
-    export class Foo {
-        value: string;
+    export class ConstructorFieldCustomElement {
+      constructor(public constructorPublicField:string, justAConstructorArgument: string, private constructorPrivateField: string){}
     }`
     let view = `
     <template>
-      \${value | booboo}
+      \${constructorPublicField}
+      \${justAConstructorArgument}
+      \${constructorPrivateField}
     </template>`
     let reflection = new Reflection();
     let rule = new SyntaxRule(reflection);
     let linter = new Linter([rule]);
-    reflection.add("./path/foo.ts", viewmodel);
-    linter.lint(view, "./path/foo.html")
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
       .then((issues) => {
-        expect(issues.length).toBe(0);
+        expect(issues.length).toBe(2);
+        expect(issues[0].message).toBe("cannot find 'justAConstructorArgument' in type 'ConstructorFieldCustomElement'");
+        expect(issues[1].message).toBe("field 'constructorPrivateField' in type 'ConstructorFieldCustomElement' is private");
         done();
       })
   });
@@ -675,6 +719,40 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
+  //#59
+  it("supports getters", (done) => {
+    let item = `
+    export class Item{
+      value:string;
+    }`;
+
+    let viewmodel = `
+    import {Item} from './path/item
+    export class Foo{
+      get item(): Item {}
+    }`
+    let view = `
+    <template>    
+      \${item}
+      \${item.value}
+      \${item.vale}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./path/item", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'vale' in type 'Item'");
+        } 
+        catch(err){fail(err);}
+        finally { done(); }
+      })
+  });
+
   it("support javascript (untyped) source", (done) => {
     let viewmodel = `
     export class Foo{
@@ -702,6 +780,40 @@ describe("Syntax and Static Typing Rule", () => {
           expect(issues[0].message).toBe("cannot find 'item' in type 'Foo'");
           expect(issues[1].message).toBe("cannot find 'indx' in type 'Foo'");
         } finally { done(); }
+      })
+  });
+
+  
+  //#58
+  it("supports access to typed Array-object members", (done) => {
+    let item = `
+    export interface Item{
+      value:string;
+    }`;
+
+    let viewmodel = `
+    import {Item} from './item
+    export class Foo{
+      items: Item[];
+    }`
+    let view = `
+    <template>    
+      \${items.length}
+      \${items.lengh}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./item", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'lengh' in object 'Array'")
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
       })
   });
 

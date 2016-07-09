@@ -45,7 +45,8 @@ export class ASTBuilder extends Rule {
             });
 
             current.children.push(next);
-            current = next;
+            if(!parser.isVoid(tag))
+                current = next;
         });
 
         parser.on("endTag", (tag, attrs, selfClosing, loc) => {
@@ -117,12 +118,14 @@ export class ASTContext {
     type: string = null;
     typeDecl: ts.DeclarationStatement = null;
     typeValue: Object = null;
+    isArray:boolean = false;
 
     constructor(init?: {
         name?: string,
         type?: string,
         typeDecl?: ts.DeclarationStatement,
         typeValue?: Object,
+        isArray?:boolean
     }) {
         if (init)
             Object.assign(this, init);
