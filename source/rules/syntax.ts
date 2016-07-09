@@ -351,11 +351,14 @@ export class SyntaxRule extends ASTBuilder {
         if (!resolvedTypeName)
             return null;
 
-        if ((this.errorOnNonPublicAccess) && (
-            member.flags & ts.NodeFlags.Private ||
-            member.flags & ts.NodeFlags.Protected)) {
-            this.reportPrivateAccessMemberIssue(memberName, decl, loc);
+        if (this.errorOnNonPublicAccess) {
+            const isPrivate = member.flags & ts.NodeFlags.Private;
+            const isProtected = member.flags & ts.NodeFlags.Protected;
+            if (isPrivate || isProtected) {
+                const accessModifier = isPrivate ? "private" : "protected";
+                this.reportPrivateAccessMemberIssue(memberName, decl, loc, accessModifier);
             return null;
+        }
         }
 
         let typeDecl = this.reflection.getDeclForImportedType((<ts.SourceFile>decl.parent), resolvedTypeName);
@@ -425,8 +428,8 @@ export class SyntaxRule extends ASTBuilder {
         this.reportIssue(issue);
     }
 
-    private reportPrivateAccessMemberIssue(member: string, decl: ts.Declaration, loc: FileLoc) {
-        let msg = `field '${member}' in type '${decl.name.getText()}' is private`;
+    private reportPrivateAccessMemberIssue(member: string, decl: ts.Declaration, loc: FileLoc, accessModifier: string) {
+        let msg = `field '${member}' in type '${decl.name.getText()}' has ${accessModifier} access modifier`;
         let issue = new Issue({
             message: msg,
             line: loc.line,
