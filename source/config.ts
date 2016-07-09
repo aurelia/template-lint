@@ -1,5 +1,8 @@
 import {Rule} from 'template-lint';
 
+export type RestrictedAccessOption = "private" | "protected";
+export type RestrictAccess = boolean | RestrictedAccessOption[];
+
 export class Config {
     
     attributeValueRules: Array<{ attr: RegExp, is?: RegExp, not?: RegExp, msg?: string, tag?:string }> = [
@@ -59,7 +62,7 @@ export class Config {
     useStaticTyping = false;
     useCustomTypings = false; 
     throwStaticTypingErrors = false;
-    errorOnNonPublicAccess = true;
+    errorOnNonPublicAccess: RestrictAccess = true;
     
     sourceFileGlob = "source/**/*.ts";
     typingsFileGlob = "typings/**/*.d.ts"; 
