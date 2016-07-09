@@ -299,16 +299,33 @@ export class SyntaxRule extends ASTBuilder {
 
         switch (decl.kind) {
             case ts.SyntaxKind.ClassDeclaration: {
-                member = (<ts.ClassDeclaration>decl).members
+                const classDeclMembers = (<ts.ClassDeclaration>decl).members;
+                member = classDeclMembers
                     .filter(x =>
                         x.kind == ts.SyntaxKind.PropertyDeclaration ||
                         x.kind == ts.SyntaxKind.MethodDeclaration ||
                         x.kind == ts.SyntaxKind.GetAccessor)
                     .find(x => (<any>x.name).text == memberName);
+
+                if (member) {
+                  resolvedTypeName = this.reflection.resolveClassElementType(member);
+                } else {
+                  const constr = <ts.ConstructorDeclaration>classDeclMembers.find(ce => ce.kind == ts.SyntaxKind.Constructor);
+                  if(constr) {
+                    const param: ts.ParameterDeclaration = constr.parameters.find(parameter => parameter.name.getText() === memberName);
+                    if(param && param.flags) {
+                      // Constructor parameters that have public/protected/private modifier, are class members.
+                      // Looks like there is no need to inspect `param.modifiers`, because
+                      // 1) access restriction is checked bellow
+                      // 2) to my understanding, access modifiers are the only flags that can be used on constructor parameters
+                      member = param;
+                      resolvedTypeName = this.reflection.resolveTypeName(param.type);
+                    }
+                  }
+                }
+
                 if (!member)
                     break;
-
-                resolvedTypeName = this.reflection.resolveClassElementType(member);
             } break;
             case ts.SyntaxKind.InterfaceDeclaration: {
                 member = (<ts.InterfaceDeclaration>decl).members
@@ -347,7 +364,7 @@ export class SyntaxRule extends ASTBuilder {
         //TODO:
         //let typeArgs = <args:ts.TypeReference[]> member.type.typeArguments;
         //The simpler solution here might be to create a copy of the generic type declaration and
-        //replace the generic references with the arguments. 
+        //replace the generic references with the arguments.
 
         return new ASTContext({ type: resolvedTypeName, typeDecl: typeDecl, isArray: memberIsArray, typeValue: memberIsArray ? [] : null });
     }

@@ -663,6 +663,29 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
+  it("supports public property from constructor argument", (done) => {
+    let viewmodel = `
+    export class ConstructorFieldCustomElement {
+      constructor(public constructorPublicField:string, justAConstructorArgument: string, private constructorPrivateField: string){}
+    }`
+    let view = `
+    <template>
+      \${constructorPublicField}
+      \${justAConstructorArgument}
+      \${constructorPrivateField}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(2);
+        expect(issues[0].message).toBe("cannot find 'justAConstructorArgument' in type 'ConstructorFieldCustomElement'");
+        expect(issues[1].message).toBe("field 'constructorPrivateField' in type 'ConstructorFieldCustomElement' is private");
+        done();
+      })
+  });
 
   it("supports keyed-access (expression)", (done) => {
     let item = `
