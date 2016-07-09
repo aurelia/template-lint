@@ -431,7 +431,7 @@ export class SyntaxRule extends ASTBuilder {
             message: msg,
             line: loc.line,
             column: loc.column,
-            severity: IssueSeverity.Error
+            severity: IssueSeverity.Warning
         });
 
         this.reportIssue(issue);
