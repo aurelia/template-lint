@@ -115,17 +115,15 @@ export class FileLoc {
 
 export class ASTContext {
     name: string = null;
-    type: string = null;
-    typeDecl: ts.DeclarationStatement = null;
+    type: ts.TypeNode = null;
+    typeDecl: ts.Declaration = null;
     typeValue: Object = null;
-    isArray:boolean = false;
 
     constructor(init?: {
         name?: string,
-        type?: string,
-        typeDecl?: ts.DeclarationStatement,
-        typeValue?: Object,
-        isArray?:boolean
+        type?: ts.TypeNode,
+        typeDecl?: ts.Declaration,
+        typeValue?: Object
     }) {
         if (init)
             Object.assign(this, init);

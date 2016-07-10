@@ -104,18 +104,18 @@ export class SyntaxRule extends ASTBuilder {
                 let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
 
                 if (varKey && varValue) {
-                    node.locals.push(new ASTContext({ name: varKey, type: 'string' }));
+                    node.locals.push(new ASTContext({ name: varKey, type: <ts.TypeNode> ts.createNode(ts.SyntaxKind.StringKeyword)}));
                     node.locals.push(new ASTContext({ name: varValue, type: resolved.type, typeDecl: resolved.typeDecl }));
                 }
                 else {
                     node.locals.push(new ASTContext({ name: varLocal, type: resolved.type, typeDecl: resolved.typeDecl }));
                 }
 
-                node.locals.push(new ASTContext({ name: "$index", type: 'number' }));
-                node.locals.push(new ASTContext({ name: "$first", type: 'boolean' }));
-                node.locals.push(new ASTContext({ name: "$last", type: 'boolean' }));
-                node.locals.push(new ASTContext({ name: "$odd", type: 'boolean' }));
-                node.locals.push(new ASTContext({ name: "$even", type: 'boolean' }));
+                node.locals.push(new ASTContext({ name: "$index", type: <ts.TypeNode> ts.createNode(ts.SyntaxKind.NumberKeyword) }));
+                node.locals.push(new ASTContext({ name: "$first", type: <ts.TypeNode> ts.createNode(ts.SyntaxKind.NumberKeyword) }));
+                node.locals.push(new ASTContext({ name: "$last", type: <ts.TypeNode> ts.createNode(ts.SyntaxKind.NumberKeyword) }));
+                node.locals.push(new ASTContext({ name: "$odd", type: <ts.TypeNode> ts.createNode(ts.SyntaxKind.NumberKeyword) }));
+                node.locals.push(new ASTContext({ name: "$even", type: <ts.TypeNode> ts.createNode(ts.SyntaxKind.NumberKeyword) }));
 
                 break;
             }
@@ -296,7 +296,7 @@ export class SyntaxRule extends ASTBuilder {
             return null;
 
         let decl = context.typeDecl;
-        let resolvedTypeName;
+        let memberType:ts.TypeNode;
         let member = null;
 
         switch (decl.kind) {
@@ -310,7 +310,7 @@ export class SyntaxRule extends ASTBuilder {
                     .find(x => (<any>x.name).text == memberName);
 
                 if (member) {
-                  resolvedTypeName = this.reflection.resolveClassElementType(member);
+                  memberType= this.reflection.resolveClassElementType(member);
                 } else {
                   const constr = <ts.ConstructorDeclaration>classDeclMembers.find(ce => ce.kind == ts.SyntaxKind.Constructor);
                   if(constr) {
@@ -321,11 +321,10 @@ export class SyntaxRule extends ASTBuilder {
                       // 1) access restriction is checked bellow
                       // 2) to my understanding, access modifiers are the only flags that can be used on constructor parameters
                       member = param;
-                      resolvedTypeName = this.reflection.resolveTypeName(param.type);
+                      memberType = param.type;
                     }
                   }
                 }
-
                 if (!member)
                     break;
             } break;
@@ -335,11 +334,11 @@ export class SyntaxRule extends ASTBuilder {
                         x.kind == ts.SyntaxKind.PropertySignature ||
                         x.kind == ts.SyntaxKind.MethodSignature ||
                         x.kind == ts.SyntaxKind.GetAccessor)
-                    .find(x => (<any>x.name).text == memberName);
+                    .find(x => x.name.getText() === memberName);
                 if (!member)
                     break;
 
-                resolvedTypeName = this.reflection.resolveTypeElementType(member);
+                memberType = this.reflection.resolveTypeElementType(member);
             } break;
             default:
             //console.log("Unhandled Kind");
@@ -350,7 +349,7 @@ export class SyntaxRule extends ASTBuilder {
             return null;
         }
 
-        if (!resolvedTypeName)
+        if (!memberType)
             return null;
 
         if (this.errorOnNonPublicAccess) {
@@ -380,8 +379,8 @@ export class SyntaxRule extends ASTBuilder {
                 return null;
             }
         }
-
-        let typeDecl = this.reflection.getDeclForImportedType((<ts.SourceFile>decl.parent), resolvedTypeName);
+        let memberTypeName = this.reflection.resolveTypeName(memberType);
+        let memberTypeDecl:ts.Declaration = this.reflection.getDeclForType((<ts.SourceFile>decl.parent), memberTypeName);
         let memberIsArray = member.type.kind == ts.SyntaxKind.ArrayType;
 
         //TODO:
@@ -389,7 +388,7 @@ export class SyntaxRule extends ASTBuilder {
         //The simpler solution here might be to create a copy of the generic type declaration and
         //replace the generic references with the arguments.
 
-        return new ASTContext({ type: resolvedTypeName, typeDecl: typeDecl, isArray: memberIsArray, typeValue: memberIsArray ? [] : null });
+        return new ASTContext({ type: memberType, typeDecl: memberTypeDecl, typeValue: memberIsArray ? [] : null });
     }
 
     private flattenAccessChain(access) {
