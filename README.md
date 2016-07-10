@@ -135,6 +135,9 @@ so please feel free to [create an issue](https://github.com/MeirionHughes/aureli
 or even a pull request.
 
 ## Install
+
+_Note: node.js 5 or 6 is required. There is currently an issue in trying to install some aurelia dependencies in node.js 4._ 
+
 ```
 npm install aurelia-template-lint
 ```
