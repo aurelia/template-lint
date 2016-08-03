@@ -298,11 +298,14 @@ export class SyntaxRule extends ASTBuilder {
         let decl = context.typeDecl;
         let resolvedTypeName;
         let member = null;
-
+                
         switch (decl.kind) {
             case ts.SyntaxKind.ClassDeclaration: {
-                const classDeclMembers = (<ts.ClassDeclaration>decl).members;
-                member = classDeclMembers
+                const classDecl = <ts.ClassDeclaration>decl;
+
+                let members = this.resolveClassMembers(classDecl);
+                
+                member = members
                     .filter(x =>
                         x.kind == ts.SyntaxKind.PropertyDeclaration ||
                         x.kind == ts.SyntaxKind.MethodDeclaration ||
@@ -312,7 +315,7 @@ export class SyntaxRule extends ASTBuilder {
                 if (member) {
                   resolvedTypeName = this.reflection.resolveClassElementType(member);
                 } else {
-                  const constr = <ts.ConstructorDeclaration>classDeclMembers.find(ce => ce.kind == ts.SyntaxKind.Constructor);
+                  const constr = <ts.ConstructorDeclaration>members.find(ce => ce.kind == ts.SyntaxKind.Constructor);
                   if(constr) {
                     const param: ts.ParameterDeclaration = constr.parameters.find(parameter => parameter.name.getText() === memberName);
                     if(param && param.flags) {
@@ -330,7 +333,9 @@ export class SyntaxRule extends ASTBuilder {
                     break;
             } break;
             case ts.SyntaxKind.InterfaceDeclaration: {
-                member = (<ts.InterfaceDeclaration>decl).members
+                let members = this.resolveInterfaceMembers(<ts.InterfaceDeclaration>decl);
+                
+                member = members
                     .filter(x =>
                         x.kind == ts.SyntaxKind.PropertySignature ||
                         x.kind == ts.SyntaxKind.MethodSignature ||
@@ -392,6 +397,52 @@ export class SyntaxRule extends ASTBuilder {
         return new ASTContext({ type: resolvedTypeName, typeDecl: typeDecl, isArray: memberIsArray, typeValue: memberIsArray ? [] : null });
     }
 
+    private resolveClassMembers(classDecl:ts.ClassDeclaration) : ts.NodeArray<ts.ClassElement>
+    {
+        var members = classDecl.members;
+
+        if(!classDecl.heritageClauses)
+            return members;
+
+        for(let base of classDecl.heritageClauses )
+        {
+            for(let type of base.types)
+            {
+                let typeDecl = this.reflection.getDeclForType((<ts.SourceFile>classDecl.parent), type.getText());
+
+                if(typeDecl != null){
+                    let baseMembers = this.resolveClassMembers(<ts.ClassDeclaration>typeDecl);
+                    members = <ts.NodeArray<ts.ClassElement>> members.concat(baseMembers);
+                }
+            }
+        }    
+
+        return members;
+    }
+
+        private resolveInterfaceMembers(interfaceDecl:ts.InterfaceDeclaration) : ts.NodeArray<ts.TypeElement>
+    {
+        var members = interfaceDecl.members;
+
+        if(!interfaceDecl.heritageClauses)
+            return members;
+
+        for(let base of interfaceDecl.heritageClauses)
+        {
+            for(let type of base.types)
+            {
+                let typeDecl = this.reflection.getDeclForType((<ts.SourceFile>interfaceDecl.parent), type.getText());
+
+                if(typeDecl != null){
+                    let baseMembers = this.resolveInterfaceMembers(<ts.InterfaceDeclaration>typeDecl);
+                    members = <ts.NodeArray<ts.TypeElement>> members.concat(baseMembers);
+                }
+            }
+        }    
+
+        return members;
+    }
+
     private flattenAccessChain(access) {
         let chain = [];
 
@@ -405,7 +456,7 @@ export class SyntaxRule extends ASTBuilder {
         }
 
         return chain.reverse();
-    }
+    }    
 
     private toSymbol(path: string): string {
         path = this.toCamelCase(path.trim());
