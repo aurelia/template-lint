@@ -894,6 +894,47 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
+  //#66
+  it("supports types declared in same-file", (done) => {
+    let item = `
+    export class Price{
+      value:string;
+    }
+    export class Item{
+      name:string;
+      price:Price
+    }`;
+
+    let viewmodel = `
+    import {Item} from './item
+    export class Foo {
+      item:Item;
+    }`
+
+    let view = `
+    <template>    
+      \${item.name}
+      \${item.price.value}
+      \${item.price.valu}
+    </template>`
+
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./item.ts", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'valu' in type 'Price'")
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      })
+  });
+
+
   /*it("rejects more than one class in view-model file", (done) => {
     let viewmodel = `
     export class ChooChoo{
