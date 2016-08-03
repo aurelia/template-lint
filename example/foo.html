@@ -1,19 +1,16 @@
 <template>
   <require/>
-  <div repeat="item of items"></div>
   <div repeat.for="item of"></div>
   <content></content>
-  <slot></slot>
-  <slot></slot>
+  <slot></slot><slot></slot>
   <table>
     <template></template>
   </table>
   <div style="width: ${width}px; height: ${height}px;"></div>
-  <div repeat.for="item of items" with.bind="items">
-  </div>
+  <div repeat.for="item of items" with.bind="items"></div>
   <template repeat.for="item of items">
     ${item.ino} 
-    ${item.role.isAdmn} 
+    ${item.role.isAdmn}
     ${item.update().sizeee}
   </template>
   <template with.bind="person">
@@ -24,5 +21,5 @@
       <td>${item.nme}</td>
     </tr>
   </table>
-  ${car.modl}
-  </etemps>
+  <div value.bind="car.modl"></div>
+</etemps>

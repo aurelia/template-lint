@@ -1,6 +1,6 @@
 
 import {Linter, Rule} from 'template-lint';
-import {SyntaxRule} from '../source/rules/syntax';
+import {BindingRule} from '../source/rules/binding';
 import {Reflection} from '../source/reflection';
 import {ASTNode} from '../source/ast';
 
@@ -8,7 +8,7 @@ describe("Syntax and Static Typing Rule", () => {
 
   it("will fail bad repeat.for syntax", (done) => {
     var linter: Linter = new Linter([
-      new SyntaxRule(new Reflection())
+      new BindingRule(new Reflection())
     ]);
     linter.lint('<div repeat.for="item of"></div>')
       .then((issues) => {
@@ -20,7 +20,7 @@ describe("Syntax and Static Typing Rule", () => {
 
   it("will fail bad interpolation syntax in text node", (done) => {
     var linter: Linter = new Linter([
-      new SyntaxRule(new Reflection())
+      new BindingRule(new Reflection())
     ]);
     linter.lint('<div>${..}</div>')
       .then((issues) => {
@@ -40,7 +40,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${name}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -64,7 +64,7 @@ describe("Syntax and Static Typing Rule", () => {
       <div css="width: \${width}px; height: \${height}px;"></div>
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -85,7 +85,7 @@ describe("Syntax and Static Typing Rule", () => {
       <div css="width: \${widt}px; height: \${hight}px;"></div>
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -107,7 +107,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${nam}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -131,7 +131,7 @@ describe("Syntax and Static Typing Rule", () => {
       <div if.bind="condition"></div>
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -151,7 +151,7 @@ describe("Syntax and Static Typing Rule", () => {
       <div if.bind="!condition"></div>
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -171,7 +171,7 @@ describe("Syntax and Static Typing Rule", () => {
       <input type="text" value.bind="name">
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -201,7 +201,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${item.info}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -230,7 +230,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${item.infooo}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -259,7 +259,7 @@ describe("Syntax and Static Typing Rule", () => {
     let view = `
     <template with.bind="item"></template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -287,7 +287,7 @@ describe("Syntax and Static Typing Rule", () => {
     let view = `
     <template with.bind="itm"></template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -318,7 +318,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${item}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -349,7 +349,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${item.info}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -377,7 +377,7 @@ describe("Syntax and Static Typing Rule", () => {
       </li>
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -409,7 +409,7 @@ describe("Syntax and Static Typing Rule", () => {
     let view = `
     <template repeat.for="item of itms"></template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -435,7 +435,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${nam}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo-camel.ts", viewmodel);
     linter.lint(view, "./foo-camel.html")
@@ -469,7 +469,7 @@ describe("Syntax and Static Typing Rule", () => {
         \${getPerson().rol}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./nested/person.ts", person);
@@ -509,7 +509,7 @@ describe("Syntax and Static Typing Rule", () => {
       </template>
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./person.ts", person);
@@ -540,7 +540,7 @@ describe("Syntax and Static Typing Rule", () => {
         </option>
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./person.ts", person);
@@ -569,7 +569,7 @@ describe("Syntax and Static Typing Rule", () => {
         </option>
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./person.ts", person);
@@ -590,7 +590,7 @@ describe("Syntax and Static Typing Rule", () => {
       <input type="text" value.bind="name">
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -611,7 +611,7 @@ describe("Syntax and Static Typing Rule", () => {
       <input type="text" value.bind="name">
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -634,7 +634,7 @@ describe("Syntax and Static Typing Rule", () => {
       <input type="text" value.bind="protectedMember">
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection, {errorOnNonPublicAccess: ["private"]});
+    let rule = new BindingRule(reflection, {restrictedAccess: ["private"]});
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -663,7 +663,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${person.nme}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     reflection.addTypings(lib);
@@ -694,7 +694,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${value.nae}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./item.ts", item);
@@ -719,7 +719,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${constructorPrivateField}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -749,7 +749,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${items[indx].inf}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -782,7 +782,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${item.vale}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item", item);
@@ -814,7 +814,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${index.will.never.know.how.wrong.this.is}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.js", viewmodel);
     linter.lint(view, "./foo.html")
@@ -846,7 +846,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${items.lengh}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./item", item);
@@ -879,7 +879,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${valu}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./base.ts", base);
@@ -919,7 +919,7 @@ describe("Syntax and Static Typing Rule", () => {
      \${item.valu}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./item.ts", item);
@@ -959,7 +959,7 @@ describe("Syntax and Static Typing Rule", () => {
     </template>`
 
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./item.ts", item);
@@ -999,7 +999,7 @@ describe("Syntax and Static Typing Rule", () => {
     </template>`
 
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./item.ts", item);
@@ -1025,7 +1025,7 @@ describe("Syntax and Static Typing Rule", () => {
     <template>
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -1064,7 +1064,7 @@ describe("Syntax and Static Typing Rule", () => {
       \${person.pet.colr}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/person.ts", person);    

@@ -1,6 +1,6 @@
 
 import {Linter, Rule} from 'template-lint';
-import {SyntaxRule} from '../source/rules/syntax';
+import {BindingRule} from '../source/rules/binding';
 import {Reflection} from '../source/reflection';
 import {ASTNode} from '../source/ast';
 
@@ -17,7 +17,7 @@ describe("Triage", () => {
       \${value | booboo}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
@@ -37,7 +37,7 @@ describe("Triage", () => {
       \${value.not.checked}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
@@ -57,7 +57,7 @@ describe("Triage", () => {
       \${value.not.checked}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
@@ -77,7 +77,7 @@ describe("Triage", () => {
       \${value.not.checked}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
@@ -99,7 +99,7 @@ describe("Triage", () => {
       \${items.lengh}
     </template>`
     let reflection = new Reflection();
-    let rule = new SyntaxRule(reflection);
+    let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")

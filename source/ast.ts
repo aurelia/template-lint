@@ -14,13 +14,15 @@ from 'aurelia-templating';
 
 export class ASTBuilder extends Rule {
     public root: ASTNode;
+    public reportBindingSyntax = true;
+
     private resources: ViewResources;
     private bindingLanguage: TemplatingBindingLanguage;
     private container: Container;
-
+    
     constructor() {
         super();
-
+        
         this.container = new Container();
         this.resources = this.container.get(ViewResources);
         this.bindingLanguage = this.container.get(TemplatingBindingLanguage);
@@ -45,7 +47,7 @@ export class ASTBuilder extends Rule {
             });
 
             current.children.push(next);
-            if(!parser.isVoid(tag))
+            if (!parser.isVoid(tag))
                 current = next;
         });
 
@@ -103,9 +105,10 @@ export class ASTBuilder extends Rule {
             column: column,
             severity: IssueSeverity.Error
         });
-
-        this.reportIssue(issue);
-    }
+        
+        if(this.reportBindingSyntax)
+            this.reportIssue(issue);
+    }  
 }
 
 export class FileLoc {
@@ -144,24 +147,24 @@ export class ASTNode {
         children?: ASTNode[],
         location?: FileLoc,
     }) {
-        if (init) 
+        if (init)
             Object.assign(this, init);
     }
 
     addChild(node: ASTNode) {
-        if (this.children.indexOf(node) == -1){
+        if (this.children.indexOf(node) == -1) {
             this.children.push(node);
             node.parent = this;
         }
     }
 
-    public static inheritLocals(node: ASTNode, ancestor?:number): ASTContext[] {
+    public static inheritLocals(node: ASTNode, ancestor?: number): ASTContext[] {
         let locals: ASTContext[] = [];
 
-        if(ancestor){           
+        if (ancestor) {
             while (node != null && ancestor >= 0) {
                 node = node.parent;
-                ancestor-=1;
+                ancestor -= 1;
             }
         }
 
@@ -179,11 +182,11 @@ export class ASTNode {
         return locals;
     }
 
-    public static inheritContext(node: ASTNode, ancestor?:number): ASTContext { 
-        if(ancestor){           
+    public static inheritContext(node: ASTNode, ancestor?: number): ASTContext {
+        if (ancestor) {
             while (node != null && ancestor >= 0) {
                 node = node.parent;
-                ancestor-=1;
+                ancestor -= 1;
             }
         }
 

@@ -11,7 +11,7 @@ import {ConflictingAttributesRule, ConflictingAttributes} from 'template-lint';
 import {RequireRule} from './rules/require';
 import {SlotRule} from './rules/slot';
 import {TemplateRule} from './rules/template';
-import {SyntaxRule} from './rules/syntax';
+import {BindingRule} from './rules/binding';
 
 import {Reflection} from './reflection';
 import {Config} from './config';
@@ -35,33 +35,54 @@ export class AureliaLinter {
         this.config = config;
         this.reflection = new Reflection();
 
-        let rules = [
-            new SelfCloseRule(),
-            new StructureRule(),
-            new ObsoleteAttributeRule(config.obsoleteAttributes),
-            new ObsoleteTagRule(config.obsoleteTags),
-            new AttributeValueRule(config.attributeValueRules),
+        let rules = []
 
-            new RequireRule(),
-            new SlotRule(config.templateControllers),
-            new TemplateRule(config.containers),
-            new ConflictingAttributesRule(<ConflictingAttributes[]>config.conflictingAttributes),
-            new SyntaxRule(this.reflection, config)
+        if (this.config.useRuleSelfClose)
+            rules.push(new SelfCloseRule());
+        if (this.config.useRuleStructure)
+            rules.push(new StructureRule());
+        if (this.config.useRuleObsoleteAttribute)
+            rules.push(new ObsoleteAttributeRule(config.obsoleteAttributeOpts));
+        if (this.config.useRuleObsoleteTag)
+            rules.push(new ObsoleteTagRule(config.obsoleteTagOpts));
+        if (this.config.useRuleAttributeValue)
+            rules.push(new AttributeValueRule(config.attributeValueOpts));
+        if (this.config.useRuleConflictingAttribute)
+            rules.push(new ConflictingAttributesRule(<ConflictingAttributes[]>config.conflictingAttributeOpts));
 
-        ].concat(config.customRules);
+        if (this.config.useRuleAureliaRequire)
+            rules.push(new RequireRule())
+        if (this.config.useRuleAureliaSlot)
+            rules.push(new SlotRule(config.aureliaSlotOpts.controllers));
+        if (this.config.useRuleAureliaTemplate)
+            rules.push(new TemplateRule(config.aureliaTemplateOpt.containers));
+
+        if (this.config.useRuleAureliaBindingAccess || this.config.useRuleAureliaBindingSyntax)
+            rules.push(
+                new BindingRule(
+                    this.reflection,
+                    {
+                        reportBindingSyntax: this.config.useRuleAureliaBindingSyntax,
+                        reportBindingAccess: this.config.useRuleAureliaBindingAccess,
+                        reportExceptions: this.config.debug,
+                        localProvidors : this.config.aureliaBindingAccessOpts.localProvidors,
+                        restrictedAccess : this.config.aureliaBindingAccessOpts.restrictedAccess
+                    }));
+
+        if (this.config.customRules)
+            rules.concat(config.customRules);
 
         this.linter = new Linter(
             rules,
-            config.scopes,
-            config.voids);
-
-        if (this.config.useStaticTyping)
-            this.init = this.reflection.addGlob(this.config.sourceFileGlob)
-                .then(() => {
-                    if (this.config.useCustomTypings)
-                        return this.reflection.addTypingsGlob(this.config.typingsFileGlob);
-                    else return Promise.resolve();
-                });
+            config.parserOpts.scopes,
+            config.parserOpts.voids);
+        
+        this.init = this.reflection.addGlob(this.config.reflectionOpts.sourceFileGlob)
+            .then(() => {
+                if (this.config.reflectionOpts.typingsFileGlob != null)
+                    return this.reflection.addTypingsGlob(this.config.reflectionOpts.typingsFileGlob);
+                else return Promise.resolve();
+            });
     }
 
     public lint(html: string, path?: string): Promise<Issue[]> {

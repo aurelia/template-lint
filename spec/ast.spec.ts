@@ -1,6 +1,6 @@
 
 import {Linter, Rule} from 'template-lint';
-import {SyntaxRule} from '../source/rules/syntax';
+import {BindingRule} from '../source/rules/binding';
 import {Reflection} from '../source/reflection';
 import {ASTNode, ASTContext, ASTBuilder, ASTElementNode} from '../source/ast';
 import * as ts from 'typescript'; 

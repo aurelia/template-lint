@@ -5,9 +5,11 @@ var fs = require('fs');
 
 var config = new Config();
 
-config.useStaticTyping = true;
-config.sourceFileGlob = "example/**/*.ts";
-config.typingsFileGlob = "typings/my-lib.d.ts"
+config.useRuleAureliaBindingSyntax
+config.useRuleAureliaBindingAccess = true;
+
+config.reflectionOpts.sourceFileGlob = "example/**/*.ts";
+config.reflectionOpts.typingsFileGlob = "typings/my-lib.d.ts"
 
 var linter = new AureliaLinter(config);
 

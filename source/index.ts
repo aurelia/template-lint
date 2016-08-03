@@ -3,7 +3,7 @@
 export * from './rules/template'
 export * from './rules/require'
 export * from './rules/slot'
-export * from './rules/syntax';
+export * from './rules/binding';
 
 export * from './ast'
 export * from './aurelia-linter'
