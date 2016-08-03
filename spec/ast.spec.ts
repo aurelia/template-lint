@@ -3,6 +3,7 @@ import {Linter, Rule} from 'template-lint';
 import {SyntaxRule} from '../source/rules/syntax';
 import {Reflection} from '../source/reflection';
 import {ASTNode, ASTContext, ASTBuilder, ASTElementNode} from '../source/ast';
+import * as ts from 'typescript'; 
 
 describe("Abstract Syntax Tree", () => {
     it("inheritLocals returns all unique locals from self and parents", () => {
@@ -20,8 +21,8 @@ describe("Abstract Syntax Tree", () => {
 
     it("inheritLocals returns deepest duplicate-name locals", () => {
 
-        let a = new ASTNode({ locals: [new ASTContext({ name: "item", type: "number" })] });
-        let b = new ASTNode({ locals: [new ASTContext({ name: "item", type: "string" })] });
+        let a = new ASTNode({ locals: [new ASTContext({ name: "item", type: <ts.TypeNode>ts.createNode(ts.SyntaxKind.NumberKeyword) })] });
+        let b = new ASTNode({ locals: [new ASTContext({ name: "item", type: <ts.TypeNode>ts.createNode(ts.SyntaxKind.StringKeyword) })] });
 
         a.addChild(b);
 
@@ -29,7 +30,7 @@ describe("Abstract Syntax Tree", () => {
 
         expect(locals.length).toBe(1);
         expect(locals[0].name).toBe("item");
-        expect(locals[0].type).toBe("string");
+        expect(locals[0].type).toEqual( <ts.TypeNode>ts.createNode(ts.SyntaxKind.StringKeyword));
     });
     it("will create correct AST when void present", (done) => {
         var builder = new ASTBuilder();

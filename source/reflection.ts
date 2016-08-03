@@ -80,34 +80,23 @@ export class Reflection {
         });
     }
 
-    /**
-     * Get the type declaration for a type symbol defined in a source file
-     */
-    getDeclForType(sourceDecl: ts.Declaration, symbol: string): ts.DeclarationStatement {
-        if (!sourceDecl || !symbol) return null;
-        let source = <ts.SourceFile>sourceDecl;
+    getDeclForType(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
+        if (!source || !typeName) return null;
+        
+        let types = source.statements.filter(x =>
+                x.kind == ts.SyntaxKind.ClassDeclaration ||
+                x.kind == ts.SyntaxKind.InterfaceDeclaration);
+    
+        let result = <ts.DeclarationStatement>types.find(x => (<ts.DeclarationStatement>x).name.getText() === typeName);
 
-        let classes = source.statements.filter(x =>
+        if(result)
+            return result; 
 
-            x.kind == ts.SyntaxKind.ClassDeclaration ||
-            x.kind == ts.SyntaxKind.InterfaceDeclaration);
-
-        let result = <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == symbol);
-
-        if(result == null)
-            result = this.getDeclForImportedType(sourceDecl, symbol);
-            
-
-        return result;
+        return this.getDeclForImportedType(source, typeName);     
     }
 
-    /**
-     * Get the type declaration for a type symbol that is imported
-     */
-    getDeclForImportedType(sourceDecl: ts.Declaration, symbol: string): ts.DeclarationStatement {
-        if (!sourceDecl || !symbol) return null;
-
-        let source = <ts.SourceFile>sourceDecl;
+    getDeclForImportedType(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
+        if (!source || !typeName) return null;
 
         let imports = source.statements.filter(x => x.kind == ts.SyntaxKind.ImportDeclaration)
         let map: { [id: string]: ts.SourceFile } = {}
@@ -116,7 +105,7 @@ export class Reflection {
             let importModule = (<any>x).moduleSpecifier.text;
 
             let isMatch = importSymbols.findIndex(importSymbol => {
-                return importSymbol.name.text == symbol;
+                return importSymbol.name.text == typeName;
             });
 
             return isMatch != -1;
@@ -145,7 +134,7 @@ export class Reflection {
                 x.kind == ts.SyntaxKind.ClassDeclaration ||
                 x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
-            return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == symbol);
+            return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == typeName);
         }
         else if (inportSourceFile.kind == ts.SyntaxKind.ModuleDeclaration) {
             let module = <ts.ModuleDeclaration>inportSourceFile;
@@ -158,7 +147,7 @@ export class Reflection {
                     x.kind == ts.SyntaxKind.ClassDeclaration ||
                     x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
-                return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == symbol);
+                return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == typeName);
             }
         }
         else {
@@ -166,33 +155,33 @@ export class Reflection {
         }
     }
 
-    public resolveClassElementType(node: ts.ClassElement): string {
+    public resolveClassElementType(node: ts.ClassElement): ts.TypeNode {
         if (!node) return null;
         switch (node.kind) {
             case ts.SyntaxKind.PropertyDeclaration:
                 let prop = <ts.PropertyDeclaration>node
-                return this.resolveTypeName(prop.type);
+                return prop.type;
             case ts.SyntaxKind.MethodDeclaration:
                 let meth = <ts.MethodDeclaration>node
-                return this.resolveTypeName(meth.type);
+                return meth.type;
             case ts.SyntaxKind.GetAccessor:
                 let get = <ts.GetAccessorDeclaration>node
-                return this.resolveTypeName(get.type);
+                return get.type;
             default:
                 //console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveClassElementType`);
                 return null;
         }
     }
 
-    public resolveTypeElementType(node: ts.TypeElement): string {
+    public resolveTypeElementType(node: ts.TypeElement): ts.TypeNode {
         if (!node) return null;
         switch (node.kind) {
             case ts.SyntaxKind.PropertySignature:
                 let prop = <ts.PropertySignature>node
-                return this.resolveTypeName(prop.type);
+                return prop.type;
             case ts.SyntaxKind.MethodSignature:
                 let meth = <ts.MethodSignature>node
-                return this.resolveTypeName(meth.type);
+                return meth.type;
             default:
                 //console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveTypeElementType`);
                 return null;
@@ -208,16 +197,13 @@ export class Reflection {
             case ts.SyntaxKind.TypeReference:
                 let ref = <ts.TypeReferenceNode>node;
                 return ref.typeName.getText();
-            case ts.SyntaxKind.TypeLiteral:
-                let lit = <ts.TypeLiteralNode>node;
-                return lit.name.getText();
             case ts.SyntaxKind.StringKeyword:
                 return 'string';
             case ts.SyntaxKind.NumberKeyword:
                 return 'number';
             case ts.SyntaxKind.BooleanKeyword:
                 return 'boolean';
-            default:
+            default:                
                 //console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveTypeName`);
                 return null;
         }
