@@ -3,6 +3,7 @@
 import {Linter, Rule} from 'template-lint';
 import {Config} from '../source/config';
 import {AureliaLinter} from '../source/aurelia-linter';
+import {BindingRule} from '../source/rules/binding';
 import {Reflection} from '../source/reflection';
 import {initialize} from 'aurelia-pal-nodejs';
 
@@ -20,4 +21,40 @@ describe("Failing Scenarios", () => {
                 done();
             });
     });*/
+
+  //#67
+  it("support custom elements", (done) => {
+    let itemViewModel = `
+    import {bindable} from "aurelia-templating";
+    export class ItemCustomElement {
+        @bindable value: string;
+    }`;
+
+    let pageViewModel = `
+    import {Item} from './item
+    export class Foo {
+      fooValue:number;
+    }`
+
+    let pageView = `
+    <template>
+      <require from="./item"></require>
+      <item bad.bind="fooValue" value.bind="fooValue"></item>
+    </template>`
+
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./item.ts", itemViewModel);
+    reflection.add("./page.ts", pageViewModel);
+    linter.lint(pageView, "./page.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'bad' in type 'ItemCustomElement'")
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      })
+  });
 });
