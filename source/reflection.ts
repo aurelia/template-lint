@@ -80,6 +80,30 @@ export class Reflection {
         });
     }
 
+    /**
+     * Get the type declaration for a type symbol defined in a source file
+     */
+    getDeclForType(sourceDecl: ts.Declaration, symbol: string): ts.DeclarationStatement {
+        if (!sourceDecl || !symbol) return null;
+        let source = <ts.SourceFile>sourceDecl;
+
+        let classes = source.statements.filter(x =>
+
+            x.kind == ts.SyntaxKind.ClassDeclaration ||
+            x.kind == ts.SyntaxKind.InterfaceDeclaration);
+
+        let result = <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == symbol);
+
+        if(result == null)
+            result = this.getDeclForImportedType(sourceDecl, symbol);
+            
+
+        return result;
+    }
+
+    /**
+     * Get the type declaration for a type symbol that is imported
+     */
     getDeclForImportedType(sourceDecl: ts.Declaration, symbol: string): ts.DeclarationStatement {
         if (!sourceDecl || !symbol) return null;
 
@@ -193,7 +217,7 @@ export class Reflection {
                 return 'number';
             case ts.SyntaxKind.BooleanKeyword:
                 return 'boolean';
-            default:                
+            default:
                 //console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveTypeName`);
                 return null;
         }

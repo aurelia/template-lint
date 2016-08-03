@@ -381,7 +381,7 @@ export class SyntaxRule extends ASTBuilder {
             }
         }
 
-        let typeDecl = this.reflection.getDeclForImportedType((<ts.SourceFile>decl.parent), resolvedTypeName);
+        let typeDecl = this.reflection.getDeclForType((<ts.SourceFile>decl.parent), resolvedTypeName);
         let memberIsArray = member.type.kind == ts.SyntaxKind.ArrayType;
 
         //TODO:

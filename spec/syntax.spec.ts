@@ -862,7 +862,7 @@ describe("Syntax and Static Typing Rule", () => {
   });
 
   //#68
-  it("supports inheritence", (done) => {
+  it("supports inheritence of classes", (done) => {
     let base = `
     export class Base{
       value:string;
@@ -894,13 +894,93 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
+  
+  //#68
+  it("supports inheritence of interfaces", (done) => {
+    let item = `
+    export interface BaseItem {
+        name: string;
+    }
+
+    export interface Item extends BaseItem {
+        value: string;
+    }`;
+
+    let viewmodel = `
+    import {Item} from './item
+    export class Foo{
+      item: Item;
+    }`
+
+    let view = `
+    <template>    
+     \${item.name}
+     \${item.value}
+     \${item.valu}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./item.ts", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'valu' in type 'Item'")
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      })
+  });
+
   //#66
-  it("supports types declared in same-file", (done) => {
+  it("supports classes declared in same-file", (done) => {
     let item = `
     export class Price{
       value:string;
     }
     export class Item{
+      name:string;
+      price:Price
+    }`;
+
+    let viewmodel = `
+    import {Item} from './item
+    export class Foo {
+      item:Item;
+    }`
+
+    let view = `
+    <template>    
+      \${item.name}
+      \${item.price.value}
+      \${item.price.valu}
+    </template>`
+
+    let reflection = new Reflection();
+    let rule = new SyntaxRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./item.ts", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'valu' in type 'Price'")
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      })
+  });
+
+   //#66
+  it("supports interfaces declared in same-file", (done) => {
+    let item = `
+    export interface Price{
+      value:string;
+    }
+    export interface Item{
       name:string;
       price:Price
     }`;
