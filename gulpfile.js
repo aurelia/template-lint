@@ -31,7 +31,9 @@ gulp.task('clean', ['clean:tests', 'clean:typescript'], function () {
 });
 
 gulp.task('compile:typescript', ['clean:typescript'], function () {
-    var project = ts.createProject('tsconfig.json');
+    var project = ts.createProject('tsconfig.json', {
+        typescript: require('typescript')
+    });
 
     var tsResult = gulp
         .src([
@@ -51,8 +53,10 @@ gulp.task('compile:typescript', ['clean:typescript'], function () {
 });
 
 gulp.task('compile:tests', ['compile:typescript', 'clean:tests'], function () {
-    var project = ts.createProject('tsconfig.json');
-
+    var project = ts.createProject('tsconfig.json', {
+        typescript: require('typescript')
+    });
+    
     var tsResult = gulp.src([
         paths.spec + '**/*spec.ts', 'typings/index.d.ts'
     ])
