@@ -86,4 +86,35 @@ describe("Failing Scenarios", () => {
         finally { done(); }
       })
   });
+
+  it("issue #73 - rejects bad interpolation binding after repeat.for attribute", (done) => {
+    let viewmodel = `
+    export class Foo {
+        existing = true;
+        items = [];
+    }`
+    let view = `
+    <template>
+        \${existing}
+        \${missing1}
+        <a repeat.for="item of items">
+            \${missing2}
+            \${item}
+        </a>
+        \${missing3}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(3);
+        expect(issues[0].message).toBe("cannot find 'missing1' in type 'Foo'");
+        expect(issues[1].message).toBe("cannot find 'missing2' in type 'Foo'");
+        expect(issues[2].message).toBe("cannot find 'missing3' in type 'Foo'");
+        done();
+      })
+  });
+
 });
