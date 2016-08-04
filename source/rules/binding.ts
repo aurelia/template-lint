@@ -102,8 +102,7 @@ export class BindingRule extends ASTBuilder {
                 this.examineBehaviorInstruction(node, <BehaviorInstruction>instruction, attrName, attr.location)
                 break;
             }
-            case "ListernerExpression": {
-
+            case "ListenerExpression": {
                 break;
             }
             default: {
