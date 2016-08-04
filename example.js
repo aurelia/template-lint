@@ -5,7 +5,6 @@ var fs = require('fs');
 
 var config = new Config();
 
-config.useRuleAureliaBindingSyntax
 config.useRuleAureliaBindingAccess = true;
 
 config.reflectionOpts.sourceFileGlob = "example/**/*.ts";
