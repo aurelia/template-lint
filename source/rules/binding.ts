@@ -39,11 +39,11 @@ export class BindingRule extends ASTBuilder {
             reportExceptions?: boolean,
             localProvidors?: string[],
             restrictedAccess?: string[]
-        }) {  
+        }) {
         super();
 
         if (opt)
-            Object.assign(this, opt);        
+            Object.assign(this, opt);
     }
 
     init(parser: Parser, path?: string) {
@@ -52,8 +52,7 @@ export class BindingRule extends ASTBuilder {
     }
 
     finalise(): Issue[] {
-        if(this.reportBindingAccess)
-        {
+        if (this.reportBindingAccess) {
             try {
                 if (this.root.context != null)
                     this.examineNode(this.root);
@@ -95,9 +94,26 @@ export class BindingRule extends ASTBuilder {
         if (instruction == null)
             return;
 
-        let attrName = instruction.attrName;
-        let attrLoc = attr.location;
+        let instructionName = instruction.constructor.name;
 
+        switch (instructionName) {
+            case "BehaviorInstruction": {
+                let attrName = instruction.attrName;
+                this.examineBehaviorInstruction(node, <BehaviorInstruction>instruction, attrName, attr.location)
+                break;
+            }
+            case "ListernerExpression": {
+
+                break;
+            }
+            default: {
+                if (this.reportExceptions)
+                    this.reportIssue(new Issue({ message: `Unknown instruction type: ${instructionName}`, line: attr.location.line }));
+            }
+        }
+    }
+
+    private examineBehaviorInstruction(node: ASTElementNode, instruction: BehaviorInstruction, attrName: string, attrLoc: FileLoc) {
         switch (attrName) {
             case "repeat": {
 
