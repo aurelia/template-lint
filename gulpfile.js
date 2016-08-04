@@ -91,6 +91,7 @@ gulp.task('test-no-compile', function (done) {
 
 gulp.task('watch', ['test'], function () {
     gulp.watch(paths.source + '**/*.ts', ['test']);
+    gulp.watch(paths.spec + '**/*spec.ts', ['test']);
 });
 
 gulp.task('default', ['test'], function () {
