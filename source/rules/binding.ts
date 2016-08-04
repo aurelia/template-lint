@@ -124,12 +124,15 @@ export class BindingRule extends ASTBuilder {
                 let chain = this.flattenAccessChain(source.sourceExpression);
                 let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
 
+                let type = resolved ? resolved.type : null;
+                let typeDecl = resolved ? resolved.typeDecl : null;
+
                 if (varKey && varValue) {
                     node.locals.push(new ASTContext({ name: varKey, type: <ts.TypeNode>ts.createNode(ts.SyntaxKind.StringKeyword) }));
-                    node.locals.push(new ASTContext({ name: varValue, type: resolved.type, typeDecl: resolved.typeDecl }));
+                    node.locals.push(new ASTContext({ name: varValue, type: type, typeDecl: typeDecl }));
                 }
                 else {
-                    node.locals.push(new ASTContext({ name: varLocal, type: resolved.type, typeDecl: resolved.typeDecl }));
+                    node.locals.push(new ASTContext({ name: varLocal, type: type, typeDecl: typeDecl }));
                 }
 
                 node.locals.push(new ASTContext({ name: "$index", type: <ts.TypeNode>ts.createNode(ts.SyntaxKind.NumberKeyword) }));

@@ -74,7 +74,7 @@ describe("Failing Scenarios", () => {
     </template>`
 
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, {reportExceptions:true});
+    let rule = new BindingRule(reflection, { reportExceptions: true });
     let linter = new Linter([rule]);
     reflection.add("./page.ts", pageViewModel);
     linter.lint(pageView, "./page.html")
@@ -109,12 +109,14 @@ describe("Failing Scenarios", () => {
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
       .then((issues) => {
-        expect(issues.length).toBe(3);
-        expect(issues[0].message).toBe("cannot find 'missing1' in type 'Foo'");
-        expect(issues[1].message).toBe("cannot find 'missing2' in type 'Foo'");
-        expect(issues[2].message).toBe("cannot find 'missing3' in type 'Foo'");
-        done();
+        try {
+          expect(issues.length).toBe(3);
+          expect(issues[0].message).toBe("cannot find 'missing1' in type 'Foo'");
+          expect(issues[1].message).toBe("cannot find 'missing2' in type 'Foo'");
+          expect(issues[2].message).toBe("cannot find 'missing3' in type 'Foo'");
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
       })
-  });
-
+  })
 });
