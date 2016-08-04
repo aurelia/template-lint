@@ -7,7 +7,7 @@ import ts = require('typescript');
 import {
     ViewResources,
     BindingLanguage,
-    /*BehaviorInstruction,*/
+    BehaviorInstruction,
     HtmlBehaviorResource,
     ViewFactory}
 from 'aurelia-templating';
@@ -220,21 +220,4 @@ export class ASTTextNode extends ASTNode {
     constructor() {
         super();
     }
-}
-
-export interface BehaviorInstruction {
-    initiatedByBehavior: boolean;
-    enhance: boolean;
-    partReplacements: any;
-    viewFactory: any;
-    originalAttrName: string;
-    skipContentProcessing: boolean;
-    contentFactory: any;
-    viewModel: Object;
-    anchorIsContainer: boolean;
-    host: Element;
-    attributes: Object;
-    type: HtmlBehaviorResource;
-    attrName: string;
-    inheritBindingContext: boolean;
 }
