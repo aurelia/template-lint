@@ -5,8 +5,8 @@ var fs = require('fs');
 
 var config = new Config();
 
+config.debug = true;
 config.useRuleAureliaBindingAccess = true;
-
 config.reflectionOpts.sourceFileGlob = "example/**/*.ts";
 config.reflectionOpts.typingsFileGlob = "typings/my-lib.d.ts"
 
