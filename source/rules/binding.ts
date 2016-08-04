@@ -385,17 +385,14 @@ export class BindingRule extends ASTBuilder {
             const isPrivate = member.flags & ts.NodeFlags.Private;
             const isProtected = member.flags & ts.NodeFlags.Protected;
 
-            if (isPrivate | isProtected) {
+            const restrictPrivate = this.restrictedAccess.indexOf("private") != -1;
+            const restrictProtected = this.restrictedAccess.indexOf("protected") != -1;
 
-                const reportPrivate = this.restrictedAccess.indexOf("private") != -1;
-                const reportProtected = this.restrictedAccess.indexOf("protected") != -1;
-
-                if (isPrivate && reportPrivate || isProtected && reportProtected) {
-                    const accessModifier = isPrivate ? "private" : "protected";
-                    this.reportPrivateAccessMemberIssue(memberName, decl, loc, accessModifier);
-
-                } return null;
-            }
+            if (isPrivate && restrictPrivate || isProtected && restrictProtected) {
+                const accessModifier = isPrivate ? "private" : "protected";
+                this.reportPrivateAccessMemberIssue(memberName, decl, loc, accessModifier);
+                return null;
+            }          
         }
         let memberTypeName = this.reflection.resolveTypeName(memberType);
         let memberTypeDecl: ts.Declaration = this.reflection.getDeclForType((<ts.SourceFile>decl.parent), memberTypeName);
