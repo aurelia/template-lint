@@ -64,9 +64,9 @@ export class ASTBuilder extends Rule {
         });
     }
 
-    private createAttributeInstruction(tag: string, name: string, value: string, line: number, column: number): BehaviorInstruction {
+    private createAttributeInstruction(tag: string, name: string, value: string, line: number, column: number): any {
 
-        var instruction: BehaviorInstruction = null;
+        var instruction: any = null;
 
         try {
             let info: any = this.bindingLanguage.inspectAttribute(this.resources, tag, name, value);
@@ -201,7 +201,7 @@ export class ASTNode {
 
 export class ASTAttribute {
     public name: string;
-    public instruction: BehaviorInstruction;
+    public instruction: any; //BehaviorInstruction || 
     public location: FileLoc;
 }
 
