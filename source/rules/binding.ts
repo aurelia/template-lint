@@ -2,9 +2,9 @@
 
 import 'aurelia-polyfills';
 
-import {TemplatingBindingLanguage, /*InterpolationBindingExpression*/} from 'aurelia-templating-binding';
+import {TemplatingBindingLanguage, InterpolationBindingExpression} from 'aurelia-templating-binding';
 import {ViewResources, BindingLanguage, BehaviorInstruction} from 'aurelia-templating';
-import {AccessMember, AccessScope, AccessKeyed, Expression, NameExpression, ValueConverter} from 'aurelia-binding';
+import {AccessMember, AccessScope, AccessKeyed, Expression, NameExpression, ValueConverter, ListenerExpression} from 'aurelia-binding';
 import {Container} from 'aurelia-dependency-injection';
 import * as ts from 'typescript';
 import * as Path from 'path';
@@ -88,6 +88,16 @@ export class BindingRule extends ASTBuilder {
         }
     }
 
+    private examineTextNode(node: ASTTextNode) {
+        let exp = <any>node.expression;
+
+        if (!exp)
+            return;
+
+        if (exp.constructor.name == "InterpolationBindingExpression")
+            this.examineInterpolationExpression(node, exp);
+    }
+
     private examineAttribute(node: ASTElementNode, attr: ASTAttribute) {
         let instruction = attr.instruction;
 
@@ -98,11 +108,11 @@ export class BindingRule extends ASTBuilder {
 
         switch (instructionName) {
             case "BehaviorInstruction": {
-                let attrName = instruction.attrName;
-                this.examineBehaviorInstruction(node, <BehaviorInstruction>instruction, attrName, attr.location)
+                this.examineBehaviorInstruction(node, <BehaviorInstruction>instruction)
                 break;
             }
             case "ListenerExpression": {
+                this.examineListenerExpression(node, <ListenerExpression>instruction)
                 break;
             }
             default: {
@@ -112,7 +122,9 @@ export class BindingRule extends ASTBuilder {
         }
     }
 
-    private examineBehaviorInstruction(node: ASTElementNode, instruction: BehaviorInstruction, attrName: string, attrLoc: FileLoc) {
+    private examineBehaviorInstruction(node: ASTElementNode, instruction: BehaviorInstruction) {
+        let attrName = instruction.attrName;
+        let attrLoc = node.location;
         switch (attrName) {
             case "repeat": {
 
@@ -166,14 +178,13 @@ export class BindingRule extends ASTBuilder {
         };
     }
 
-    private examineTextNode(node: ASTTextNode) {
-        let exp = <any>node.expression;
+    private examineListenerExpression(node: ASTElementNode, exp: any /*ListenerExpression*/) {
 
-        if (!exp)
-            return;
+        let target:string = exp.targetEvent;
+        let access = exp.sourceExpression;
 
-        if (exp.constructor.name == "InterpolationBindingExpression")
-            this.examineInterpolationExpression(node, exp);
+        let chain = this.flattenAccessChain(access);
+        let resolved = this.resolveAccessScopeToType(node, chain, node.location);
     }
 
     private examineInterpolationExpression(node: ASTNode, exp: any) {
@@ -391,7 +402,7 @@ export class BindingRule extends ASTBuilder {
                 const accessModifier = isPrivate ? "private" : "protected";
                 this.reportPrivateAccessMemberIssue(memberName, decl, loc, accessModifier);
                 return null;
-            }          
+            }
         }
         let memberTypeName = this.reflection.resolveTypeName(memberType);
         let memberTypeDecl: ts.Declaration = this.reflection.getDeclForType((<ts.SourceFile>decl.parent), memberTypeName);
@@ -470,11 +481,11 @@ export class BindingRule extends ASTBuilder {
     }
 
     private toCamelCase(value: string) {
-        return value.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
+        return value.replace(/-([a-z])/g, function(g) { return g[1].toUpperCase(); });
     }
 
     private toDashCase(value: string) {
-        return value.replace(/([a-z][A-Z])/g, function (g) { return g[0] + '-' + g[1].toLowerCase() });
+        return value.replace(/([a-z][A-Z])/g, function(g) { return g[0] + '-' + g[1].toLowerCase() });
     }
 
     private reportUnresolvedAccessObjectIssue(member: string, objectName: string, loc: FileLoc) {

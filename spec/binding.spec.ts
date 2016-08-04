@@ -4,19 +4,149 @@ import {BindingRule} from '../source/rules/binding';
 import {Reflection} from '../source/reflection';
 import {ASTNode} from '../source/ast';
 
-describe("Syntax and Static Typing Rule", () => {
+describe("Static-Type Binding Tests", () => {
 
-  it("will fail bad repeat.for syntax", (done) => {
-    var linter: Linter = new Linter([
-      new BindingRule(new Reflection())
-    ]);
-    linter.lint('<div repeat.for="item of"></div>')
-      .then((issues) => {
-        expect(issues.length).toBe(1);
-        expect(issues[0].message).toContain('Incorrect syntax for "for"')
-        done();
-      });
+  describe("repeat.for bindings", () => {
+
+    it("will fail bad repeat.for syntax", (done) => {
+      var linter: Linter = new Linter([
+        new BindingRule(new Reflection())
+      ]);
+      linter.lint('<div repeat.for="item of"></div>')
+        .then((issues) => {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toContain('Incorrect syntax for "for"')
+          done();
+        });
+    });
+
+    it("will reject bad interpolation binding after repeat.for attribute", (done) => {
+      let viewmodel = `
+      export class Foo {
+          existing = true;
+          items = [];
+      }`
+      let view = `
+      <template>
+          \${existing}
+          \${missing1}
+          <a repeat.for="item of items">
+              \${missing2}
+              \${item}
+          </a>
+          \${missing3}
+      </template>`
+      let reflection = new Reflection();
+      let rule = new BindingRule(reflection);
+      let linter = new Linter([rule]);
+      reflection.add("./foo.ts", viewmodel);
+      linter.lint(view, "./foo.html")
+        .then((issues) => {
+          try {
+            expect(issues.length).toBe(3);
+            expect(issues[0].message).toBe("cannot find 'missing1' in type 'Foo'");
+            expect(issues[1].message).toBe("cannot find 'missing2' in type 'Foo'");
+            expect(issues[2].message).toBe("cannot find 'missing3' in type 'Foo'");
+          }
+          catch (err) { fail(err); }
+          finally { done(); }
+        })
+    })
+
+
+    it("accepts good repeat.for attribute value", (done) => {
+      let item = `
+      export class Item{
+        info:string;
+      }`;
+
+      let viewmodel = `
+      import {Item} from './path/item
+      export class Foo{
+        items:Item[]
+      }`
+      let view = `
+      <template repeat.for="item of items">    
+        \${item}
+      </template>`
+      let reflection = new Reflection();
+      let rule = new BindingRule(reflection);
+      let linter = new Linter([rule]);
+      reflection.add("./foo.ts", viewmodel);
+      reflection.add("./path/item.ts", item);
+      linter.lint(view, "./foo.html")
+        .then((issues) => {
+          try {
+            expect(issues.length).toBe(0);
+          }
+          catch (error) { expect(error).toBeUndefined() }
+          finally { done(); }
+        })
+    });
+
+    it("accepts good repeat.for attribute valid of imported interface", (done) => {
+      let item = `
+      export interface Item{
+        info:string;
+      }`;
+
+      let viewmodel = `
+      import {Item} from './path/item
+      export class Foo{
+        items:Item[]
+      }`
+      let view = `
+      <template repeat.for="item of items">
+        \${item}
+        \${item.info}
+      </template>`
+      let reflection = new Reflection();
+      let rule = new BindingRule(reflection);
+      let linter = new Linter([rule]);
+      reflection.add("./foo.ts", viewmodel);
+      reflection.add("./path/item.ts", item);
+      linter.lint(view, "./foo.html")
+        .then((issues) => {
+          try {
+            expect(issues.length).toBe(0);
+          }
+          catch (error) { expect(error).toBeUndefined() }
+          finally { done(); }
+        })
+    });
+
+    it("supports repeat.for when iterating an unknown", (done) => {
+
+      let viewmodel = `
+      import {Router} from 'not-defined'
+      export class Foo{
+        @bindable router: Router;
+      }`
+      let view = `
+      <template>    
+        <li repeat.for="row of router.navigation">
+            <a href.bind="row.href">\${row.title}</a>
+        </li>
+      </template>`
+      let reflection = new Reflection();
+      let rule = new BindingRule(reflection);
+      let linter = new Linter([rule]);
+      reflection.add("./foo.ts", viewmodel);
+      linter.lint(view, "./foo.html")
+        .then((issues) => {
+          try {
+            expect(issues.length).toBe(0);
+          }
+          catch (error) {
+            fail(error);
+          }
+          finally {
+            done();
+          }
+        })
+    });
   });
+
 
   it("will fail bad interpolation syntax in text node", (done) => {
     var linter: Linter = new Linter([
@@ -302,99 +432,7 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
-  it("accepts good repeat.for attribute value", (done) => {
-    let item = `
-    export class Item{
-      info:string;
-    }`;
 
-    let viewmodel = `
-    import {Item} from './path/item
-    export class Foo{
-      items:Item[]
-    }`
-    let view = `
-    <template repeat.for="item of items">    
-      \${item}
-    </template>`
-    let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
-    let linter = new Linter([rule]);
-    reflection.add("./foo.ts", viewmodel);
-    reflection.add("./path/item.ts", item);
-    linter.lint(view, "./foo.html")
-      .then((issues) => {
-        try {
-          expect(issues.length).toBe(0);
-        }
-        catch (error) { expect(error).toBeUndefined() }
-        finally { done(); }
-      })
-  });
-
-  it("accepts good repeat.for attribute valid of imported interface", (done) => {
-    let item = `
-    export interface Item{
-      info:string;
-    }`;
-
-    let viewmodel = `
-    import {Item} from './path/item
-    export class Foo{
-      items:Item[]
-    }`
-    let view = `
-    <template repeat.for="item of items">
-      \${item}
-      \${item.info}
-    </template>`
-    let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
-    let linter = new Linter([rule]);
-    reflection.add("./foo.ts", viewmodel);
-    reflection.add("./path/item.ts", item);
-    linter.lint(view, "./foo.html")
-      .then((issues) => {
-        try {
-          expect(issues.length).toBe(0);
-        }
-        catch (error) { expect(error).toBeUndefined() }
-        finally { done(); }
-      })
-  });
-
-  it("supports repeat.for when iterating an unknown", (done) => {
-
-    let viewmodel = `
-    import {Router} from 'not-defined'
-    export class Foo{
-       @bindable router: Router;
-    }`
-    let view = `
-    <template>    
-      <li repeat.for="row of router.navigation">
-          <a href.bind="row.href">\${row.title}</a>
-      </li>
-    </template>`
-    let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
-    let linter = new Linter([rule]);
-    reflection.add("./foo.ts", viewmodel);
-    linter.lint(view, "./foo.html")
-      .then((issues) => {
-        try {
-          expect(issues.length).toBe(0);
-        } 
-        catch(error)
-        {
-          fail(error);
-        }
-        finally{
-          done();
-        }     
-      })
-  });
-  
   it("rejects bad with.bind attribute value", (done) => {
     let item = `
     export class Item{
@@ -634,7 +672,7 @@ describe("Syntax and Static Typing Rule", () => {
       <input type="text" value.bind="protectedMember">
     </template>`
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, {restrictedAccess: ["private"]});
+    let rule = new BindingRule(reflection, { restrictedAccess: ["private"] });
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -701,7 +739,7 @@ describe("Syntax and Static Typing Rule", () => {
     linter.lint(view, "./foo.html")
       .then((issues) => {
         expect(issues.length).toBe(2);
-        expect(issues[0].message).toBe("cannot find 'valu' in type 'ItemCustomElement'");        
+        expect(issues[0].message).toBe("cannot find 'valu' in type 'ItemCustomElement'");
         expect(issues[1].message).toBe("cannot find 'nae' in type 'Item'");
         done();
       })
@@ -791,8 +829,8 @@ describe("Syntax and Static Typing Rule", () => {
         try {
           expect(issues.length).toBe(1);
           expect(issues[0].message).toBe("cannot find 'vale' in type 'Item'");
-        } 
-        catch(err){fail(err);}
+        }
+        catch (err) { fail(err); }
         finally { done(); }
       })
   });
@@ -827,7 +865,7 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
-  
+
   //#58
   it("supports access to typed Array-object members", (done) => {
     let item = `
@@ -894,7 +932,7 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
-  
+
   //#68
   it("supports inheritence of interfaces", (done) => {
     let item = `
@@ -974,7 +1012,7 @@ describe("Syntax and Static Typing Rule", () => {
       })
   });
 
-   //#66
+  //#66
   it("supports interfaces declared in same-file", (done) => {
     let item = `
     export interface Price{
@@ -1008,6 +1046,37 @@ describe("Syntax and Static Typing Rule", () => {
         try {
           expect(issues.length).toBe(1);
           expect(issues[0].message).toBe("cannot find 'valu' in type 'Price'")
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      })
+  });
+
+
+  it("supports delegate binding", (done) => {
+    let pageViewModel = `
+    export class Page {
+      value:number;
+      public submit() {       
+      }
+    }`
+
+    let pageView = `
+    <template>
+      \${value}
+      <form role="form" submit.delegate="submit()"></form>
+      <form role="form" submit.delegate="submt()"></form>
+    </template>`
+
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let linter = new Linter([rule]);
+    reflection.add("./page.ts", pageViewModel);
+    linter.lint(pageView, "./page.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'submt' in type 'Page'")
         }
         catch (err) { fail(err); }
         finally { done(); }
@@ -1080,4 +1149,38 @@ describe("Syntax and Static Typing Rule", () => {
         finally { done(); }
       })
   });*/
+
+  /*it("supports custom elements", (done) => {
+      let itemCustomElement = `
+      import {bindable} from "aurelia-templating";
+      export class ItemCustomElement {
+          @bindable value: string;
+      }`;
+  
+      let pageViewModel = `
+      export class Foo {
+        fooValue:number;
+      }`
+  
+      let pageView = `
+      <template>
+        <require from="./item"></require>
+        <item bad.bind="fooValue" value.bind="fooValue"></item>
+      </template>`
+  
+      let reflection = new Reflection();
+      let rule = new BindingRule(reflection);
+      let linter = new Linter([rule]);
+      reflection.add("./item.ts", itemCustomElement);
+      reflection.add("./page.ts", pageViewModel);
+      linter.lint(pageView, "./page.html")
+        .then((issues) => {
+          try {
+            expect(issues.length).toBe(1);
+            expect(issues[0].message).toBe("cannot find 'bad' in type 'ItemCustomElement'")
+          }
+          catch (err) { fail(err); }
+          finally { done(); }
+        })
+    });*/
 });
