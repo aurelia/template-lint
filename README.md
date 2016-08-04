@@ -328,7 +328,7 @@ export class Config {
 ```
 
 ## Static Type Checking
-In order to use static type checking you must opt-in by setting `useRuleAureliaBindingAccess = false`. 
+In order to use static type checking you must opt-in by setting `useRuleAureliaBindingAccess = true`. 
 
 your template html and source must have a path that defined as being in the same directory, i.e: *"source/foo.html"* and *"source/foo.ts"*. 
 You pass the path of the html file to the lint function. See Below. 
