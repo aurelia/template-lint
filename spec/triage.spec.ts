@@ -67,6 +67,98 @@ describe("Triage", () => {
       })
   });
 
+  it("it will silently ignore intersection types", (done) => {
+    let types = `
+    export class A{
+      name: string;
+    }
+    export class B{
+      name: string;
+      value: number;
+    }`
+    let viewmodel = `   
+    import {A, B} from './types' 
+    export class Foo {
+        value:A | B;
+    }`
+    let view = `
+    <template>
+      \${value.not.checked}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    reflection.add("./path/types.ts", types);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(0);
+        done();
+      })
+  });
+
+  it("it will silently ignore union types", (done) => {
+    let types = `
+    export class A{
+      name: string;
+    }
+    export class B{
+      name: string;
+      value: number;
+    }`
+    let viewmodel = `   
+    import {A, B} from './types' 
+    export class Foo {
+        value:A & B;
+    }`
+    let view = `
+    <template>
+      \${value.not.checked}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    reflection.add("./path/types.ts", types);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(0);
+        done();
+      })
+  });
+
+  it("it will silently ignore type alias", (done) => {
+    let types = `
+    class A{
+      name: string;
+    }
+    class B{
+      name: string;
+      value: number;
+    }
+    export type C = A & B`
+    let viewmodel = `   
+    import {C} from './types' 
+    export class Foo {
+        value:C;
+    }`
+    let view = `
+    <template>
+      \${value.not.checked}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    reflection.add("./path/types.ts", types);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(0);
+        done();
+      })
+  });
+
+
   it("it will silently ignore function-typed fields", (done) => {
     let viewmodel = `
     export class Foo {
