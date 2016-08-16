@@ -716,10 +716,15 @@ describe("Static-Type Binding Tests", () => {
   it("supports importing module", (done) => {
     let lib = `
     declare module 'module-name' {
+      // dummy module that in reality should have some exports imported bellow
     }`
     let viewmodel = `
     import defaultMember from "module-name";
     import * as name from "module-name";
+    import { member } from "module-name";
+    import { member as alias } from "module-name";
+    import { member1 , member2 } from "module-name";
+    import defaultMember2, * as name2 from "module-name";
     import "module-name";
     export class Foo{
       existing:string;
