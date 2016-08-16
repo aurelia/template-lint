@@ -104,7 +104,11 @@ export class Reflection {
             if(!(<any>x).importClause) {
               return false;  // smth like `import "module-name"`
             }
-            let importSymbols = (<any>x).importClause.namedBindings.elements;
+            const namedBindings = (<any>x).importClause.namedBindings;
+            if(!namedBindings) {
+              return false; // smth like `import defaultMember from "module-name";`;
+            }
+            let importSymbols = namedBindings.elements;
             if(!importSymbols) {
               return false; // smth like `import * as name from "module-name"`
             }

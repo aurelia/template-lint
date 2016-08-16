@@ -718,6 +718,7 @@ describe("Static-Type Binding Tests", () => {
     declare module 'module-name' {
     }`
     let viewmodel = `
+    import defaultMember from "module-name";
     import * as name from "module-name";
     import "module-name";
     export class Foo{
