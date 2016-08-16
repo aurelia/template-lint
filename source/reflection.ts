@@ -105,6 +105,9 @@ export class Reflection {
               return false;  // smth like `import "module-name"`
             }
             let importSymbols = (<any>x).importClause.namedBindings.elements;
+            if(!importSymbols) {
+              return false; // smth like `import * as name from "module-name"`
+            }
             let importModule = (<any>x).moduleSpecifier.text;
 
             let isMatch = importSymbols.findIndex(importSymbol => {

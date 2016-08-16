@@ -718,6 +718,7 @@ describe("Static-Type Binding Tests", () => {
     declare module 'module-name' {
     }`
     let viewmodel = `
+    import * as name from "module-name";
     import "module-name";
     export class Foo{
       existing:string;
