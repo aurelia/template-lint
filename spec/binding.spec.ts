@@ -713,12 +713,12 @@ describe("Static-Type Binding Tests", () => {
       })
   });
 
-  it("supports importing module without importing types", (done) => {
+  it("supports importing module", (done) => {
     let lib = `
-    declare module 'some-module' {
+    declare module 'module-name' {
     }`
     let viewmodel = `
-    import "some-module";
+    import "module-name";
     export class Foo{
       existing:string;
     }`
@@ -741,7 +741,7 @@ describe("Static-Type Binding Tests", () => {
         done();
       })
   });
-    
+
   it("supports bindable field", (done) => {
     let item = `      
     export class Item{           

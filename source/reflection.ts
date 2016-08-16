@@ -102,7 +102,7 @@ export class Reflection {
         let map: { [id: string]: ts.SourceFile } = {}
         let symbolImportDecl = imports.find(x => {
             if(!(<any>x).importClause) {
-              return false;
+              return false;  // smth like `import "module-name"`
             }
             let importSymbols = (<any>x).importClause.namedBindings.elements;
             let importModule = (<any>x).moduleSpecifier.text;
