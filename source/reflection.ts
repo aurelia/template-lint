@@ -101,6 +101,9 @@ export class Reflection {
         let imports = source.statements.filter(x => x.kind == ts.SyntaxKind.ImportDeclaration)
         let map: { [id: string]: ts.SourceFile } = {}
         let symbolImportDecl = imports.find(x => {
+            if(!(<any>x).importClause) {
+              return false;
+            }
             let importSymbols = (<any>x).importClause.namedBindings.elements;
             let importModule = (<any>x).moduleSpecifier.text;
 
