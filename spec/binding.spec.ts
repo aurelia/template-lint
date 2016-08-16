@@ -713,6 +713,35 @@ describe("Static-Type Binding Tests", () => {
       })
   });
 
+  it("supports importing module without importing types", (done) => {
+    let lib = `
+    declare module 'some-module' {
+    }`
+    let viewmodel = `
+    import "some-module";
+    export class Foo{
+      existing:string;
+    }`
+    let view = `
+    <template>
+      \${existing}
+      \${missing}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, {reportExceptions: true});
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    reflection.addTypings(lib);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        const issue1 = issues[0];
+        expect(issue1.message).toContain("cannot find 'missing' in type 'Foo'");
+        console.log(issues);
+        done();
+      })
+  });
+    
   it("supports bindable field", (done) => {
     let item = `      
     export class Item{           
