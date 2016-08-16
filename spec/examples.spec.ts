@@ -166,7 +166,7 @@ describe("Aurelia Examples", () => {
             });
     });
 
-    it("complains about obsolete attribute `replaceable` ", (done) => {
+    /*it("complains about obsolete attribute `replaceable` ", (done) => {
         var html = `  
             <template replaceable="">
             </template>
@@ -177,7 +177,7 @@ describe("Aurelia Examples", () => {
                 expect(issues[0].message).toBe("replaceable attribute is obsolete");
                 done();
             });
-    });
+    });*/
 
     it("allows binding of id attribute", (done) => {
         var config: Config = new Config();
