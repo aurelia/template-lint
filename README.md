@@ -241,11 +241,6 @@ export class Config {
     * msg: the error to report if the attribute is found
     */
     obsoleteAttributeOpts: Array<{ attr: string, tag?: string, msg?: string }> = [
-        {
-            attr: "replaceable",
-            tag: "template",
-            msg: "has been superceded by the slot element"
-        }
     ];
 
     /**
