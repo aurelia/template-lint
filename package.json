@@ -6,6 +6,9 @@
     "type": "git",
     "url": "https://github.com/MeirionHughes/aurelia-template-lint"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "contributors": [
     {
       "name": "atsu85",
