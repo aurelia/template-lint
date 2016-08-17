@@ -744,7 +744,6 @@ describe("Static-Type Binding Tests", () => {
         expect(issues.length).toBe(1);
         const issue1 = issues[0];
         expect(issue1.message).toContain("cannot find 'missing' in type 'Foo'");
-        console.log(issues);
         done();
       })
   });
