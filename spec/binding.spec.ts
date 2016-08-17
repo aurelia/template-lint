@@ -744,7 +744,6 @@ describe("Static-Type Binding Tests", () => {
         expect(issues.length).toBe(1);
         const issue1 = issues[0];
         expect(issue1.message).toContain("cannot find 'missing' in type 'Foo'");
-        console.log(issues);
         done();
       })
   });
@@ -834,6 +833,45 @@ describe("Static-Type Binding Tests", () => {
           expect(issues[0].message).toBe("cannot find 'indx' in type 'Foo'");
           expect(issues[1].message).toBe("cannot find 'inf' in type 'Item'");
         } finally { done(); }
+      })
+  });
+
+  // #90
+  it("supports dynamic properties from index signature", (done) => {
+    let viewmodel = `
+    export class Foo{
+      i: I;
+      c: C;
+    }
+    export interface I {
+      existing: string;
+      [x: string]: any; // dynamic properties can be used with index signature
+    }
+    export class C {
+      existing: string;
+      [x: string]: any; // dynamic properties can be used with index signature
+    }
+`
+    let view = `
+    <template>
+      \${i.existing}
+      \${i.dynamic1}
+      \${i.dynamic2}
+      \${c.existing}
+      \${c.dynamic3}
+      \${c.dynamic4}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, {reportExceptions: true});
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
       })
   });
 
