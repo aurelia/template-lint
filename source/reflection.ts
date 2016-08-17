@@ -102,9 +102,16 @@ export class Reflection {
         let map: { [id: string]: ts.SourceFile } = {}
         let symbolImportDecl = imports.find(x => {
             if(!(<any>x).importClause) {
-              return false;
+              return false;  // smth like `import "module-name"`
             }
-            let importSymbols = (<any>x).importClause.namedBindings.elements;
+            const namedBindings = (<any>x).importClause.namedBindings;
+            if(!namedBindings) {
+              return false; // smth like `import defaultMember from "module-name";`;
+            }
+            let importSymbols = namedBindings.elements;
+            if(!importSymbols) {
+              return false; // smth like `import * as name from "module-name"`
+            }
             let importModule = (<any>x).moduleSpecifier.text;
 
             let isMatch = importSymbols.findIndex(importSymbol => {
