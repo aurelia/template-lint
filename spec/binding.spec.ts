@@ -1186,6 +1186,34 @@ describe("Static-Type Binding Tests", () => {
       });
   });
 
+  // #92
+  it("supports (svg) attributes with namespace", (done) => {
+    let viewmodel = `
+    export class Foo{
+      existing: string;
+    }
+`
+    let view = `
+    <template>
+      <svg class="icon">
+          <use xlink:href="icons.svg#some_selector_\${existing}_\${missing}"></use>
+      </svg>
+    </template>`
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, {reportExceptions: true});
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toContain("cannot find 'missing' in type 'Foo'");
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      })
+  });
+  
   /*it("rejects more than one class in view-model file", (done) => {
     let viewmodel = `
     export class ChooChoo{
