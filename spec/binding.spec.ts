@@ -1119,6 +1119,34 @@ describe("Static-Type Binding Tests", () => {
       })
   });
 
+  //87 
+  it("Support named element binding", (done) => {
+    let viewmodel = `
+    export class Foo{
+      existingElement: HTMLSelectElement;
+      existing: string;
+    }`
+    let view = `
+    <template>
+      <select ref="existingElement"></select>
+      <select ref="missingElement"></select>
+      \${missing}
+    </template>`
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(2);
+          expect(issues[0].message).toContain("cannot find 'missingElement' in type 'Foo'");
+          expect(issues[1].message).toContain("cannot find 'missing' in type 'Foo'");
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      });
+  });
 
   /*it("rejects more than one class in view-model file", (done) => {
     let viewmodel = `
