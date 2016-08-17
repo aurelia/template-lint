@@ -370,6 +370,10 @@ export class BindingRule extends ASTBuilder {
                         }
                     }
                 }
+                if (!member) {
+                    // "dynamic" members could be defined using index signature: `[x: string]: number;`
+                    member = members.filter(x => x.kind == ts.SyntaxKind.IndexSignature).pop();
+                }
                 if (!member)
                     break;
             } break;
@@ -382,6 +386,10 @@ export class BindingRule extends ASTBuilder {
                         x.kind == ts.SyntaxKind.MethodSignature ||
                         x.kind == ts.SyntaxKind.GetAccessor)
                     .find(x => x.name.getText() === memberName);
+                if (!member) {
+                    // "dynamic" members could be defined using index signature: `[x: string]: number;`
+                    member = members.filter(x => x.kind == ts.SyntaxKind.IndexSignature).pop();
+                }
                 if (!member)
                     break;
 
