@@ -30,6 +30,8 @@ gulp.task('clean:tests', function () {
 gulp.task('clean', ['clean:tests', 'clean:typescript'], function () {
 });
 
+var tslint = require('gulp-tslint');
+
 gulp.task('compile:typescript', ['clean:typescript'], function () {
     var project = ts.createProject('tsconfig.json', {
         typescript: require('typescript')
@@ -50,6 +52,15 @@ gulp.task('compile:typescript', ['clean:typescript'], function () {
             .pipe(sourcemap.write('.', { sourceRoot: '../source' }))
             .pipe(gulp.dest(paths.output))
     ]);
+});
+
+gulp.task('lint:typescript', function() {
+  return gulp.src([paths.source + '**/*.ts', paths.spec + '**/*.ts'])
+    .pipe(plumber())
+    .pipe(tslint({
+      formatter: "verbose"
+    }))
+    .pipe(tslint.report());
 });
 
 gulp.task('compile:tests', ['compile:typescript', 'clean:tests'], function () {
@@ -76,7 +87,7 @@ gulp.task('test:jasmine', function (done) {
 });
 
 gulp.task('test', function (done) {
-    runsequence('compile:tests', 'test:jasmine', function (err) {
+    runsequence('compile:tests', 'lint:typescript', 'test:jasmine', function (err) {
         runsequence('clean:tests');
         done();
     });
@@ -90,8 +101,8 @@ gulp.task('test-no-compile', function (done) {
 });
 
 gulp.task('watch', ['test'], function () {
-    gulp.watch(paths.source + '**/*.ts', ['test']);
-    gulp.watch(paths.spec + '**/*spec.ts', ['test']);
+    gulp.watch(paths.source + '**/*.ts', ['test', 'lint:typescript']);
+    gulp.watch(paths.spec + '**/*spec.ts', ['test', 'lint:typescript']);
 });
 
 gulp.task('default', ['test'], function () {
