@@ -11,6 +11,7 @@ import {
     HtmlBehaviorResource,
     ViewFactory}
 from 'aurelia-templating';
+import {Attribute} from "parse5";
 
 export class ASTBuilder extends Rule {
     public root: ASTNode;
@@ -37,8 +38,13 @@ export class ASTBuilder extends Rule {
             next.tag = tag;
             next.parent = current;
             next.location = new FileLoc(loc.line, loc.col);
-            next.attrs = attrs.map((x, i) => {
+            next.attrs = attrs.map((x: Attribute & {prefix?: string}, i) => {
                 var attrLoc = loc.attrs[x.name];
+                // workaround for parse5 version differences
+                if(!attrLoc && x.prefix) {
+                    // for example in svg `<use xlink:href="icons.svg#some_selector">`
+                    attrLoc = loc.attrs[x.prefix + ":" + x.name];
+                }
                 var attr = new ASTAttribute();
                 attr.name = x.name;
                 attr.instruction = this.createAttributeInstruction(tag, x.name, x.value, attrLoc.line, attrLoc.col);
