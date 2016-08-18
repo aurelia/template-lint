@@ -10,6 +10,8 @@ var sourcemap = require('gulp-sourcemaps');
 var rimraf = require('gulp-rimraf');
 var replace = require('gulp-replace');
 var runsequence = require('run-sequence');
+var tslint = require('gulp-tslint');
+var typescriptFormatter = require('gulp-typescript-formatter');
 
 var paths = {
     source: "source/",
@@ -29,8 +31,6 @@ gulp.task('clean:tests', function () {
 
 gulp.task('clean', ['clean:tests', 'clean:typescript'], function () {
 });
-
-var tslint = require('gulp-tslint');
 
 gulp.task('compile:typescript', ['clean:typescript'], function () {
     var project = ts.createProject('tsconfig.json', {
@@ -61,6 +61,25 @@ gulp.task('lint:typescript', function() {
       formatter: "verbose"
     }))
     .pipe(tslint.report());
+});
+
+function format(sourcePattern, targetDir) {
+    return gulp.src(sourcePattern)
+        .pipe(typescriptFormatter({
+            baseDir: '.',
+            tslint: true, // use tslint.json file ?
+            editorconfig: true, // use .editorconfig file ?
+            tsfmt: true, // use tsfmt.json ?
+        }))
+        .pipe(gulp.dest(targetDir));
+}
+
+gulp.task('format:sources', function () {
+    return format(paths.source + '**/*.ts', paths.source);
+});
+
+gulp.task('format:tests', function () {
+    return format(paths.spec + '**/*.ts', paths.spec);
 });
 
 gulp.task('compile:tests', ['compile:typescript', 'clean:tests'], function () {
