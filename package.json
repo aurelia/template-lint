@@ -53,7 +53,7 @@
     "aurelia-templating-binding": "^1.0.0",
     "glob": "7.0.x",
     "parse5": "2.1.x",
-    "template-lint": "0.7.x",
+    "template-lint": "0.7.9 - 0.7.x",
     "typescript": "^2.0.0"
   }
 }
