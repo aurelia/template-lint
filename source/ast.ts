@@ -5,226 +5,226 @@ import { Rule, Parser, ParserState, Issue, IssueSeverity } from 'template-lint';
 import ts = require('typescript');
 
 import {
-    ViewResources,
-    BindingLanguage,
-    BehaviorInstruction,
-    HtmlBehaviorResource,
-    ViewFactory
+  ViewResources,
+  BindingLanguage,
+  BehaviorInstruction,
+  HtmlBehaviorResource,
+  ViewFactory
 }
-    from 'aurelia-templating';
+  from 'aurelia-templating';
 import { Attribute } from "parse5";
 
 export class ASTBuilder extends Rule {
-    public root: ASTNode;
-    public reportBindingSyntax = true;
+  public root: ASTNode;
+  public reportBindingSyntax = true;
 
-    private resources: ViewResources;
-    private bindingLanguage: TemplatingBindingLanguage;
-    private container: Container;
+  private resources: ViewResources;
+  private bindingLanguage: TemplatingBindingLanguage;
+  private container: Container;
 
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        this.container = new Container();
-        this.resources = this.container.get(ViewResources);
-        this.bindingLanguage = this.container.get(TemplatingBindingLanguage);
-    }
+    this.container = new Container();
+    this.resources = this.container.get(ViewResources);
+    this.bindingLanguage = this.container.get(TemplatingBindingLanguage);
+  }
 
-    init(parser: Parser) {
-        var current = new ASTNode();
-        this.root = current;
+  init(parser: Parser) {
+    var current = new ASTNode();
+    this.root = current;
 
-        parser.on("startTag", (tag, attrs, selfClosing, loc) => {
-            let next = new ASTElementNode();
-            next.tag = tag;
-            next.parent = current;
-            next.location = new FileLoc(loc.line, loc.col);
-            next.attrs = attrs.map((x: Attribute & { prefix?: string }, i) => {
-                var attrLoc = loc.attrs[x.name];
-                // workaround for parse5 version differences
-                if (!attrLoc && x.prefix) {
-                    // for example in svg `<use xlink:href="icons.svg#some_selector">`
-                    attrLoc = loc.attrs[x.prefix + ":" + x.name];
-                }
-                var attr = new ASTAttribute();
-                attr.name = x.name;
-                attr.instruction = this.createAttributeInstruction(tag, x.name, x.value, attrLoc.line, attrLoc.col);
-                attr.location = new FileLoc(attrLoc.line, attrLoc.col);
-                return attr;
-            });
-
-            current.children.push(next);
-            if (!parser.isVoid(tag))
-                current = next;
-        });
-
-        parser.on("endTag", (tag, attrs, selfClosing, loc) => {
-            current = current.parent;
-        });
-
-        parser.on("text", (text, loc) => {
-            let child = new ASTTextNode();
-            child.parent = current;
-            child.expression = this.createTextExpression(text, loc.line, loc.col);
-            child.location = new FileLoc(loc.line, loc.col);
-            current.children.push(child);
-        });
-    }
-
-    private createAttributeInstruction(tag: string, name: string, value: string, line: number, column: number): any {
-
-        var instruction: any = null;
-
-        try {
-            let info: any = this.bindingLanguage.inspectAttribute(this.resources, tag, name, value);
-            if (info)
-                instruction = this.bindingLanguage.createAttributeInstruction(this.resources, { tagName: tag }, info, undefined);
-        } catch (error) {
-            this.reportSyntaxIssue(error, line, column);
+    parser.on("startTag", (tag, attrs, selfClosing, loc) => {
+      let next = new ASTElementNode();
+      next.tag = tag;
+      next.parent = current;
+      next.location = new FileLoc(loc.line, loc.col);
+      next.attrs = attrs.map((x: Attribute & { prefix?: string }, i) => {
+        var attrLoc = loc.attrs[x.name];
+        // workaround for parse5 version differences
+        if (!attrLoc && x.prefix) {
+          // for example in svg `<use xlink:href="icons.svg#some_selector">`
+          attrLoc = loc.attrs[x.prefix + ":" + x.name];
         }
+        var attr = new ASTAttribute();
+        attr.name = x.name;
+        attr.instruction = this.createAttributeInstruction(tag, x.name, x.value, attrLoc.line, attrLoc.col);
+        attr.location = new FileLoc(attrLoc.line, attrLoc.col);
+        return attr;
+      });
 
-        return instruction;
+      current.children.push(next);
+      if (!parser.isVoid(tag))
+        current = next;
+    });
+
+    parser.on("endTag", (tag, attrs, selfClosing, loc) => {
+      current = current.parent;
+    });
+
+    parser.on("text", (text, loc) => {
+      let child = new ASTTextNode();
+      child.parent = current;
+      child.expression = this.createTextExpression(text, loc.line, loc.col);
+      child.location = new FileLoc(loc.line, loc.col);
+      current.children.push(child);
+    });
+  }
+
+  private createAttributeInstruction(tag: string, name: string, value: string, line: number, column: number): any {
+
+    var instruction: any = null;
+
+    try {
+      let info: any = this.bindingLanguage.inspectAttribute(this.resources, tag, name, value);
+      if (info)
+        instruction = this.bindingLanguage.createAttributeInstruction(this.resources, { tagName: tag }, info, undefined);
+    } catch (error) {
+      this.reportSyntaxIssue(error, line, column);
     }
 
-    private createTextExpression(text: string, line: number, column: number): InterpolationBindingExpression {
+    return instruction;
+  }
 
-        var exp: InterpolationBindingExpression = null;
+  private createTextExpression(text: string, line: number, column: number): InterpolationBindingExpression {
 
-        try {
-            exp = this.bindingLanguage.inspectTextContent(this.resources, text);
-        } catch (error) {
-            this.reportSyntaxIssue(error, line, column);
-        }
-        return exp;
+    var exp: InterpolationBindingExpression = null;
+
+    try {
+      exp = this.bindingLanguage.inspectTextContent(this.resources, text);
+    } catch (error) {
+      this.reportSyntaxIssue(error, line, column);
     }
+    return exp;
+  }
 
-    private reportSyntaxIssue(error: Error, line: number, column: number) {
+  private reportSyntaxIssue(error: Error, line: number, column: number) {
 
-        let shorter = error.message.split(/\./);
+    let shorter = error.message.split(/\./);
 
-        let msg = shorter ? shorter[0] : error.message.trim();
-        let detail = shorter && shorter.length > 1 ? shorter.splice(1).join().trim() : null;
+    let msg = shorter ? shorter[0] : error.message.trim();
+    let detail = shorter && shorter.length > 1 ? shorter.splice(1).join().trim() : null;
 
-        let issue = new Issue({
-            message: msg,
-            detail: detail,
-            line: line,
-            column: column,
-            severity: IssueSeverity.Error
-        });
+    let issue = new Issue({
+      message: msg,
+      detail: detail,
+      line: line,
+      column: column,
+      severity: IssueSeverity.Error
+    });
 
-        if (this.reportBindingSyntax)
-            this.reportIssue(issue);
-    }
+    if (this.reportBindingSyntax)
+      this.reportIssue(issue);
+  }
 }
 
 export class FileLoc {
-    constructor(public line: number, public column: number) {
-    }
+  constructor(public line: number, public column: number) {
+  }
 }
 
 export class ASTContext {
-    name: string = null;
-    type: ts.TypeNode = null;
-    typeDecl: ts.Declaration = null;
-    typeValue: Object = null;
+  name: string = null;
+  type: ts.TypeNode = null;
+  typeDecl: ts.Declaration = null;
+  typeValue: Object = null;
 
-    constructor(init?: {
-        name?: string,
-        type?: ts.TypeNode,
-        typeDecl?: ts.Declaration,
-        typeValue?: Object
-    }) {
-        if (init)
-            Object.assign(this, init);
-    }
+  constructor(init?: {
+    name?: string,
+    type?: ts.TypeNode,
+    typeDecl?: ts.Declaration,
+    typeValue?: Object
+  }) {
+    if (init)
+      Object.assign(this, init);
+  }
 }
 
 export class ASTNode {
-    public context: ASTContext = null;
-    public locals: ASTContext[] = [];
-    public parent: ASTNode = null;
-    public children: ASTNode[] = [];
-    public location: FileLoc = null;
+  public context: ASTContext = null;
+  public locals: ASTContext[] = [];
+  public parent: ASTNode = null;
+  public children: ASTNode[] = [];
+  public location: FileLoc = null;
 
-    constructor(init?: {
-        context?: ASTContext,
-        locals?: ASTContext[],
-        parent?: ASTNode,
-        children?: ASTNode[],
-        location?: FileLoc,
-    }) {
-        if (init)
-            Object.assign(this, init);
+  constructor(init?: {
+    context?: ASTContext,
+    locals?: ASTContext[],
+    parent?: ASTNode,
+    children?: ASTNode[],
+    location?: FileLoc,
+  }) {
+    if (init)
+      Object.assign(this, init);
+  }
+
+  addChild(node: ASTNode) {
+    if (this.children.indexOf(node) == -1) {
+      this.children.push(node);
+      node.parent = this;
+    }
+  }
+
+  public static inheritLocals(node: ASTNode, ancestor?: number): ASTContext[] {
+    let locals: ASTContext[] = [];
+
+    if (ancestor) {
+      while (node != null && ancestor >= 0) {
+        node = node.parent;
+        ancestor -= 1;
+      }
     }
 
-    addChild(node: ASTNode) {
-        if (this.children.indexOf(node) == -1) {
-            this.children.push(node);
-            node.parent = this;
-        }
+    while (node != null) {
+      node.locals.forEach(x => {
+        let index = locals.findIndex(y => y.name == x.name);
+
+        if (index == -1)
+          locals.push(x);
+      });
+
+      node = node.parent;
     }
 
-    public static inheritLocals(node: ASTNode, ancestor?: number): ASTContext[] {
-        let locals: ASTContext[] = [];
+    return locals;
+  }
 
-        if (ancestor) {
-            while (node != null && ancestor >= 0) {
-                node = node.parent;
-                ancestor -= 1;
-            }
-        }
-
-        while (node != null) {
-            node.locals.forEach(x => {
-                let index = locals.findIndex(y => y.name == x.name);
-
-                if (index == -1)
-                    locals.push(x);
-            });
-
-            node = node.parent;
-        }
-
-        return locals;
+  public static inheritContext(node: ASTNode, ancestor?: number): ASTContext {
+    if (ancestor) {
+      while (node != null && ancestor >= 0) {
+        node = node.parent;
+        ancestor -= 1;
+      }
     }
 
-    public static inheritContext(node: ASTNode, ancestor?: number): ASTContext {
-        if (ancestor) {
-            while (node != null && ancestor >= 0) {
-                node = node.parent;
-                ancestor -= 1;
-            }
-        }
-
-        while (node != null) {
-            if (node.context != null)
-                return node.context;
-            node = node.parent;
-        }
-        return null;
+    while (node != null) {
+      if (node.context != null)
+        return node.context;
+      node = node.parent;
     }
+    return null;
+  }
 }
 
 export class ASTAttribute {
-    public name: string;
-    public instruction: any; //BehaviorInstruction || 
-    public location: FileLoc;
+  public name: string;
+  public instruction: any; //BehaviorInstruction || 
+  public location: FileLoc;
 }
 
 export class ASTElementNode extends ASTNode {
-    public tag: string;
-    public attrs: ASTAttribute[];
+  public tag: string;
+  public attrs: ASTAttribute[];
 
-    constructor() {
-        super();
-    }
+  constructor() {
+    super();
+  }
 }
 
 export class ASTTextNode extends ASTNode {
-    public expression: InterpolationBindingExpression;
+  public expression: InterpolationBindingExpression;
 
-    constructor() {
-        super();
-    }
+  constructor() {
+    super();
+  }
 }
