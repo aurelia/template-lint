@@ -1,22 +1,22 @@
-import {Linter, Rule, Issue, IssueSeverity} from 'template-lint';
+import { Linter, Rule, Issue, IssueSeverity } from 'template-lint';
 
-import {SelfCloseRule} from 'template-lint';
-import {StructureRule} from 'template-lint';
-import {ObsoleteTagRule} from 'template-lint';
-import {ObsoleteAttributeRule} from 'template-lint';
-import {UniqueIdRule} from 'template-lint';
-import {AttributeValueRule} from 'template-lint';
-import {ConflictingAttributesRule, ConflictingAttributes} from 'template-lint';
+import { SelfCloseRule } from 'template-lint';
+import { StructureRule } from 'template-lint';
+import { ObsoleteTagRule } from 'template-lint';
+import { ObsoleteAttributeRule } from 'template-lint';
+import { UniqueIdRule } from 'template-lint';
+import { AttributeValueRule } from 'template-lint';
+import { ConflictingAttributesRule, ConflictingAttributes } from 'template-lint';
 
-import {RequireRule} from './rules/require';
-import {SlotRule} from './rules/slot';
-import {TemplateRule} from './rules/template';
-import {BindingRule} from './rules/binding';
+import { RequireRule } from './rules/require';
+import { SlotRule } from './rules/slot';
+import { TemplateRule } from './rules/template';
+import { BindingRule } from './rules/binding';
 
-import {Reflection} from './reflection';
-import {Config} from './config';
+import { Reflection } from './reflection';
+import { Config } from './config';
 
-import {initialize} from 'aurelia-pal-nodejs';
+import { initialize } from 'aurelia-pal-nodejs';
 
 initialize();
 
@@ -65,8 +65,8 @@ export class AureliaLinter {
                         reportBindingSyntax: this.config.useRuleAureliaBindingSyntax,
                         reportBindingAccess: this.config.useRuleAureliaBindingAccess,
                         reportExceptions: this.config.debug,
-                        localProvidors : this.config.aureliaBindingAccessOpts.localProvidors,
-                        restrictedAccess : this.config.aureliaBindingAccessOpts.restrictedAccess
+                        localProvidors: this.config.aureliaBindingAccessOpts.localProvidors,
+                        restrictedAccess: this.config.aureliaBindingAccessOpts.restrictedAccess
                     }));
 
         if (this.config.customRules)
@@ -76,7 +76,7 @@ export class AureliaLinter {
             rules,
             config.parserOpts.scopes,
             config.parserOpts.voids);
-        
+
         this.init = this.reflection.addGlob(this.config.reflectionOpts.sourceFileGlob)
             .then(() => {
                 if (this.config.reflectionOpts.typingsFileGlob != null)

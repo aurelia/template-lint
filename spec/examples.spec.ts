@@ -1,5 +1,5 @@
-import {Config} from '../source/config';
-import {AureliaLinter} from '../source/aurelia-linter';
+import { Config } from '../source/config';
+import { AureliaLinter } from '../source/aurelia-linter';
 
 describe("Aurelia Examples", () => {
 

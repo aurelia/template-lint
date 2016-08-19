@@ -1,7 +1,7 @@
 
 "use strict";
 
-import {Rule, Parser, Issue, IssueSeverity} from 'template-lint';
+import { Rule, Parser, Issue, IssueSeverity } from 'template-lint';
 
 
 /**
@@ -21,8 +21,9 @@ export class RequireRule extends Rule {
             if (!result) {
                 let error = new Issue({
                     message: "require tag is missing a 'from' attribute",
-                    line: location.line, 
-                    column: location.col}); 
+                    line: location.line,
+                    column: location.col
+                });
                 self.reportIssue(error);
             }
         });

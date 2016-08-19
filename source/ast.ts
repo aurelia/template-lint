@@ -1,7 +1,7 @@
-import {TemplatingBindingLanguage, InterpolationBindingExpression} from 'aurelia-templating-binding';
-import {AccessMember, AccessScope, AccessKeyed, NameExpression, ValueConverter} from 'aurelia-binding';
-import {Container} from 'aurelia-dependency-injection';
-import {Rule, Parser, ParserState, Issue, IssueSeverity} from 'template-lint';
+import { TemplatingBindingLanguage, InterpolationBindingExpression } from 'aurelia-templating-binding';
+import { AccessMember, AccessScope, AccessKeyed, NameExpression, ValueConverter } from 'aurelia-binding';
+import { Container } from 'aurelia-dependency-injection';
+import { Rule, Parser, ParserState, Issue, IssueSeverity } from 'template-lint';
 import ts = require('typescript');
 
 import {
@@ -9,9 +9,10 @@ import {
     BindingLanguage,
     BehaviorInstruction,
     HtmlBehaviorResource,
-    ViewFactory}
-from 'aurelia-templating';
-import {Attribute} from "parse5";
+    ViewFactory
+}
+    from 'aurelia-templating';
+import { Attribute } from "parse5";
 
 export class ASTBuilder extends Rule {
     public root: ASTNode;
@@ -20,10 +21,10 @@ export class ASTBuilder extends Rule {
     private resources: ViewResources;
     private bindingLanguage: TemplatingBindingLanguage;
     private container: Container;
-    
+
     constructor() {
         super();
-        
+
         this.container = new Container();
         this.resources = this.container.get(ViewResources);
         this.bindingLanguage = this.container.get(TemplatingBindingLanguage);
@@ -38,10 +39,10 @@ export class ASTBuilder extends Rule {
             next.tag = tag;
             next.parent = current;
             next.location = new FileLoc(loc.line, loc.col);
-            next.attrs = attrs.map((x: Attribute & {prefix?: string}, i) => {
+            next.attrs = attrs.map((x: Attribute & { prefix?: string }, i) => {
                 var attrLoc = loc.attrs[x.name];
                 // workaround for parse5 version differences
-                if(!attrLoc && x.prefix) {
+                if (!attrLoc && x.prefix) {
                     // for example in svg `<use xlink:href="icons.svg#some_selector">`
                     attrLoc = loc.attrs[x.prefix + ":" + x.name];
                 }
@@ -111,10 +112,10 @@ export class ASTBuilder extends Rule {
             column: column,
             severity: IssueSeverity.Error
         });
-        
-        if(this.reportBindingSyntax)
+
+        if (this.reportBindingSyntax)
             this.reportIssue(issue);
-    }  
+    }
 }
 
 export class FileLoc {

@@ -1,4 +1,4 @@
-import {Rule} from 'template-lint';
+import { Rule } from 'template-lint';
 
 export class Config {
 
@@ -108,7 +108,7 @@ export class Config {
         restrictedAccess: ["private", "protected"]
     }
 
-    
+
     /**
     * Aurelia Slot Options
     * controllers: attributes that create template controllers
@@ -118,7 +118,7 @@ export class Config {
             "repeat.for", "if.bind", "with.bind"
         ]
     }
-    
+
     /**
     * Aurelia Template Options
     * containers: html container elements (used to ensure no repeat-for usage)
@@ -141,7 +141,7 @@ export class Config {
      * report exceptions as issues, where applicable 
      */
     debug = false;
-    
+
     /**
      * Append the linter rule-set with these rules
      */

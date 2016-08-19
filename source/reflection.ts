@@ -82,17 +82,17 @@ export class Reflection {
 
     getDeclForType(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
         if (!source || !typeName) return null;
-        
+
         let types = source.statements.filter(x =>
-                x.kind == ts.SyntaxKind.ClassDeclaration ||
-                x.kind == ts.SyntaxKind.InterfaceDeclaration);
-    
+            x.kind == ts.SyntaxKind.ClassDeclaration ||
+            x.kind == ts.SyntaxKind.InterfaceDeclaration);
+
         let result = <ts.DeclarationStatement>types.find(x => (<ts.DeclarationStatement>x).name.getText() === typeName);
 
-        if(result)
-            return result; 
+        if (result)
+            return result;
 
-        return this.getDeclForImportedType(source, typeName);     
+        return this.getDeclForImportedType(source, typeName);
     }
 
     getDeclForImportedType(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
@@ -101,16 +101,16 @@ export class Reflection {
         let imports = source.statements.filter(x => x.kind == ts.SyntaxKind.ImportDeclaration)
         let map: { [id: string]: ts.SourceFile } = {}
         let symbolImportDecl = imports.find(x => {
-            if(!(<any>x).importClause) {
-              return false;  // smth like `import "module-name"`
+            if (!(<any>x).importClause) {
+                return false;  // smth like `import "module-name"`
             }
             const namedBindings = (<any>x).importClause.namedBindings;
-            if(!namedBindings) {
-              return false; // smth like `import defaultMember from "module-name";`;
+            if (!namedBindings) {
+                return false; // smth like `import defaultMember from "module-name";`;
             }
             let importSymbols = namedBindings.elements;
-            if(!importSymbols) {
-              return false; // smth like `import * as name from "module-name"`
+            if (!importSymbols) {
+                return false; // smth like `import * as name from "module-name"`
             }
             let importModule = (<any>x).moduleSpecifier.text;
 
@@ -213,7 +213,7 @@ export class Reflection {
                 return 'number';
             case ts.SyntaxKind.BooleanKeyword:
                 return 'boolean';
-            default:                
+            default:
                 //console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveTypeName`);
                 return null;
         }
