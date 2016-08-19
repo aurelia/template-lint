@@ -6,7 +6,7 @@
             "check-space"
         ],
         "indent": [
-            false,
+            true,
             "spaces"
         ],
         "no-duplicate-variable": true,
@@ -25,7 +25,7 @@
             "double"
         ],
         "semicolon": [
-            false,
+            true,
             "always"
         ],
         "triple-equals": [

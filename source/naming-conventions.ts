@@ -18,6 +18,6 @@ export class DefaultNamingConvention implements INamingConvention {
     }
 
     toDashCase(value: string) {
-        return value.replace(/([a-z][A-Z])/g, function (g) { return g[0] + '-' + g[1].toLowerCase() });
+        return value.replace(/([a-z][A-Z])/g, function (g) { return g[0] + '-' + g[1].toLowerCase(); });
     }
 } 

@@ -27,7 +27,7 @@ export class Reflection {
                     });
                 }
             } catch (err) {
-                reject(err)
+                reject(err);
             }
         });
     }
@@ -49,7 +49,7 @@ export class Reflection {
                     });
                 }
             } catch (err) {
-                reject(err)
+                reject(err);
             }
         });
     }
@@ -98,8 +98,8 @@ export class Reflection {
     getDeclForImportedType(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
         if (!source || !typeName) return null;
 
-        let imports = source.statements.filter(x => x.kind == ts.SyntaxKind.ImportDeclaration)
-        let map: { [id: string]: ts.SourceFile } = {}
+        let imports = source.statements.filter(x => x.kind == ts.SyntaxKind.ImportDeclaration);
+        let map: { [id: string]: ts.SourceFile } = {};
         let symbolImportDecl = imports.find(x => {
             if (!(<any>x).importClause) {
                 return false;  // smth like `import "module-name"`
@@ -169,13 +169,13 @@ export class Reflection {
         if (!node) return null;
         switch (node.kind) {
             case ts.SyntaxKind.PropertyDeclaration:
-                let prop = <ts.PropertyDeclaration>node
+                let prop = <ts.PropertyDeclaration>node;
                 return prop.type;
             case ts.SyntaxKind.MethodDeclaration:
-                let meth = <ts.MethodDeclaration>node
+                let meth = <ts.MethodDeclaration>node;
                 return meth.type;
             case ts.SyntaxKind.GetAccessor:
-                let get = <ts.GetAccessorDeclaration>node
+                let get = <ts.GetAccessorDeclaration>node;
                 return get.type;
             default:
                 //console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveClassElementType`);
@@ -187,10 +187,10 @@ export class Reflection {
         if (!node) return null;
         switch (node.kind) {
             case ts.SyntaxKind.PropertySignature:
-                let prop = <ts.PropertySignature>node
+                let prop = <ts.PropertySignature>node;
                 return prop.type;
             case ts.SyntaxKind.MethodSignature:
-                let meth = <ts.MethodSignature>node
+                let meth = <ts.MethodSignature>node;
                 return meth.type;
             default:
                 //console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveTypeElementType`);

@@ -7,7 +7,7 @@ describe("AttributeValue Rule", () => {
     var linter: AureliaLinter = new AureliaLinter(config);
 
     it("complains about string interpolation used in style attribute", (done) => {
-        var html = "<template><div style=\"width: ${width}px; height: ${height}px;\"></div></template>"
+        var html = "<template><div style=\"width: ${width}px; height: ${height}px;\"></div></template>";
 
         linter.lint(html)
             .then((issues) => {
@@ -18,7 +18,7 @@ describe("AttributeValue Rule", () => {
     });
 
     it("happy about plain string used in style attribute", (done) => {
-        var html = "<template><div style=\"width: 100px; height: 100px;\"></div></template>"
+        var html = "<template><div style=\"width: 100px; height: 100px;\"></div></template>";
 
         linter.lint(html)
             .then((issues) => {
@@ -28,7 +28,7 @@ describe("AttributeValue Rule", () => {
     });
 
     it("happy about string interpolation used in css attribute", (done) => {
-        var html = "<template><div css=\"width: ${width}px; height: ${height}px;\"></div></template>"
+        var html = "<template><div css=\"width: ${width}px; height: ${height}px;\"></div></template>";
 
         linter.lint(html)
             .then((issues) => {
@@ -38,7 +38,7 @@ describe("AttributeValue Rule", () => {
     });
 
     it("complains about camel case bindable", (done) => {
-        var html = `<template bindable="myNameIs"></template>`
+        var html = `<template bindable="myNameIs"></template>`;
 
         linter.lint(html)
             .then((issues) => {
@@ -49,7 +49,7 @@ describe("AttributeValue Rule", () => {
     });
 
     it("okay with non-camel-case bindable", (done) => {
-        var html = `<template bindable="mynameis"></template>`
+        var html = `<template bindable="mynameis"></template>`;
 
         linter.lint(html)
             .then((issues) => {
@@ -59,7 +59,7 @@ describe("AttributeValue Rule", () => {
     });
 
     it("okay with correct button", (done) => {
-        var html = `<template><button type="reset"></button></template>`
+        var html = `<template><button type="reset"></button></template>`;
 
         linter.lint(html)
             .then((issues) => {
@@ -69,7 +69,7 @@ describe("AttributeValue Rule", () => {
     });
 
     it("not okay with incorrect button type", (done) => {
-        var html = `<template><button type="reste"></button></template>`
+        var html = `<template><button type="reste"></button></template>`;
 
         linter.lint(html)
             .then((issues) => {

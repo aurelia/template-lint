@@ -217,7 +217,7 @@ export class ASTElementNode extends ASTNode {
     public attrs: ASTAttribute[];
 
     constructor() {
-        super()
+        super();
     }
 }
 

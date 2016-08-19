@@ -5,7 +5,7 @@ export class Config {
     useRuleAttributeValue = true;         // error on bad attribute value
     useRuleObsoleteAttribute = true;      // error on use of obsolete attributes
     useRuleObsoleteTag = true;            // error on use of obsolete tags
-    useRuleConflictingAttribute = true    // error on use of conflicting attributes
+    useRuleConflictingAttribute = true;    // error on use of conflicting attributes
     useRuleSelfClose = true;              // error on self-closed tags
     useRuleStructure = true;              // error on mismatched tags (unclosed)
 
@@ -41,7 +41,7 @@ export class Config {
             is: /^button$|^submit$|^reset$|^menu$/,
             msg: "button type invalid"
         }
-    ]
+    ];
 
 
     /**
@@ -93,7 +93,7 @@ export class Config {
             'param', 'source', 'track', 'wbr'],
 
         scopes: ['html', 'body', 'template', 'svg', 'math']
-    }
+    };
 
     /**
     * Aurelia Binding Access Options
@@ -106,7 +106,7 @@ export class Config {
             "repeat.for", "if.bind", "with.bind"
         ],
         restrictedAccess: ["private", "protected"]
-    }
+    };
 
 
     /**
@@ -117,7 +117,7 @@ export class Config {
         controllers: [
             "repeat.for", "if.bind", "with.bind"
         ]
-    }
+    };
 
     /**
     * Aurelia Template Options
@@ -125,7 +125,7 @@ export class Config {
     */
     aureliaTemplateOpt = {
         containers: ['table', 'select']
-    }
+    };
 
     /**
     * Reflection Options
@@ -135,7 +135,7 @@ export class Config {
     reflectionOpts = {
         sourceFileGlob: "source/**/*.ts",
         typingsFileGlob: "typings/**/*.d.ts",
-    }
+    };
 
     /**
      * report exceptions as issues, where applicable 

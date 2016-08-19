@@ -44,7 +44,7 @@ describe("Aurelia Examples", () => {
             <template>
                 <my-old-tag></my-old-tag>
             </template>                  
-            `
+            `;
         linter.lint(html)
             .then((issues) => {
                 expect(issues.length).toBe(1);
@@ -58,7 +58,7 @@ describe("Aurelia Examples", () => {
             <template>
                 <div>Hello World!</div>
             </template>                  
-            `
+            `;
         linter.lint(html)
             .then((issues) => {
                 expect(issues.length).toBe(0);
@@ -77,7 +77,7 @@ describe("Aurelia Examples", () => {
                 <router-view></router-view>
             </div>
             </template>  
-            `
+            `;
         linter.lint(html)
             .then((issues) => {
                 expect(issues.length).toBe(0);
@@ -94,7 +94,7 @@ describe("Aurelia Examples", () => {
                 </template>
             </table>
             </template>
-            `
+            `;
         linter.lint(html)
             .then((issues) => {
                 expect(issues.length).toBeGreaterThan(0);
@@ -111,7 +111,7 @@ describe("Aurelia Examples", () => {
                 </tr>
             </table>
             </template>
-            `
+            `;
         linter.lint(html)
             .then((issues) => {
                 expect(issues.length).toBe(0);
@@ -128,7 +128,7 @@ describe("Aurelia Examples", () => {
                 <option>...</option>
                 </template>
             </select>
-            </template> `
+            </template> `;
         linter.lint(html)
             .then((issues) => {
                 expect(issues.length).toBeGreaterThan(0);
@@ -143,7 +143,7 @@ describe("Aurelia Examples", () => {
                 <option repeat.for="customer of customers">...</option>
             </select>
             </template>
-            `
+            `;
         linter.lint(html)
             .then((issues) => {
                 expect(issues.length).toBe(0);
@@ -157,7 +157,7 @@ describe("Aurelia Examples", () => {
             <content>
             </content>
             </template>
-            `
+            `;
         linter.lint(html)
             .then((issues) => {
                 expect(issues.length).toBe(1);
@@ -186,7 +186,7 @@ describe("Aurelia Examples", () => {
         <template>
           <div id="\${model.type}-\${model.id}-selected">
           </div>
-        </template>`
+        </template>`;
         linter.lint(html)
             .then((issues) => {
                 expect(issues.length).toBe(0);
@@ -201,7 +201,7 @@ describe("Aurelia Examples", () => {
         <template>
           <div repeat.for="item of item" with.bind="item">
           </div>
-        </template>`
+        </template>`;
         linter.lint(html)
             .then((issues) => {
                 expect(issues.length).toBe(1);

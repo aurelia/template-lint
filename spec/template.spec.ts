@@ -48,7 +48,7 @@ describe("Template Rule", () => {
                 expect(issues[0].message).toBe("template as child of <table> not allowed");
                 done();
             });
-    })
+    });
 
     it("will reject template directly under select", (done) => {
         linter.lint('<template><select><template></template></select></template>')
@@ -56,7 +56,7 @@ describe("Template Rule", () => {
                 expect(issues[0].message).toBe("template as child of <select> not allowed");
                 done();
             });
-    })
+    });
 
 
     it("will pass template with valid contents", (done) => {

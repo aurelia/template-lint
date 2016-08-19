@@ -18,7 +18,7 @@ export class SlotRule extends Rule {
     }
 
     init(parser: Parser) {
-        var stack = parser.state.stack
+        var stack = parser.state.stack;
 
         parser.on("startTag", (tag, attrs, sc, loc) => {
             if (tag == 'slot') {
@@ -31,7 +31,7 @@ export class SlotRule extends Rule {
                 this.slots.push({ name: name, loc: loc });
 
                 for (let i = stack.length - 1; i >= 0; i--) {
-                    let result = stack[i].attrs.find(x => this.controllers.indexOf(x.name) != -1)
+                    let result = stack[i].attrs.find(x => this.controllers.indexOf(x.name) != -1);
                     if (result) {
                         this.reportIssue(
                             new Issue({
@@ -43,7 +43,7 @@ export class SlotRule extends Rule {
                     }
                 }
             }
-        })
+        });
     }
 
     finalise(): Issue[] {
@@ -69,7 +69,7 @@ export class SlotRule extends Rule {
                     column: slot.loc.col
                 });
 
-                this.reportIssue(error)
+                this.reportIssue(error);
             }
             else {
                 names.push(slot.name);

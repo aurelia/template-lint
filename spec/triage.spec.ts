@@ -11,11 +11,11 @@ describe("Triage", () => {
         let viewmodel = `
     export class Foo {
         value: string;
-    }`
+    }`;
         let view = `
     <template>
       \${value | booboo}
-    </template>`
+    </template>`;
         let reflection = new Reflection();
         let rule = new BindingRule(reflection);
         let linter = new Linter([rule]);
@@ -24,18 +24,18 @@ describe("Triage", () => {
             .then((issues) => {
                 expect(issues.length).toBe(0);
                 done();
-            })
+            });
     });
 
     it("it will silently ignore any-typed fields", (done) => {
         let viewmodel = `
     export class Foo {
         value: any;
-    }`
+    }`;
         let view = `
     <template>
       \${value.not.checked}
-    </template>`
+    </template>`;
         let reflection = new Reflection();
         let rule = new BindingRule(reflection);
         let linter = new Linter([rule]);
@@ -44,18 +44,18 @@ describe("Triage", () => {
             .then((issues) => {
                 expect(issues.length).toBe(0);
                 done();
-            })
+            });
     });
 
     it("it will silently ignore literal-typed fields", (done) => {
         let viewmodel = `
     export class Foo {
         value: {name:string};
-    }`
+    }`;
         let view = `
     <template>
       \${value.not.checked}
-    </template>`
+    </template>`;
         let reflection = new Reflection();
         let rule = new BindingRule(reflection);
         let linter = new Linter([rule]);
@@ -64,7 +64,7 @@ describe("Triage", () => {
             .then((issues) => {
                 expect(issues.length).toBe(0);
                 done();
-            })
+            });
     });
 
     it("it will silently ignore intersection types", (done) => {
@@ -75,16 +75,16 @@ describe("Triage", () => {
     export class B{
       name: string;
       value: number;
-    }`
+    }`;
         let viewmodel = `   
     import {A, B} from './types' 
     export class Foo {
         value:A | B;
-    }`
+    }`;
         let view = `
     <template>
       \${value.not.checked}
-    </template>`
+    </template>`;
         let reflection = new Reflection();
         let rule = new BindingRule(reflection);
         let linter = new Linter([rule]);
@@ -94,7 +94,7 @@ describe("Triage", () => {
             .then((issues) => {
                 expect(issues.length).toBe(0);
                 done();
-            })
+            });
     });
 
     it("it will silently ignore union types", (done) => {
@@ -105,16 +105,16 @@ describe("Triage", () => {
     export class B{
       name: string;
       value: number;
-    }`
+    }`;
         let viewmodel = `   
     import {A, B} from './types' 
     export class Foo {
         value:A & B;
-    }`
+    }`;
         let view = `
     <template>
       \${value.not.checked}
-    </template>`
+    </template>`;
         let reflection = new Reflection();
         let rule = new BindingRule(reflection);
         let linter = new Linter([rule]);
@@ -124,7 +124,7 @@ describe("Triage", () => {
             .then((issues) => {
                 expect(issues.length).toBe(0);
                 done();
-            })
+            });
     });
 
     it("it will silently ignore type alias", (done) => {
@@ -136,16 +136,16 @@ describe("Triage", () => {
       name: string;
       value: number;
     }
-    export type C = A & B`
+    export type C = A & B`;
         let viewmodel = `   
     import {C} from './types' 
     export class Foo {
         value:C;
-    }`
+    }`;
         let view = `
     <template>
       \${value.not.checked}
-    </template>`
+    </template>`;
         let reflection = new Reflection();
         let rule = new BindingRule(reflection);
         let linter = new Linter([rule]);
@@ -155,7 +155,7 @@ describe("Triage", () => {
             .then((issues) => {
                 expect(issues.length).toBe(0);
                 done();
-            })
+            });
     });
 
 
@@ -163,11 +163,11 @@ describe("Triage", () => {
         let viewmodel = `
     export class Foo {
         value: ()=>void;
-    }`
+    }`;
         let view = `
     <template>
       \${value.not.checked}
-    </template>`
+    </template>`;
         let reflection = new Reflection();
         let rule = new BindingRule(reflection);
         let linter = new Linter([rule]);
@@ -176,7 +176,7 @@ describe("Triage", () => {
             .then((issues) => {
                 expect(issues.length).toBe(0);
                 done();
-            })
+            });
     });
 
     //#58
@@ -184,12 +184,12 @@ describe("Triage", () => {
         let viewmodel = `
     export class Foo{
       items:[];
-    }`
+    }`;
         let view = `
     <template>    
       \${items.length}
       \${items.lengh}
-    </template>`
+    </template>`;
         let reflection = new Reflection();
         let rule = new BindingRule(reflection);
         let linter = new Linter([rule]);
@@ -202,6 +202,6 @@ describe("Triage", () => {
                 }
                 catch (err) { fail(err); }
                 finally { done(); }
-            })
+            });
     });
 });

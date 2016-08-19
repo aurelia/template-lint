@@ -29,8 +29,8 @@ export class BindingRule extends ASTBuilder {
     public reportBindingAccess = true;
     public reportExceptions = false;
 
-    public localProvidors = ["repeat.for", "if.bind", "with.bind"]
-    public restrictedAccess = ["private", "protected"]
+    public localProvidors = ["repeat.for", "if.bind", "with.bind"];
+    public restrictedAccess = ["private", "protected"];
 
     constructor(
         private reflection: Reflection,
@@ -109,15 +109,15 @@ export class BindingRule extends ASTBuilder {
 
         switch (instructionName) {
             case "BehaviorInstruction": {
-                this.examineBehaviorInstruction(node, <BehaviorInstruction>instruction)
+                this.examineBehaviorInstruction(node, <BehaviorInstruction>instruction);
                 break;
             }
             case "ListenerExpression": {
-                this.examineListenerExpression(node, <ListenerExpression>instruction)
+                this.examineListenerExpression(node, <ListenerExpression>instruction);
                 break;
             }
             case "NameExpression": {
-                this.examineNameExpression(node, <NameExpression>instruction)
+                this.examineNameExpression(node, <NameExpression>instruction);
                 break;
             }
             default: {
@@ -502,7 +502,7 @@ export class BindingRule extends ASTBuilder {
     }
 
     private toDashCase(value: string) {
-        return value.replace(/([a-z][A-Z])/g, function (g) { return g[0] + '-' + g[1].toLowerCase() });
+        return value.replace(/([a-z][A-Z])/g, function (g) { return g[0] + '-' + g[1].toLowerCase(); });
     }
 
     private reportUnresolvedAccessObjectIssue(member: string, objectName: string, loc: FileLoc) {

@@ -35,7 +35,7 @@ export class AureliaLinter {
         this.config = config;
         this.reflection = new Reflection();
 
-        let rules = []
+        let rules = [];
 
         if (this.config.useRuleSelfClose)
             rules.push(new SelfCloseRule());
@@ -51,7 +51,7 @@ export class AureliaLinter {
             rules.push(new ConflictingAttributesRule(<ConflictingAttributes[]>config.conflictingAttributeOpts));
 
         if (this.config.useRuleAureliaRequire)
-            rules.push(new RequireRule())
+            rules.push(new RequireRule());
         if (this.config.useRuleAureliaSlot)
             rules.push(new SlotRule(config.aureliaSlotOpts.controllers));
         if (this.config.useRuleAureliaTemplate)
