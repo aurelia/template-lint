@@ -208,7 +208,7 @@ export class ASTNode {
 
 export class ASTAttribute {
   public name: string;
-  public instruction: any; //BehaviorInstruction || 
+  public instruction: any;
   public location: FileLoc;
 }
 

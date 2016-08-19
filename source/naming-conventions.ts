@@ -14,10 +14,10 @@ export class DefaultNamingConvention implements INamingConvention {
   }
 
   toCamelCase(value: string) {
-    return value.replace(/-([a-z])/g, function(g) { return g[1].toUpperCase(); });
+    return value.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
   }
 
   toDashCase(value: string) {
-    return value.replace(/([a-z][A-Z])/g, function(g) { return g[0] + '-' + g[1].toLowerCase(); });
+    return value.replace(/([a-z][A-Z])/g, function (g) { return g[0] + "-" + g[1].toLowerCase(); });
   }
 }

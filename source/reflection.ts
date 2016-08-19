@@ -1,7 +1,7 @@
-import * as Path from 'path';
-import * as ts from 'typescript';
-import * as glob from 'glob';
-import * as fs from 'fs';
+import * as Path from "path";
+import * as ts from "typescript";
+import * as glob from "glob";
+import * as fs from "fs";
 
 /*
 * Manage Reflection information for available sources
@@ -19,7 +19,7 @@ export class Reflection {
               reject(er);
 
             files.forEach(path => {
-              let source = fs.readFileSync(path, 'utf8');
+              let source = fs.readFileSync(path, "utf8");
               this.add(path, source);
             });
 
@@ -41,7 +41,7 @@ export class Reflection {
               reject(er);
 
             files.forEach(path => {
-              let source = fs.readFileSync(path, 'utf8');
+              let source = fs.readFileSync(path, "utf8");
               this.addTypings(source);
             });
 
@@ -75,7 +75,7 @@ export class Reflection {
       .map(x => <ts.ModuleDeclaration>x);
 
     modules.forEach(module => {
-      let moduleName = module.name.getText().replace(/\'|\"|\`/g, '');
+      let moduleName = module.name.getText().replace(/\'|\"|\`/g, "");
       this.pathToSource[moduleName] = module;
     });
   }
@@ -157,11 +157,11 @@ export class Reflection {
           x.kind == ts.SyntaxKind.ClassDeclaration ||
           x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
-        return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == typeName);
+        return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() === typeName);
       }
     }
     else {
-      //console.log("getDeclForImportedType - Unknown kind - " + sourceDecl.kind);
+      // console.log("getDeclForImportedType - Unknown kind - " + sourceDecl.kind);
     }
   }
 
@@ -178,7 +178,7 @@ export class Reflection {
         let get = <ts.GetAccessorDeclaration>node;
         return get.type;
       default:
-        //console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveClassElementType`);
+        // console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveClassElementType`);
         return null;
     }
   }
@@ -208,11 +208,11 @@ export class Reflection {
         let ref = <ts.TypeReferenceNode>node;
         return ref.typeName.getText();
       case ts.SyntaxKind.StringKeyword:
-        return 'string';
+        return "string";
       case ts.SyntaxKind.NumberKeyword:
-        return 'number';
+        return "number";
       case ts.SyntaxKind.BooleanKeyword:
-        return 'boolean';
+        return "boolean";
       default:
         //console.log(`unhandled kind ${ts.SyntaxKind[node.kind]} in resolveTypeName`);
         return null;

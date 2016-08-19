@@ -1,16 +1,16 @@
 "use strict";
 
-import 'aurelia-polyfills';
+import "aurelia-polyfills";
 
-import { TemplatingBindingLanguage, InterpolationBindingExpression } from 'aurelia-templating-binding';
-import { ViewResources, BindingLanguage, BehaviorInstruction } from 'aurelia-templating';
-import { AccessMember, AccessScope, AccessKeyed, Expression, NameExpression, ValueConverter, ListenerExpression } from 'aurelia-binding';
-import { Container } from 'aurelia-dependency-injection';
-import * as ts from 'typescript';
-import * as Path from 'path';
+import { TemplatingBindingLanguage, InterpolationBindingExpression } from "aurelia-templating-binding";
+import { ViewResources, BindingLanguage, BehaviorInstruction } from "aurelia-templating";
+import { AccessMember, AccessScope, AccessKeyed, Expression, NameExpression, ValueConverter, ListenerExpression } from "aurelia-binding";
+import { Container } from "aurelia-dependency-injection";
+import * as ts from "typescript";
+import * as Path from "path";
 
-import { Rule, Parser, ParserState, Issue, IssueSeverity } from 'template-lint';
-import { Reflection } from '../reflection';
+import { Rule, Parser, ParserState, Issue, IssueSeverity } from "template-lint";
+import { Reflection } from "../reflection";
 
 import {
   ASTBuilder,
@@ -20,7 +20,7 @@ import {
   ASTAttribute,
   ASTContext,
   FileLoc
-} from '../ast';
+} from "../ast";
 
 /**
  *  Rule to ensure static type usage is valid
@@ -133,10 +133,10 @@ export class BindingRule extends ASTBuilder {
     switch (attrName) {
       case "repeat": {
 
-        let varKey = <string>instruction.attributes['key'];
-        let varValue = <string>instruction.attributes['value'];
-        let varLocal = <string>instruction.attributes['local'];
-        let source = instruction.attributes['items'];
+        let varKey = <string>instruction.attributes["key"];
+        let varValue = <string>instruction.attributes["value"];
+        let varLocal = <string>instruction.attributes["local"];
+        let source = instruction.attributes["items"];
         let chain = this.flattenAccessChain(source.sourceExpression);
         let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
 
@@ -161,7 +161,7 @@ export class BindingRule extends ASTBuilder {
       }
       case "with": {
 
-        let source = instruction.attributes['with'];
+        let source = instruction.attributes["with"];
         let chain = this.flattenAccessChain(source.sourceExpression);
         let resolved = this.resolveAccessScopeToType(node, chain, new FileLoc(attrLoc.line, attrLoc.column));
 
@@ -498,11 +498,11 @@ export class BindingRule extends ASTBuilder {
   }
 
   private toCamelCase(value: string) {
-    return value.replace(/-([a-z])/g, function(g) { return g[1].toUpperCase(); });
+    return value.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
   }
 
   private toDashCase(value: string) {
-    return value.replace(/([a-z][A-Z])/g, function(g) { return g[0] + '-' + g[1].toLowerCase(); });
+    return value.replace(/([a-z][A-Z])/g, function (g) { return g[0] + "-" + g[1].toLowerCase(); });
   }
 
   private reportUnresolvedAccessObjectIssue(member: string, objectName: string, loc: FileLoc) {

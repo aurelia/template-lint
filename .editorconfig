@@ -6,9 +6,7 @@ indent_style = space
 indent_size = 2
 end_of_line = lf
 charset = utf-8
-# actually my preference would be true, but so far trimming hasn't been done everywhere
-trim_trailing_whitespace = true
-# actually my preference would be true, but it seemed that final newline isn't used in this project
+trim_trailing_whitespace = false
 insert_final_newline = true
 
 [*.md]
