@@ -1,11 +1,11 @@
 "use strict";
 
-import {Linter, Rule} from 'template-lint';
-import {Config} from '../source/config';
-import {AureliaLinter} from '../source/aurelia-linter';
-import {BindingRule} from '../source/rules/binding';
-import {Reflection} from '../source/reflection';
-import {initialize} from 'aurelia-pal-nodejs';
+import { Linter, Rule } from 'template-lint';
+import { Config } from '../source/config';
+import { AureliaLinter } from '../source/aurelia-linter';
+import { BindingRule } from '../source/rules/binding';
+import { Reflection } from '../source/reflection';
+import { initialize } from 'aurelia-pal-nodejs';
 
 initialize();
 
@@ -25,5 +25,5 @@ describe("Failing Scenarios", () => {
         finally { done(); }
       });
   });
-  */  
+  */
 });

@@ -1,6 +1,6 @@
 
-import {Linter, Rule} from 'template-lint';
-import {RequireRule} from '../source/rules/require';
+import { Linter, Rule } from 'template-lint';
+import { RequireRule } from '../source/rules/require';
 
 describe("Require Rule", () => {
 

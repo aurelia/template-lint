@@ -1,13 +1,13 @@
 {
-    "compilerOptions": {
-        "target": "es6",
-        "module": "commonjs",        
-        "sourceMap": true,
-        "noEmitOnError": true,
-        "newLine": "LF",
-        "declaration": true       
-    },
-    "exclude": [
-      "node_modules"
-    ]
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "sourceMap": true,
+    "noEmitOnError": true,
+    "newLine": "LF",
+    "declaration": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }

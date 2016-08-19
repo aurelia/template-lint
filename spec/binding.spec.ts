@@ -1,8 +1,8 @@
 
-import {Linter, Rule} from 'template-lint';
-import {BindingRule} from '../source/rules/binding';
-import {Reflection} from '../source/reflection';
-import {ASTNode} from '../source/ast';
+import { Linter, Rule } from 'template-lint';
+import { BindingRule } from '../source/rules/binding';
+import { Reflection } from '../source/reflection';
+import { ASTNode } from '../source/ast';
 
 describe("Static-Type Binding Tests", () => {
 
@@ -15,7 +15,7 @@ describe("Static-Type Binding Tests", () => {
       linter.lint('<div repeat.for="item of"></div>')
         .then((issues) => {
           expect(issues.length).toBe(1);
-          expect(issues[0].message).toContain('Incorrect syntax for "for"')
+          expect(issues[0].message).toContain('Incorrect syntax for "for"');
           done();
         });
     });
@@ -25,7 +25,7 @@ describe("Static-Type Binding Tests", () => {
       export class Foo {
           existing = true;
           items = [];
-      }`
+      }`;
       let view = `
       <template>
           \${existing}
@@ -35,7 +35,7 @@ describe("Static-Type Binding Tests", () => {
               \${item}
           </a>
           \${missing3}
-      </template>`
+      </template>`;
       let reflection = new Reflection();
       let rule = new BindingRule(reflection);
       let linter = new Linter([rule]);
@@ -50,8 +50,8 @@ describe("Static-Type Binding Tests", () => {
           }
           catch (err) { fail(err); }
           finally { done(); }
-        })
-    })
+        });
+    });
 
 
     it("accepts good repeat.for attribute value", (done) => {
@@ -64,11 +64,11 @@ describe("Static-Type Binding Tests", () => {
       import {Item} from './path/item
       export class Foo{
         items:Item[]
-      }`
+      }`;
       let view = `
       <template repeat.for="item of items">    
         \${item}
-      </template>`
+      </template>`;
       let reflection = new Reflection();
       let rule = new BindingRule(reflection);
       let linter = new Linter([rule]);
@@ -79,9 +79,9 @@ describe("Static-Type Binding Tests", () => {
           try {
             expect(issues.length).toBe(0);
           }
-          catch (error) { expect(error).toBeUndefined() }
+          catch (error) { expect(error).toBeUndefined(); }
           finally { done(); }
-        })
+        });
     });
 
     it("accepts good repeat.for attribute valid of imported interface", (done) => {
@@ -94,12 +94,12 @@ describe("Static-Type Binding Tests", () => {
       import {Item} from './path/item
       export class Foo{
         items:Item[]
-      }`
+      }`;
       let view = `
       <template repeat.for="item of items">
         \${item}
         \${item.info}
-      </template>`
+      </template>`;
       let reflection = new Reflection();
       let rule = new BindingRule(reflection);
       let linter = new Linter([rule]);
@@ -110,9 +110,9 @@ describe("Static-Type Binding Tests", () => {
           try {
             expect(issues.length).toBe(0);
           }
-          catch (error) { expect(error).toBeUndefined() }
+          catch (error) { expect(error).toBeUndefined(); }
           finally { done(); }
-        })
+        });
     });
 
     it("supports repeat.for when iterating an unknown", (done) => {
@@ -121,13 +121,13 @@ describe("Static-Type Binding Tests", () => {
       import {Router} from 'not-defined'
       export class Foo{
         @bindable router: Router;
-      }`
+      }`;
       let view = `
       <template>    
         <li repeat.for="row of router.navigation">
             <a href.bind="row.href">\${row.title}</a>
         </li>
-      </template>`
+      </template>`;
       let reflection = new Reflection();
       let rule = new BindingRule(reflection);
       let linter = new Linter([rule]);
@@ -143,7 +143,7 @@ describe("Static-Type Binding Tests", () => {
           finally {
             done();
           }
-        })
+        });
     });
   });
 
@@ -155,7 +155,7 @@ describe("Static-Type Binding Tests", () => {
     linter.lint('<div>${..}</div>')
       .then((issues) => {
         expect(issues.length).toBe(1);
-        expect(issues[0].message).toContain('Parser Error')
+        expect(issues[0].message).toContain('Parser Error');
         done();
       });
   });
@@ -164,11 +164,11 @@ describe("Static-Type Binding Tests", () => {
     let viewmodel = `
     export class Foo{
       name:string
-    }`
+    }`;
     let view = `
     <template>
       \${name}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -178,9 +178,9 @@ describe("Static-Type Binding Tests", () => {
         try {
           expect(issues.length).toBe(0);
         }
-        catch (error) { expect(error).toBeUndefined() }
+        catch (error) { expect(error).toBeUndefined(); }
         finally { done(); }
-      })
+      });
   });
 
   it("accepts good interpolation within attribute value", (done) => {
@@ -188,11 +188,11 @@ describe("Static-Type Binding Tests", () => {
     export class Foo{
       width:number;
       height:number;
-    }`
+    }`;
     let view = `
     <template>
       <div css="width: \${width}px; height: \${height}px;"></div>
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -201,7 +201,7 @@ describe("Static-Type Binding Tests", () => {
       .then((issues) => {
         expect(issues.length).toBe(0);
         done();
-      })
+      });
   });
 
   it("rejects bad interpolation within attribute value", (done) => {
@@ -209,11 +209,11 @@ describe("Static-Type Binding Tests", () => {
     export class Foo{
       width:number;
       height:number;
-    }`
+    }`;
     let view = `
     <template>
       <div css="width: \${widt}px; height: \${hight}px;"></div>
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -224,18 +224,18 @@ describe("Static-Type Binding Tests", () => {
         expect(issues[0].message).toBe("cannot find 'widt' in type 'Foo'");
         expect(issues[1].message).toBe("cannot find 'hight' in type 'Foo'");
         done();
-      })
+      });
   });
 
   it("rejects bad interpolation binding", (done) => {
     let viewmodel = `
     export class Foo{
       name:string
-    }`
+    }`;
     let view = `
     <template>
       \${nam}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -243,23 +243,23 @@ describe("Static-Type Binding Tests", () => {
     linter.lint(view, "./foo.html")
       .then((issues) => {
         try {
-          expect(issues.length).toBe(1)
+          expect(issues.length).toBe(1);
           expect(issues[0].message).toBe("cannot find 'nam' in type 'Foo'");
         }
-        catch (error) { expect(error).toBeUndefined() }
+        catch (error) { expect(error).toBeUndefined(); }
         finally { done(); }
-      })
+      });
   });
 
   it("accepts good if.bind", (done) => {
     let viewmodel = `
     export class Foo{
       condition:boolean
-    }`
+    }`;
     let view = `
     <template>
       <div if.bind="condition"></div>
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -268,18 +268,18 @@ describe("Static-Type Binding Tests", () => {
       .then((issues) => {
         expect(issues.length).toBe(0);
         done();
-      })
+      });
   });
 
   it("accepts good negated if.bind", (done) => {
     let viewmodel = `
     export class Foo{
       condition:boolean
-    }`
+    }`;
     let view = `
     <template>
       <div if.bind="!condition"></div>
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -288,18 +288,18 @@ describe("Static-Type Binding Tests", () => {
       .then((issues) => {
         expect(issues.length).toBe(0);
         done();
-      })
+      });
   });
 
   it("accepts good attribute binding", (done) => {
     let viewmodel = `
     export class Foo{
       name:string
-    }`
+    }`;
     let view = `
     <template>
       <input type="text" value.bind="name">
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -309,9 +309,9 @@ describe("Static-Type Binding Tests", () => {
         try {
           expect(issues.length).toBe(0);
         }
-        catch (error) { expect(error).toBeUndefined() }
+        catch (error) { expect(error).toBeUndefined(); }
         finally { done(); }
-      })
+      });
   });
 
 
@@ -325,11 +325,11 @@ describe("Static-Type Binding Tests", () => {
     import {Item} from './path/item
     export class Foo{
       item:Item
-    }`
+    }`;
     let view = `
     <template>
       \${item.info}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -340,9 +340,9 @@ describe("Static-Type Binding Tests", () => {
         try {
           expect(issues.length).toBe(0);
         }
-        catch (error) { expect(error).toBeUndefined() }
+        catch (error) { expect(error).toBeUndefined(); }
         finally { done(); }
-      })
+      });
   });
 
   it("rejects bad attribute binding to imported type", (done) => {
@@ -358,7 +358,7 @@ describe("Static-Type Binding Tests", () => {
     let view = `
     <template>
       \${item.infooo}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -370,9 +370,9 @@ describe("Static-Type Binding Tests", () => {
           expect(issues.length).toBe(1);
           expect(issues[0].message).toBe("cannot find 'infooo' in type 'Item'");
         }
-        catch (error) { expect(error).toBeUndefined() }
+        catch (error) { expect(error).toBeUndefined(); }
         finally { done(); }
-      })
+      });
   });
 
   it("accepts good with.bind attribute value", (done) => {
@@ -385,9 +385,9 @@ describe("Static-Type Binding Tests", () => {
     import {Item} from './path/item
     export class Foo{
       item:Item
-    }`
+    }`;
     let view = `
-    <template with.bind="item"></template>`
+    <template with.bind="item"></template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -398,9 +398,9 @@ describe("Static-Type Binding Tests", () => {
         try {
           expect(issues.length).toBe(0);
         }
-        catch (error) { expect(error).toBeUndefined() }
+        catch (error) { expect(error).toBeUndefined(); }
         finally { done(); }
-      })
+      });
   });
 
   it("rejects bad with.bind attribute value", (done) => {
@@ -413,9 +413,9 @@ describe("Static-Type Binding Tests", () => {
     import {Item} from './path/item
     export class Foo{
       item:Item
-    }`
+    }`;
     let view = `
-    <template with.bind="itm"></template>`
+    <template with.bind="itm"></template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -427,9 +427,9 @@ describe("Static-Type Binding Tests", () => {
           expect(issues.length).toBe(1);
           expect(issues[0].message).toBe("cannot find 'itm' in type 'Foo'");
         }
-        catch (error) { expect(error).toBeUndefined() }
+        catch (error) { expect(error).toBeUndefined(); }
         finally { done(); }
-      })
+      });
   });
 
 
@@ -443,9 +443,9 @@ describe("Static-Type Binding Tests", () => {
     import {Item} from './path/item
     export class Foo{
       items:Item[]
-    }`
+    }`;
     let view = `
-    <template repeat.for="item of itms"></template>`
+    <template repeat.for="item of itms"></template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -457,21 +457,21 @@ describe("Static-Type Binding Tests", () => {
           expect(issues.length).toBe(1);
           expect(issues[0].message).toBe("cannot find 'itms' in type 'Foo'");
         }
-        catch (error) { expect(error).toBeUndefined() }
+        catch (error) { expect(error).toBeUndefined(); }
         finally { done(); }
-      })
+      });
   });
 
   it("correctly find view-model regardless of class name", (done) => {
     let viewmodel = `
     export class ChooChoo{
       name:string
-    }`
+    }`;
     let view = `
     <template>
       <input type="text" value.bind="name">
       \${nam}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -481,7 +481,7 @@ describe("Static-Type Binding Tests", () => {
         expect(issues.length).toBe(1);
         expect(issues[0].message).toBe("cannot find 'nam' in type 'ChooChoo'");
         done();
-      })
+      });
   });
 
   it("supports chain traversal via method return type", (done) => {
@@ -489,23 +489,23 @@ describe("Static-Type Binding Tests", () => {
     export class Role{
       isAdmin:boolean;      
     }
-    `
+    `;
     let person = `    
     import {Role} from './role';   
     export class Person{    
        getRole():Role{}
-    }`
+    }`;
     let viewmodel = ` 
     import {Person} from './nested/person';   
     export class Foo{
       getPerson():Person{}
-    }`
+    }`;
     let view = `
     <template>     
         \${getPerson().getRole().isAdmin}
         \${getPerson().getRole().isAdmi}
         \${getPerson().rol}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -519,7 +519,7 @@ describe("Static-Type Binding Tests", () => {
           expect(issues[0].message).toBe("cannot find 'isAdmi' in type 'Role'");
           expect(issues[1].message).toBe("cannot find 'rol' in type 'Person'");
         } finally { done(); }
-      })
+      });
   });
 
   it("supports $parent access scope", (done) => {
@@ -527,17 +527,17 @@ describe("Static-Type Binding Tests", () => {
     export class Role{
       isAdmin:boolean;      
     }
-    `
+    `;
     let person = `    
     import {Role} from './role';   
     export class Person{    
        role:Role; 
-    }`
+    }`;
     let viewmodel = ` 
     import {Person} from './person';   
     export class Foo{
       person:Person; 
-    }`
+    }`;
     let view = `
     <template with.bind="person">
       <template with.bind="role">
@@ -545,7 +545,7 @@ describe("Static-Type Binding Tests", () => {
         \${$parent.$parent.person.role.isAdmin}
         \${$parent.role.isAdmin} 
       </template>
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -557,7 +557,7 @@ describe("Static-Type Binding Tests", () => {
         expect(issues.length).toBe(1);
         expect(issues[0].message).toBe("cannot find 'isAdmn' in type 'Role'");
         done();
-      })
+      });
   });
 
   it("will accept use of local created in same element", (done) => {
@@ -565,18 +565,18 @@ describe("Static-Type Binding Tests", () => {
     export class Person{           
        id:number;
        fullName:string;
-    }`
+    }`;
     let viewmodel = ` 
     import {Person} from './person';   
     export class Foo{
       employees:Person[]; 
-    }`
+    }`;
     let view = `
     <template>
         <option repeat.for="employee of employees" model.bind = "employee.id" > 
           \${employee.fullName } 
         </option>
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -586,7 +586,7 @@ describe("Static-Type Binding Tests", () => {
       .then((issues) => {
         expect(issues.length).toBe(0);
         done();
-      })
+      });
   });
 
   it("will accept use of local created in same element, before it is created", (done) => {
@@ -594,18 +594,18 @@ describe("Static-Type Binding Tests", () => {
     export class Person{           
        id:number;
        fullName:string;
-    }`
+    }`;
     let viewmodel = ` 
     import {Person} from './person';   
     export class Foo{
       employees:Person[]; 
-    }`
+    }`;
     let view = `
     <template>
         <option model.bind = "employee.id" repeat.for="employee of employees"  > 
           \${employee.fullName } 
         </option>
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -615,18 +615,18 @@ describe("Static-Type Binding Tests", () => {
       .then((issues) => {
         expect(issues.length).toBe(0);
         done();
-      })
+      });
   });
 
   it("will reject access of private member", (done) => {
     let viewmodel = `
     export class Foo{
       private name:string;
-    }`
+    }`;
     let view = `
     <template>
       <input type="text" value.bind="name">
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -636,18 +636,18 @@ describe("Static-Type Binding Tests", () => {
         expect(issues.length).toBe(1);
         expect(issues[0].message).toBe("field 'name' in type 'Foo' has private access modifier");
         done();
-      })
+      });
   });
 
   it("will reject access of protected member (with default settings)", (done) => {
     let viewmodel = `
     export class Foo{
       protected name:string;
-    }`
+    }`;
     let view = `
     <template>
       <input type="text" value.bind="name">
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -657,7 +657,7 @@ describe("Static-Type Binding Tests", () => {
         expect(issues.length).toBe(1);
         expect(issues[0].message).toBe("field 'name' in type 'Foo' has protected access modifier");
         done();
-      })
+      });
   });
 
   it("will not reject access of protected member if only private access modifier is restricted", (done) => {
@@ -665,12 +665,12 @@ describe("Static-Type Binding Tests", () => {
     export class Foo{
         private privateMember:string;
         protected protectedMember:string;
-    }`
+    }`;
     let view = `
     <template>
       <input type="text" value.bind="privateMember">
       <input type="text" value.bind="protectedMember">
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection, { restrictedAccess: ["private"] });
     let linter = new Linter([rule]);
@@ -680,7 +680,7 @@ describe("Static-Type Binding Tests", () => {
         expect(issues.length).toBe(1);
         expect(issues[0].message).toBe("field 'privateMember' in type 'Foo' has private access modifier");
         done();
-      })
+      });
   });
 
   it("supports custom typings", (done) => {
@@ -689,17 +689,17 @@ describe("Static-Type Binding Tests", () => {
         export interface Person{
           name:string;
         }
-    }`
+    }`;
     let viewmodel = `
     import {Person} from 'my-lib';
     export class Foo{
       person:Person;
-    }`
+    }`;
     let view = `
     <template>
       \${person.name}
       \${person.nme}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -710,14 +710,14 @@ describe("Static-Type Binding Tests", () => {
         expect(issues.length).toBe(1);
         expect(issues[0].message).toBe("cannot find 'nme' in type 'Person'");
         done();
-      })
+      });
   });
 
   it("supports importing module", (done) => {
     let lib = `
     declare module 'module-name' {
       // dummy module that in reality should have some exports imported bellow
-    }`
+    }`;
     let viewmodel = `
     import defaultMember from "module-name";
     import * as name from "module-name";
@@ -728,14 +728,14 @@ describe("Static-Type Binding Tests", () => {
     import "module-name";
     export class Foo{
       existing:string;
-    }`
+    }`;
     let view = `
     <template>
       \${existing}
       \${missing}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, {reportExceptions: true});
+    let rule = new BindingRule(reflection, { reportExceptions: true });
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     reflection.addTypings(lib);
@@ -745,27 +745,27 @@ describe("Static-Type Binding Tests", () => {
         const issue1 = issues[0];
         expect(issue1.message).toContain("cannot find 'missing' in type 'Foo'");
         done();
-      })
+      });
   });
 
   it("supports bindable field", (done) => {
     let item = `      
     export class Item{           
        name:string;
-    }`
+    }`;
     let viewmodel = `
     import {bindable} from "aurelia-framework";
     import {Item} from './item'
     export class ItemCustomElement {
         @bindable value: Item;
-    }`
+    }`;
     let view = `
     <template>
       \${value}
       \${valu}
       \${value.name}      
       \${value.nae}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -777,20 +777,20 @@ describe("Static-Type Binding Tests", () => {
         expect(issues[0].message).toBe("cannot find 'valu' in type 'ItemCustomElement'");
         expect(issues[1].message).toBe("cannot find 'nae' in type 'Item'");
         done();
-      })
+      });
   });
 
   it("supports public property from constructor argument", (done) => {
     let viewmodel = `
     export class ConstructorFieldCustomElement {
       constructor(public constructorPublicField:string, justAConstructorArgument: string, private constructorPrivateField: string){}
-    }`
+    }`;
     let view = `
     <template>
       \${constructorPublicField}
       \${justAConstructorArgument}
       \${constructorPrivateField}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -801,7 +801,7 @@ describe("Static-Type Binding Tests", () => {
         expect(issues[0].message).toBe("cannot find 'justAConstructorArgument' in type 'ConstructorFieldCustomElement'");
         expect(issues[1].message).toBe("field 'constructorPrivateField' in type 'ConstructorFieldCustomElement' has private access modifier");
         done();
-      })
+      });
   });
 
   it("supports keyed-access (expression)", (done) => {
@@ -815,12 +815,12 @@ describe("Static-Type Binding Tests", () => {
     export class Foo{
       items:Item[]
       index:number;
-    }`
+    }`;
     let view = `
     <template>    
       \${items[index].info}
       \${items[indx].inf}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -833,7 +833,7 @@ describe("Static-Type Binding Tests", () => {
           expect(issues[0].message).toBe("cannot find 'indx' in type 'Foo'");
           expect(issues[1].message).toBe("cannot find 'inf' in type 'Item'");
         } finally { done(); }
-      })
+      });
   });
 
   // #90
@@ -851,7 +851,7 @@ describe("Static-Type Binding Tests", () => {
       existing: string;
       [x: string]: any; // dynamic properties can be used with index signature
     }
-`
+`;
     let view = `
     <template>
       \${i.existing}
@@ -860,9 +860,9 @@ describe("Static-Type Binding Tests", () => {
       \${c.existing}
       \${c.dynamic3}
       \${c.dynamic4}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, {reportExceptions: true});
+    let rule = new BindingRule(reflection, { reportExceptions: true });
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
@@ -872,7 +872,7 @@ describe("Static-Type Binding Tests", () => {
         }
         catch (err) { fail(err); }
         finally { done(); }
-      })
+      });
   });
 
   //#59
@@ -886,13 +886,13 @@ describe("Static-Type Binding Tests", () => {
     import {Item} from './path/item
     export class Foo{
       get item(): Item {}
-    }`
+    }`;
     let view = `
     <template>    
       \${item}
       \${item.value}
       \${item.vale}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -906,7 +906,7 @@ describe("Static-Type Binding Tests", () => {
         }
         catch (err) { fail(err); }
         finally { done(); }
-      })
+      });
   });
 
   it("support javascript (untyped) source", (done) => {
@@ -914,7 +914,7 @@ describe("Static-Type Binding Tests", () => {
     export class Foo{
       items;
       index;
-    }`
+    }`;
     let view = `
     <template> 
       \${items};
@@ -924,7 +924,7 @@ describe("Static-Type Binding Tests", () => {
       \${items[index]}
       \${items[index].info}
       \${index.will.never.know.how.wrong.this.is}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -936,7 +936,7 @@ describe("Static-Type Binding Tests", () => {
           expect(issues[0].message).toBe("cannot find 'item' in type 'Foo'");
           expect(issues[1].message).toBe("cannot find 'indx' in type 'Foo'");
         } finally { done(); }
-      })
+      });
   });
 
 
@@ -951,12 +951,12 @@ describe("Static-Type Binding Tests", () => {
     import {Item} from './item
     export class Foo{
       items: Item[];
-    }`
+    }`;
     let view = `
     <template>    
       \${items.length}
       \${items.lengh}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -966,11 +966,11 @@ describe("Static-Type Binding Tests", () => {
       .then((issues) => {
         try {
           expect(issues.length).toBe(1);
-          expect(issues[0].message).toBe("cannot find 'lengh' in object 'Array'")
+          expect(issues[0].message).toBe("cannot find 'lengh' in object 'Array'");
         }
         catch (err) { fail(err); }
         finally { done(); }
-      })
+      });
   });
 
   //#68
@@ -983,13 +983,13 @@ describe("Static-Type Binding Tests", () => {
     let viewmodel = `
     import {Base} from './base
     export class Foo extends Base{
-    }`
+    }`;
 
     let view = `
     <template>    
       \${value}
       \${valu}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -999,11 +999,11 @@ describe("Static-Type Binding Tests", () => {
       .then((issues) => {
         try {
           expect(issues.length).toBe(1);
-          expect(issues[0].message).toBe("cannot find 'valu' in type 'Foo'")
+          expect(issues[0].message).toBe("cannot find 'valu' in type 'Foo'");
         }
         catch (err) { fail(err); }
         finally { done(); }
-      })
+      });
   });
 
 
@@ -1022,14 +1022,14 @@ describe("Static-Type Binding Tests", () => {
     import {Item} from './item
     export class Foo{
       item: Item;
-    }`
+    }`;
 
     let view = `
     <template>    
      \${item.name}
      \${item.value}
      \${item.valu}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
     let linter = new Linter([rule]);
@@ -1039,11 +1039,11 @@ describe("Static-Type Binding Tests", () => {
       .then((issues) => {
         try {
           expect(issues.length).toBe(1);
-          expect(issues[0].message).toBe("cannot find 'valu' in type 'Item'")
+          expect(issues[0].message).toBe("cannot find 'valu' in type 'Item'");
         }
         catch (err) { fail(err); }
         finally { done(); }
-      })
+      });
   });
 
   //#66
@@ -1061,14 +1061,14 @@ describe("Static-Type Binding Tests", () => {
     import {Item} from './item
     export class Foo {
       item:Item;
-    }`
+    }`;
 
     let view = `
     <template>    
       \${item.name}
       \${item.price.value}
       \${item.price.valu}
-    </template>`
+    </template>`;
 
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
@@ -1079,11 +1079,11 @@ describe("Static-Type Binding Tests", () => {
       .then((issues) => {
         try {
           expect(issues.length).toBe(1);
-          expect(issues[0].message).toBe("cannot find 'valu' in type 'Price'")
+          expect(issues[0].message).toBe("cannot find 'valu' in type 'Price'");
         }
         catch (err) { fail(err); }
         finally { done(); }
-      })
+      });
   });
 
   //#66
@@ -1101,14 +1101,14 @@ describe("Static-Type Binding Tests", () => {
     import {Item} from './item
     export class Foo {
       item:Item;
-    }`
+    }`;
 
     let view = `
     <template>    
       \${item.name}
       \${item.price.value}
       \${item.price.valu}
-    </template>`
+    </template>`;
 
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
@@ -1119,11 +1119,11 @@ describe("Static-Type Binding Tests", () => {
       .then((issues) => {
         try {
           expect(issues.length).toBe(1);
-          expect(issues[0].message).toBe("cannot find 'valu' in type 'Price'")
+          expect(issues[0].message).toBe("cannot find 'valu' in type 'Price'");
         }
         catch (err) { fail(err); }
         finally { done(); }
-      })
+      });
   });
 
 
@@ -1133,14 +1133,14 @@ describe("Static-Type Binding Tests", () => {
       value:number;
       public submit() {       
       }
-    }`
+    }`;
 
     let pageView = `
     <template>
       \${value}
       <form role="form" submit.delegate="submit()"></form>
       <form role="form" submit.delegate="submt()"></form>
-    </template>`
+    </template>`;
 
     let reflection = new Reflection();
     let rule = new BindingRule(reflection, { reportExceptions: true });
@@ -1150,11 +1150,11 @@ describe("Static-Type Binding Tests", () => {
       .then((issues) => {
         try {
           expect(issues.length).toBe(1);
-          expect(issues[0].message).toBe("cannot find 'submt' in type 'Page'")
+          expect(issues[0].message).toBe("cannot find 'submt' in type 'Page'");
         }
         catch (err) { fail(err); }
         finally { done(); }
-      })
+      });
   });
 
   //87 
@@ -1163,13 +1163,13 @@ describe("Static-Type Binding Tests", () => {
     export class Foo{
       existingElement: HTMLSelectElement;
       existing: string;
-    }`
+    }`;
     let view = `
     <template>
       <select ref="existingElement"></select>
       <select ref="missingElement"></select>
       \${missing}
-    </template>`
+    </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection, { reportExceptions: true });
     let linter = new Linter([rule]);
@@ -1180,6 +1180,34 @@ describe("Static-Type Binding Tests", () => {
           expect(issues.length).toBe(2);
           expect(issues[0].message).toContain("cannot find 'missingElement' in type 'Foo'");
           expect(issues[1].message).toContain("cannot find 'missing' in type 'Foo'");
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      });
+  });
+
+  // #92
+  it("supports (svg) attributes with namespace", (done) => {
+    let viewmodel = `
+    export class Foo{
+      existing: string;
+    }
+`;
+    let view = `
+    <template>
+      <svg class="icon">
+          <use xlink:href="icons.svg#some_selector_\${existing}_\${missing}"></use>
+      </svg>
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toContain("cannot find 'missing' in type 'Foo'");
         }
         catch (err) { fail(err); }
         finally { done(); }
@@ -1220,7 +1248,7 @@ describe("Static-Type Binding Tests", () => {
       name:string;
       pet:T;
     }`;
-
+ 
     let viewmodel = `
     import {Person} from './path/person'
     import {Cat} from './path/cat'

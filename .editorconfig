@@ -1,0 +1,17 @@
+root = true
+
+[*]
+# actually my preference would be "tabs", but 4 spaces seemed to be used most commonly in *.ts
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = false
+insert_final_newline = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+[gulpfile.js]
+indent_style = space
+indent_size = 2

@@ -1,6 +1,6 @@
 
-import {Linter, Rule} from 'template-lint';
-import {SlotRule} from '../source/rules/slot';
+import { Linter, Rule } from 'template-lint';
+import { SlotRule } from '../source/rules/slot';
 
 describe("Slot Rule", () => {
 
@@ -68,7 +68,7 @@ describe("Slot Rule", () => {
       `)
       .then((issues) => {
         expect(issues.length).toBe(1);
-        expect(issues[0].message).toContain("slot cannot have ancestor using")
+        expect(issues[0].message).toContain("slot cannot have ancestor using");
         done();
       });
   });
@@ -84,12 +84,12 @@ describe("Slot Rule", () => {
       `)
       .then((issues) => {
         expect(issues.length).toBe(1);
-        expect(issues[0].message).toContain("slot cannot have ancestor using")
+        expect(issues[0].message).toContain("slot cannot have ancestor using");
         done();
       });
   });
 
-   it("will reject slot elements inside with.bind template controllers", (done) => {
+  it("will reject slot elements inside with.bind template controllers", (done) => {
 
     linter.lint(`
       <div with.bind="">
@@ -100,7 +100,7 @@ describe("Slot Rule", () => {
       `)
       .then((issues) => {
         expect(issues.length).toBe(1);
-        expect(issues[0].message).toContain("slot cannot have ancestor using")
+        expect(issues[0].message).toContain("slot cannot have ancestor using");
         done();
       });
   });

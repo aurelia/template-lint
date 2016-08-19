@@ -16,7 +16,7 @@
     }
   ],
   "license": "(Apache-2.0)",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "keywords": [
     "template",
     "html",
@@ -36,9 +36,13 @@
     "gulp-rimraf": "^0.2.0",
     "gulp-shell": "^0.5.2",
     "gulp-sourcemaps": "^1.6.0",
+    "gulp-tslint": "^6.0.2",
     "gulp-typescript": "^2.13.6",
+    "gulp-typescript-formatter": "^0.1.1",
     "merge2": "^1.0.2",
     "run-sequence": "^1.2.1",
+    "tslint": "^3.14.0",
+    "typescript-formatter": "^2.3.0",
     "typings": "^1.0.4"
   },
   "scripts": {
@@ -53,7 +57,7 @@
     "aurelia-templating-binding": "^1.0.0",
     "glob": "7.0.x",
     "parse5": "2.1.x",
-    "template-lint": "0.7.x",
+    "template-lint": "0.7.9 - 0.7.x",
     "typescript": "^2.0.0"
   }
 }
