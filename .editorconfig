@@ -1,7 +1,6 @@
 root = true
 
 [*]
-# actually my preference would be "tabs", but 4 spaces seemed to be used most commonly in *.ts
 indent_style = space
 indent_size = 2
 end_of_line = lf

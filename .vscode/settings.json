@@ -6,4 +6,5 @@
         "**/*.map":true,    
         "**/.js":{"when": "$(basename).ts"} 
     }
+    
 }
