@@ -1,6 +1,7 @@
+.github
+.vscode
 source
 spec
-.vscode
 typings
 **/*.map
 tsconfig.json
