@@ -1191,8 +1191,7 @@ describe("Static-Type Binding Tests", () => {
     let viewmodel = `
     export class Foo{
       existing: string;
-    }
-`;
+    }`;
     let view = `
     <template>
       <svg class="icon">

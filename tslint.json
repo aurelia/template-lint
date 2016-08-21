@@ -1,13 +1,6 @@
 {
   "rules": {
     "use-isnan": true,
-    "trailing-comma": [
-      true,
-      {
-        "multiline": "always",
-        "singleline": "never"
-      }
-    ],
     "linebreak-style": [
       true,
       "LF"

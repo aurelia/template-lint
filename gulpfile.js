@@ -2,16 +2,18 @@
 
 var gulp = require('gulp');
 var ts = require('gulp-typescript');
-var shell = require('gulp-shell');
-var merge = require('merge2');
 var jasmine = require('gulp-jasmine');
 var plumber = require('gulp-plumber');
 var sourcemap = require('gulp-sourcemaps');
 var rimraf = require('gulp-rimraf');
 var replace = require('gulp-replace');
-var runsequence = require('run-sequence');
 var tslint = require('gulp-tslint');
 var typescriptFormatter = require('gulp-typescript-formatter');
+var shell = require('gulp-shell');
+
+var path = require('path');
+var merge = require('merge2');
+var runsequence = require('run-sequence');
 
 var paths = {
   source: "source/",
@@ -49,7 +51,13 @@ gulp.task('compile:typescript', ['clean:typescript'], function () {
   return merge([
     tsResult.dts.pipe(gulp.dest(paths.output)),
     tsResult.js
-      .pipe(sourcemap.write('.', { sourceRoot: '../source' }))
+      .pipe(sourcemap.write('.', {
+        sourceRoot: function (file) {
+          var relative = path.relative(file.path, path.join(__dirname, "source"));
+          var relativeSource = path.join(relative, 'source')
+          return relativeSource;
+        }
+      }))
       .pipe(gulp.dest(paths.output))
   ]);
 });
@@ -96,7 +104,13 @@ gulp.task('compile:tests', ['compile:typescript', 'clean:tests'], function () {
     .pipe(ts(project));
 
   return tsResult.js
-    .pipe(sourcemap.write('.', { sourceRoot: '../spec' }))
+    .pipe(sourcemap.write('.', {
+      sourceRoot: function (file) {
+        var relative = path.relative(file.path, path.join(__dirname, "spec"));
+        var relativeSource = path.join(relative, 'spec')
+        return relativeSource;
+      }
+    }))
     .pipe(replace(/(require\('\..\/source\/)/g, 'require(\'..\/dist\/'))
     .pipe(gulp.dest(paths.spec));
 });
