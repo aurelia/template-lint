@@ -67,10 +67,16 @@ export class BindingRule extends ASTBuilder {
 
   private examineNode(node: ASTNode) {
 
-    if (node instanceof ASTElementNode)
+    if (node instanceof ASTElementNode) {
       this.examineElementNode(node);
-    else if (node instanceof ASTTextNode)
+
+      //triage #77
+      if (node.attrs.find(x => x.name == "slot" || x.name == "replace-part"))
+        return;
+    }
+    else if (node instanceof ASTTextNode) {
       this.examineTextNode(node);
+    }
 
     if (node.children == null)
       return;

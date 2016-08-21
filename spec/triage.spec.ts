@@ -204,4 +204,62 @@ describe("Triage", () => {
         finally { done(); }
       });
   });
+
+  //#77
+  it("it will silently ignore replace-part attribute and element children", (done) => {
+    let viewmodel = `
+    export class Foo{
+    }`;
+    let view = `
+    <template>
+      <require from='./some-element'></require>
+      <some-element>
+        <template replace-part="item-template">
+          \${item.itemName}
+        </template> 
+      </some-element>
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);
+          //expect(issues[0].message).toBe("cannot find 'lengh' in object 'Array'")
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      });
+  });
+
+  //#77
+  it("it will silently ignore slot attribute and element children", (done) => {
+    let viewmodel = `
+    export class Foo{
+    }`;
+    let view = `
+    <template>
+      <require from='./some-element'></require>
+      <some-element>
+        <template slot="item-template">
+          \${item.itemName}
+        </template> 
+      </some-element>
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);
+          //expect(issues[0].message).toBe("cannot find 'lengh' in object 'Array'")
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      });
+  });
 });
