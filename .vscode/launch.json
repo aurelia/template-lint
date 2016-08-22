@@ -1,40 +1,53 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            
-            "name": "Launch",
-            "type": "node",
-            "request": "launch",
-            "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
-            "stopOnEntry": false,
-            "args": ["test-no-compile"],
-            "cwd": "${workspaceRoot}",
-            "preLaunchTask": "compile:tests",
-            "internalConsoleOptions": "openOnSessionStart" ,
-            "runtimeExecutable": null,
-            "runtimeArgs": [
-                "--nolazy"
-            ],
-            "env": {
-                "NODE_ENV": "development"
-            },
-            "externalConsole": false,
-            "sourceMaps": true,            
-            "outDir": "${workspaceRoot}/dist"
-            //"outDir": "${workspaceRoot}/spec" 
-        },
-        {
-            "name": "Attach",
-            "type": "node",
-            "request": "attach",
-            "port": 5858,
-            "address": "localhost",
-            "restart": false,
-            "sourceMaps": true,
-            "outDir": "${workspaceRoot}/dist",
-            "localRoot": "${workspaceRoot}",
-            "remoteRoot": null
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+      "stopOnEntry": false,
+      "args": [
+        "test-no-compile"
+      ],
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": "compile:tests",
+      "internalConsoleOptions": "openOnSessionStart",
+      "runtimeExecutable": null,
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "externalConsole": false,
+      "sourceMaps": true,
+      "outDir": "${workspaceRoot}/dist"
+      //"outDir": "${workspaceRoot}/spec" 
+    },
+    {
+      "name": "Launch Example",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/example.js",
+      "stopOnEntry": false,
+      "args": [
+        "test-no-compile"
+      ],
+      "cwd": "${workspaceRoot}",
+      "preLaunchTask": "compile:tests",
+      "internalConsoleOptions": "openOnSessionStart",
+      "runtimeExecutable": null,
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "externalConsole": false,
+      "sourceMaps": true,
+      "outDir": "${workspaceRoot}/dist"
+      //"outDir": "${workspaceRoot}/spec" 
+    }   
+  ]
 }
