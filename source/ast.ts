@@ -12,7 +12,7 @@ import {
   ViewFactory
 }
   from 'aurelia-templating';
-import { Attribute } from "parse5";
+import { ASTAttribute as P5ASTAttribute } from "parse5";
 
 export class ASTBuilder extends Rule {
   public root: ASTNode;
@@ -39,7 +39,7 @@ export class ASTBuilder extends Rule {
       next.tag = tag;
       next.parent = current;
       next.location = new FileLoc(loc.line, loc.col);
-      next.attrs = attrs.map((x, i) => {
+      next.attrs = attrs.map((x: P5ASTAttribute, i) => {
         var attrLoc = loc.attrs[x.name];
         // workaround for parse5 version differences
         if (!attrLoc && x.prefix) {

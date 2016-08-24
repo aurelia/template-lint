@@ -3,3 +3,5 @@
 **/*.map
 spec/**/*.js
 /dist
+.idea/
+*.iml
