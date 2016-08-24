@@ -39,7 +39,7 @@ export class ASTBuilder extends Rule {
       next.tag = tag;
       next.parent = current;
       next.location = new FileLoc(loc.line, loc.col);
-      next.attrs = attrs.map((x: Attribute & { prefix?: string }, i) => {
+      next.attrs = attrs.map((x, i) => {
         var attrLoc = loc.attrs[x.name];
         // workaround for parse5 version differences
         if (!attrLoc && x.prefix) {

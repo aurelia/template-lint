@@ -1,9 +1,0 @@
-{
-  "globalDependencies": {
-    "glob": "registry:dt/glob#5.0.10+20160317120654",
-    "jasmine": "registry:dt/jasmine#2.2.0+20160505161446",
-    "minimatch": "registry:dt/minimatch#2.0.8+20160317120654",
-    "node": "registry:env/node#4.0.0+20160507210304",
-    "parse5": "registry:dt/parse5#2.1.5+20160224211008"
-  }
-}

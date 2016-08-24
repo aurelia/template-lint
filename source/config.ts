@@ -5,9 +5,10 @@ export class Config {
   useRuleAttributeValue = true;         // error on bad attribute value
   useRuleObsoleteAttribute = true;      // error on use of obsolete attributes
   useRuleObsoleteTag = true;            // error on use of obsolete tags
-  useRuleConflictingAttribute = true;    // error on use of conflicting attributes
+  useRuleConflictingAttribute = true;   // error on use of conflicting attributes
   useRuleSelfClose = true;              // error on self-closed tags
   useRuleStructure = true;              // error on mismatched tags (unclosed)
+  useRuleId = true;                     // error on bad id attributes
 
   useRuleAureliaRequire = true;         // error on bad require tag usage (aurelia-flavor)
   useRuleAureliaSlot = true;            // error on bad slot usage (aurelia-flavor)
@@ -81,6 +82,17 @@ export class Config {
       msg: "template controllers shouldn't be placed on the same element"
     }
   ];
+
+  /**
+  * ID Attribute Rule
+  *
+  */
+  idAttributeOpts = {
+    allowEmptyId: false,
+    allowDuplicateId: false,
+    allowIllegalChars: false,
+    ignoreAny: /\$\{[\s\S]+\}/,
+  };
 
   /**
   * Parser Options

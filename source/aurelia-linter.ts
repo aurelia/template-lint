@@ -1,12 +1,14 @@
 import { Linter, Rule, Issue, IssueSeverity } from 'template-lint';
 
+import { ParserBuilder } from 'template-lint';
 import { SelfCloseRule } from 'template-lint';
 import { StructureRule } from 'template-lint';
 import { ObsoleteTagRule } from 'template-lint';
 import { ObsoleteAttributeRule } from 'template-lint';
-import { UniqueIdRule } from 'template-lint';
+import { IdAttributeRule } from 'template-lint';
 import { AttributeValueRule } from 'template-lint';
 import { ConflictingAttributesRule, ConflictingAttributes } from 'template-lint';
+
 
 import { RequireRule } from './rules/require';
 import { SlotRule } from './rules/slot';
@@ -49,6 +51,9 @@ export class AureliaLinter {
       rules.push(new AttributeValueRule(config.attributeValueOpts));
     if (this.config.useRuleConflictingAttribute)
       rules.push(new ConflictingAttributesRule(<ConflictingAttributes[]>config.conflictingAttributeOpts));
+    if (this.config.useRuleId)
+      rules.push(new IdAttributeRule(this.config.idAttributeOpts));
+
 
     if (this.config.useRuleAureliaRequire)
       rules.push(new RequireRule());
@@ -72,10 +77,14 @@ export class AureliaLinter {
     if (this.config.customRules)
       rules.concat(config.customRules);
 
+    var parserBuilder = new ParserBuilder()
+      .withVoids(this.config.parserOpts.voids)
+      .withScopes(this.config.parserOpts.scopes);
+
     this.linter = new Linter(
       rules,
-      config.parserOpts.scopes,
-      config.parserOpts.voids);
+      parserBuilder
+    );
 
     this.init = this.reflection.addGlob(this.config.reflectionOpts.sourceFileGlob)
       .then(() => {

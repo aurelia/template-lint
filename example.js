@@ -8,7 +8,7 @@ var config = new Config();
 config.debug = true;
 config.useRuleAureliaBindingAccess = true;
 config.reflectionOpts.sourceFileGlob = "example/**/*.ts";
-config.reflectionOpts.typingsFileGlob = "typings/my-lib.d.ts"
+config.reflectionOpts.typingsFileGlob = "example/my-lib.d.ts"
 
 var linter = new AureliaLinter(config);
 

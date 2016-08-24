@@ -6,8 +6,5 @@
     "noEmitOnError": true,
     "newLine": "LF",
     "declaration": true
-  },
-  "exclude": [
-    "node_modules"
-  ]
+  }
 }
