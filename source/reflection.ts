@@ -206,6 +206,9 @@ export class Reflection {
         return this.resolveTypeName(arr.elementType);
       case ts.SyntaxKind.TypeReference:
         let ref = <ts.TypeReferenceNode>node;
+        if (ref.typeName.getText() == "Array") {
+          return this.resolveTypeName(ref.typeArguments[0]);
+        }
         return ref.typeName.getText();
       case ts.SyntaxKind.StringKeyword:
         return "string";

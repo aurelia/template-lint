@@ -973,6 +973,42 @@ describe("Static-Type Binding Tests", () => {
       });
   });
 
+  //#111
+  it("supports access to generic Array type members", (done) => {
+    let item = `
+    export interface Item{
+      value:string;
+    }`;
+
+    let viewmodel = `
+    import {Item} from './item
+    export class Foo{
+      items: Array<Item>;
+    }`;
+    let view = `
+    <template>    
+      \${items.length}
+      \${items.lengh}
+      \${items[0].value}
+      \${items[0].vale}
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./item", item);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(2);
+          expect(issues[0].message).toBe("cannot find 'lengh' in object 'Array'");
+          expect(issues[1].message).toBe("cannot find 'vale' in type 'Item'");
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      });
+  });
+
   //#68
   it("supports inheritence of classes", (done) => {
     let base = `
