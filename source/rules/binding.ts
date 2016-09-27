@@ -29,7 +29,7 @@ export class BindingRule extends ASTBuilder {
   public reportBindingAccess = true;
   public reportExceptions = false;
 
-  public localProvidors = ["repeat.for", "if.bind", "with.bind"];
+  public localProvidors = ["ref", "repeat.for", "if.bind", "with.bind"];
   public restrictedAccess = ["private", "protected"];
 
   constructor(
@@ -87,7 +87,21 @@ export class BindingRule extends ASTBuilder {
   }
 
   private examineElementNode(node: ASTElementNode) {
-    let attrs = node.attrs.sort(x => (this.localProvidors.indexOf(x.name) != -1) ? 0 : 1);
+    let attrs = node.attrs.sort((a, b) => {
+      var ai = this.localProvidors.indexOf(a.name);
+      var bi = this.localProvidors.indexOf(b.name);
+
+      if (ai == -1 && bi == -1)
+        return 0;
+
+      if (ai == -1)
+        return 1;
+
+      if (bi == -1)
+        return -1;
+
+      return ai < bi ? -1 : 1;
+    });
 
     for (let i = 0, ii = attrs.length; i < ii; ++i) {
       let attr = attrs[i];
@@ -123,7 +137,12 @@ export class BindingRule extends ASTBuilder {
         break;
       }
       case "NameExpression": {
+        if (attr.name == "ref") {
+          var name = instruction.sourceExpression.name;
+          node.locals.push(new ASTContext({ name: name, type: <ts.TypeNode>ts.createNode(ts.SyntaxKind.AnyKeyword) }));
+        }
         this.examineNameExpression(node, <NameExpression>instruction);
+
         break;
       }
       default: {
@@ -194,6 +213,12 @@ export class BindingRule extends ASTBuilder {
     let access = exp.sourceExpression;
     let chain = this.flattenAccessChain(access);
     let resolved = this.resolveAccessScopeToType(node, chain, node.location);
+
+    for (var arg of access.args) {
+      let access = arg;
+      let chain = this.flattenAccessChain(access);
+      let resolved = this.resolveAccessScopeToType(node, chain, node.location);
+    }
   }
 
   private examineNameExpression(node: ASTElementNode, exp: any /*NamedExpression*/) {

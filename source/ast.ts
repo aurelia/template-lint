@@ -40,10 +40,10 @@ export class ASTBuilder extends Rule {
       next.parent = current;
       next.location = new FileLoc(loc.line, loc.col);
       next.attrs = attrs.map((x: P5ASTAttribute, i) => {
-        var attr = new ASTAttribute();     
+        var attr = new ASTAttribute();
         attr.name = (x.prefix !== undefined && x.prefix != "") ? `${x.prefix}:${x.name}` : x.name;
         var attrLoc = loc.attrs[attr.name] || loc.attrs[attr.name.toLowerCase()];
-                
+
         attr.name = x.name;
         attr.instruction = this.createAttributeInstruction(tag, x.name, x.value, attrLoc.line, attrLoc.col);
         attr.location = new FileLoc(attrLoc.line, attrLoc.col);

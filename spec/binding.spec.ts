@@ -1213,9 +1213,8 @@ describe("Static-Type Binding Tests", () => {
     linter.lint(view, "./path/foo.html")
       .then((issues) => {
         try {
-          expect(issues.length).toBe(2);
-          expect(issues[0].message).toContain("cannot find 'missingElement' in type 'Foo'");
-          expect(issues[1].message).toContain("cannot find 'missing' in type 'Foo'");
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toContain("cannot find 'missing' in type 'Foo'");
         }
         catch (err) { fail(err); }
         finally { done(); }
@@ -1269,11 +1268,59 @@ describe("Static-Type Binding Tests", () => {
           expect(issues.length).toBe(0);
         });
     }
-    catch (err) { 
-      console.log("caught");
-
-      fail(err); }
+    catch (err) {
+      fail(err);
+    }
     finally { done(); }
+  });
+
+  //#119
+  it("accept binding to ref variables", (done) => {
+    let viewmodel = `
+    export class Foo{
+      someMethod(value){}
+    }`;
+    let view = `
+    <template>      
+      <button ref="someName" click.delegate="someMethod(someName.attributes['expanded'].value)">
+      </button>
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);          
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      });
+  });
+  //#120
+  it("Support resolving method args for delegate bindings", (done) => {
+    let viewmodel = `
+    export class Foo{
+    }`;
+    let view = `
+    <template>      
+      <button ref="someName" click.delegate="missing(someName.attributes['expanded'].value)">
+      </button>
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'missing' in type 'Foo'");
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      });
   });
 
 
