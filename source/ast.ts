@@ -40,13 +40,10 @@ export class ASTBuilder extends Rule {
       next.parent = current;
       next.location = new FileLoc(loc.line, loc.col);
       next.attrs = attrs.map((x: P5ASTAttribute, i) => {
-        var attrLoc = loc.attrs[x.name];
-        // workaround for parse5 version differences
-        if (!attrLoc && x.prefix) {
-          // for example in svg `<use xlink:href="icons.svg#some_selector">`
-          attrLoc = loc.attrs[x.prefix + ":" + x.name];
-        }
-        var attr = new ASTAttribute();
+        var attr = new ASTAttribute();     
+        attr.name = (x.prefix !== undefined && x.prefix != "") ? `${x.prefix}:${x.name}` : x.name;
+        var attrLoc = loc.attrs[attr.name] || loc.attrs[attr.name.toLowerCase()];
+                
         attr.name = x.name;
         attr.instruction = this.createAttributeInstruction(tag, x.name, x.value, attrLoc.line, attrLoc.col);
         attr.location = new FileLoc(attrLoc.line, attrLoc.col);

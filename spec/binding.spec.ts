@@ -1248,6 +1248,34 @@ describe("Static-Type Binding Tests", () => {
         finally { done(); }
       });
   });
+  // #117
+  it("supports svg element namespace", async (done) => {
+
+    var view = `
+    <svg if.bind="!userContext.imageUri" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" style="width:20px;height:20px;">
+     <circle cx="20" cy="20" r="18" stroke="grey" stroke-width="1" fill="#FFFFFF" /> 
+     <text x="50%" y="50%" text-anchor="middle" stroke="#51c5cf" stroke-width="2px" dy=".3em" letter-spacing="2">
+     \${userContext.caps}</text> 
+     </svg>
+    `;
+
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let linter = new Linter([rule]);
+
+    try {
+      await linter.lint(view, "./path/foo.html")
+        .then((issues) => {
+          expect(issues.length).toBe(0);
+        });
+    }
+    catch (err) { 
+      console.log("caught");
+
+      fail(err); }
+    finally { done(); }
+  });
+
 
   /*it("rejects more than one class in view-model file", (done) => {
     let viewmodel = `
