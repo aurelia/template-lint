@@ -11,11 +11,17 @@ initialize();
 
 describe("Failing Scenarios", () => {
   //uncomment, add your example and what you expect. 
-  /*
-  it("some test that fails", (done) => {
+  
+  it("#117 - bad namespace", (done) => {
     var config: Config = new Config();
     var linter: AureliaLinter = new AureliaLinter(config);
-    var html = `<template></etemps> <!-- oops! -->`
+    var html = `
+    <svg if.bind="!userContext.imageUri" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" style="width:20px;height:20px;">
+     <circle cx="20" cy="20" r="18" stroke="grey" stroke-width="1" fill="#FFFFFF" /> 
+     <text x="50%" y="50%" text-anchor="middle" stroke="#51c5cf" stroke-width="2px" dy=".3em" letter-spacing="2">
+     \${userContext.caps}</text> 
+     </svg>
+    `;
     linter.lint(html)
       .then((issues) => {
         try {
@@ -25,5 +31,5 @@ describe("Failing Scenarios", () => {
         finally { done(); }
       });
   });
-  */
+  
 });
