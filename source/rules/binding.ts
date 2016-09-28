@@ -213,12 +213,14 @@ export class BindingRule extends ASTBuilder {
     let access = exp.sourceExpression;
     let chain = this.flattenAccessChain(access);
     let resolved = this.resolveAccessScopeToType(node, chain, node.location);
-
+    
+    node.locals.push(new ASTContext({ name: "$event" }));
     for (var arg of access.args) {
       let access = arg;
       let chain = this.flattenAccessChain(access);
       let resolved = this.resolveAccessScopeToType(node, chain, node.location);
     }
+    node.locals.pop();
   }
 
   private examineNameExpression(node: ASTElementNode, exp: any /*NamedExpression*/) {

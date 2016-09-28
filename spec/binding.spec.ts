@@ -1292,7 +1292,7 @@ describe("Static-Type Binding Tests", () => {
     linter.lint(view, "./foo.html")
       .then((issues) => {
         try {
-          expect(issues.length).toBe(0);          
+          expect(issues.length).toBe(0);
         }
         catch (err) { fail(err); }
         finally { done(); }
@@ -1322,6 +1322,34 @@ describe("Static-Type Binding Tests", () => {
         finally { done(); }
       });
   });
+
+  //#120
+  it("Support resolving $event method arg for delegate bindings", (done) => {
+    let viewmodel = `
+    export class Foo{
+      method(event){}
+    }`;
+    let view = `
+    <template>      
+      <button ref="someName" keyup.delegate="method($event)"></button>
+      <button ref="someName" keyup.trigger="method($event)"></button>
+      <button ref="someName" keyup.delegate="method($evnt)"></button>
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find '$evnt' in type 'Foo'");
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      });
+  });
+
 
 
   /*it("rejects more than one class in view-model file", (done) => {
