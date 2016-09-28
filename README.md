@@ -1,8 +1,9 @@
 # aurelia-template-lint
 
+Sanity check of Aurelia Templates
+
 ![logo](https://d30y9cdsu7xlg0.cloudfront.net/png/30843-200.png)
 
-Sanity check of Aurelia-flavor Template HTML.
 
 [![NPM version][npm-image]][npm-url]
 [![NPM downloads][npm-downloads]][npm-url]
@@ -11,141 +12,27 @@ Sanity check of Aurelia-flavor Template HTML.
 [![Stability][stability-image]][npm-url]
 [![Gitter][gitter-image]][gitter-url]
 
-##Info
-This project was the result of wondering why aurelia applications had missing content when you used self-closing tags.
-In the end it turns out that if your template html is ill-formed, the browser's parser will not complain and you will simply have missing content
-and/or an ill formed DOM element tree.
+## Info
 
-By using this lint during your development cycle, you can spot problems with your html and/or templates before they cause problems in the browser.
-aurelia-template-lint extends upon [template-lint](https://github.com/MeirionHughes/template-lint/) (the base lint project) to add aurelia-specific rules
-and easier configuration of them.
+Aurelia is a front-end platform built upon existing (or upcoming) industry standards.
+One such standard is to ensure that all view-markup is parsable by regular browsers; while this allows Aurelia to forgo the need for a custom parser, it does mean poorly formatted html will be ignored without warning. 
 
-See:
-* [StackOverflow: aurelia-self-closing-require-element-does-not-work](http://stackoverflow.com/questions/37300986/aurelia-self-closing-require-element-does-not-work)
-* [StackOverflow: aurelia-sanity-check-template-html](http://stackoverflow.com/questions/37322985/aurelia-sanity-check-template-html)
-
-*Note: it is recommended you use this via the [gulp plugin](https://github.com/MeirionHughes/gulp-aurelia-template-lint).*
-*If you use this library directly, in a production environment (ci), then ensure you lock to a minor version as this library is under development and subject to breaking changes on minor versions*
-
-##Example
-using the default config (plus type checking - *see below*), the example:
-
-
-***foo.html***
-```html
-01:<template>
-02:  <require/>
-03:  <div repeat.for="item of"></div>
-04:  <content></content>
-05:  <slot></slot><slot></slot>
-06:  <table>
-07:    <template></template>
-08:  </table>
-09:  <div style="width: ${width}px; height: ${height}px;"></div>
-10:  <div repeat.for="item of items" with.bind="items"></div>
-11:  <template repeat.for="item of items">
-12:    ${item.ino} 
-13:    ${item.role.isAdmn} 
-14:    ${item.update().sizeee}
-15:  </template>
-16:  <template with.bind="person">
-17:    ${address.postcdo}
-18:  </template>
-19:  <table>
-20:    <tr repeat.for="item of items">
-21:      <td>${item.nme}</td>
-22:    </tr>
-23:  </table>
-24:  <div value.bind="car.modl"></div>
-25:</etemps>
-```
-***foo.ts***
-```ts
-import {Person} from './my-types/person';
-import {Item} from './my-types/item';
-import {Car} from 'my-lib';
-
-export class FooViewModel {
-  person: Person;
-  items: Item[];
-  car: Car;
-  width:number;
-  height:number;
-}
-```
-
-will result in the following errors:
-
-```
-suspected unclosed element detected [ln: 1 col: 1]
-self-closing element [ln: 2 col: 3]
-require tag is missing a 'from' attribute [ln: 2 col: 3]
-Incorrect syntax for "for" [ln: 3 col: 8]
-  * The form is: "$local of $items" or "[$key, $value] of $items",
-<content> is obsolete [ln: 4 col: 3]
-  * use slot instead
-more than one default slot detected [ln: 5 col: 16]
-template as child of <table> not allowed [ln: 7 col: 5]
-interpolation not allowed in style attribute [ln: 9 col: 3]
-conflicting attributes: [repeat.for, with.bind] [ln: 10 col: 3]
-  * template controllers shouldn't be placed on the same element
-cannot find 'ino' in type 'Item' [ln: 13 col: 5]
-cannot find 'isAdmn' in type 'Role' [ln: 15 col: 5]
-cannot find 'sizeee' in type 'Data' [ln: 17 col: 5]
-cannot find 'postcdo' in type 'Address' [ln: 18 col: 5]
-cannot find 'nme' in type 'Item' [ln: 21 col: 11]
-cannot find 'modl' in type 'Car' [ln: 24 col: 8]
-mismatched close tag [ln: 25 col: 1]
-```
-
-The full example is available in the repository; including the custom typings. 
-
-## Rules
-Rules used by default:
-
-* **SelfClose**
-  * *ensure non-void elements do not self-close*
-* **Parser**
-  * *returns detected unclosed/ill-matched elements errors captured during parsing*
-* **ObsoleteTag**
-  * *identify obsolete tag usage*
-* **ObsoleteAttributes**
-  * *identify obsolete attribute usage*
-* **AttributeValue**
-  * *ensure attributes exactly match an expected pattern*
-  * *ensure attributes don't contain any matches of an pattern*
-  * *ensure attribute is used for a tag*
-* **Slot**
-  * *don't allow two, or more, slots to have the same name;*
-  * *don't allow more than one default slot;*  
-* **Require**
-  * *ensure require elments have a 'from' attribute*
-* **ConflictingAttributes**
-  * *ensure element doesn't have attribute combination marked as conflicting.* 
-  * *i.e. template controller attributes (`if.bind` and `repeat.for` on the same element)*
-* **Template**
-  * *ensure root is a template element, unless its <html>*
-  * *no more than one template element present*
-* **Binding Syntax**
-  * *ensure binding syntax is correct*
-* **Binding Access**
-  * *ensure binding correlates with fields of known types (static type checking)*
-
-I'm more than happy to add or improve rules;
-so please feel free to [create an issue](https://github.com/MeirionHughes/aurelia-template-lint/labels/rule),
-or even a pull request.
+The goal of `aurelia-template-lint` is to detect problems with your template html and source before they become problem in the browser, or are ignored by the browser entirely. 
 
 ## Install
 
-_Note: node.js 5 or 6 is required. There is currently an issue in trying to install some aurelia dependencies in node.js 4._ 
+*Note: node.js 6 is required.*
+
+*Note: it is recommended you use this via the [gulp plugin](https://github.com/MeirionHughes/gulp-aurelia-template-lint).*
+
+*Note: If you use this library directly, in a production environment (ci), then ensure you lock to a minor version as this library is under development and subject to breaking changes on minor versions*
+
 
 ```
-npm install aurelia-template-lint
+npm install aurelia-template-lint --save-dev
 ```
 
-##Usage
-*For use with gulp, there is a [gulp plugin available](https://github.com/MeirionHughes/gulp-aurelia-template-lint)*
-
+## Usage
 
 ```js
 const AureliaLinter = require('aurelia-template-lint').AureliaLinter
@@ -174,6 +61,8 @@ config.obsoleteTagOpts.push({tag:'my-old-tag', msg:'is really old'});
 
 var linter = new AureliaLinter(config);
 ```
+
+## Config
 
 Config is an object type of the form and default:
 
@@ -322,6 +211,115 @@ export class Config {
 }
 ```
 
+## Example
+using the default config (plus type checking - *see below*), the example:
+
+
+***foo.html***
+```html
+01:<template>
+02:  <require/>
+03:  <div repeat.for="item of"></div>
+04:  <content></content>
+05:  <slot></slot><slot></slot>
+06:  <table>
+07:    <template></template>
+08:  </table>
+09:  <div style="width: ${width}px; height: ${height}px;"></div>
+10:  <div repeat.for="item of items" with.bind="items"></div>
+11:  <template repeat.for="item of items">
+12:    ${item.ino} 
+13:    ${item.role.isAdmn} 
+14:    ${item.update().sizeee}
+15:  </template>
+16:  <template with.bind="person">
+17:    ${address.postcdo}
+18:  </template>
+19:  <table>
+20:    <tr repeat.for="item of items">
+21:      <td>${item.nme}</td>
+22:    </tr>
+23:  </table>
+24:  <div value.bind="car.modl"></div>
+25:</etemps>
+```
+***foo.ts***
+```ts
+import {Person} from './my-types/person';
+import {Item} from './my-types/item';
+import {Car} from 'my-lib';
+
+export class FooViewModel {
+  person: Person;
+  items: Item[];
+  car: Car;
+  width:number;
+  height:number;
+}
+```
+
+will result in the following errors:
+
+```
+suspected unclosed element detected [ln: 1 col: 1]
+self-closing element [ln: 2 col: 3]
+require tag is missing a 'from' attribute [ln: 2 col: 3]
+Incorrect syntax for "for" [ln: 3 col: 8]
+  * The form is: "$local of $items" or "[$key, $value] of $items",
+<content> is obsolete [ln: 4 col: 3]
+  * use slot instead
+more than one default slot detected [ln: 5 col: 16]
+template as child of <table> not allowed [ln: 7 col: 5]
+interpolation not allowed in style attribute [ln: 9 col: 3]
+conflicting attributes: [repeat.for, with.bind] [ln: 10 col: 3]
+  * template controllers shouldn't be placed on the same element
+cannot find 'ino' in type 'Item' [ln: 13 col: 5]
+cannot find 'isAdmn' in type 'Role' [ln: 15 col: 5]
+cannot find 'sizeee' in type 'Data' [ln: 17 col: 5]
+cannot find 'postcdo' in type 'Address' [ln: 18 col: 5]
+cannot find 'nme' in type 'Item' [ln: 21 col: 11]
+cannot find 'modl' in type 'Car' [ln: 24 col: 8]
+mismatched close tag [ln: 25 col: 1]
+```
+
+The full example is available in the repository; including the custom typings. 
+
+## Rules
+Rules used by default:
+
+* **SelfClose**
+  * *ensure non-void elements do not self-close*
+* **Parser**
+  * *returns detected unclosed/ill-matched elements errors captured during parsing*
+* **ObsoleteTag**
+  * *identify obsolete tag usage*
+* **ObsoleteAttributes**
+  * *identify obsolete attribute usage*
+* **AttributeValue**
+  * *ensure attributes exactly match an expected pattern*
+  * *ensure attributes don't contain any matches of an pattern*
+  * *ensure attribute is used for a tag*
+* **Slot**
+  * *don't allow two, or more, slots to have the same name;*
+  * *don't allow more than one default slot;*  
+* **Require**
+  * *ensure require elments have a 'from' attribute*
+* **ConflictingAttributes**
+  * *ensure element doesn't have attribute combination marked as conflicting.* 
+  * *i.e. template controller attributes (`if.bind` and `repeat.for` on the same element)*
+* **Template**
+  * *ensure root is a template element, unless its <html>*
+  * *no more than one template element present*
+* **Binding Syntax**
+  * *ensure binding syntax is correct*
+* **Binding Access**
+  * *ensure binding correlates with fields of known types (static type checking)*
+
+I'm more than happy to add or improve rules;
+so please feel free to [create an issue](https://github.com/MeirionHughes/aurelia-template-lint/labels/rule),
+or even a pull request.
+
+
 ## Static Type Checking
 In order to use static type checking you must opt-in by setting `useRuleAureliaBindingAccess = true`. 
 
@@ -355,7 +353,17 @@ please [report any false-negatives, code exceptions or issues](https://github.co
 
 also note it will probably be far easier to use this via [gulp plugin](https://github.com/MeirionHughes/gulp-aurelia-template-lint), where you'll only need to pass the config object
 
-##Compiling
+## Background
+This project was the result of wondering why aurelia applications had missing content when you used self-closing tags.
+In the end it turns out that if your template html is ill-formed, the browser's parser will not complain and you will simply have missing content
+and/or an ill formed DOM element tree.
+
+See:
+* [StackOverflow: aurelia-self-closing-require-element-does-not-work](http://stackoverflow.com/questions/37300986/aurelia-self-closing-require-element-does-not-work)
+* [StackOverflow: aurelia-sanity-check-template-html](http://stackoverflow.com/questions/37322985/aurelia-sanity-check-template-html)
+
+
+## Compiling
 Clone the repository. 
 In the project root run
 ```shell
@@ -368,7 +376,7 @@ test with:
 gulp compile:typescript && node example.js
 ```
 
-##Visual Studio Code
+## Visual Studio Code
 
 Once installed, you can use make use of Visual Studio Code launcher (`ctrl + f5`). Also allows you to place breakpoints on ts spec files (currently only for those files in `outDir` path in `launch.json` see: https://github.com/Microsoft/vscode/issues/6915) 
   
@@ -382,7 +390,7 @@ Special thanks to:
 If you would like to contribute code or failing tests (for rules you'd like) you are most welcome to do so. 
 Please feel free to PR or raise an issue. :)  
 
-##Icon
+## Icon
 
 Icon courtesy of [The Noun Project](https://thenounproject.com/)
 
