@@ -75,7 +75,8 @@ export class Config {
     useRuleConflictingAttribute = true    // error on use of conflicting attributes
     useRuleSelfClose = true;              // error on self-closed tags
     useRuleStructure = true;              // error on mismatched tags (unclosed)
-
+    useRuleValidChildren = true;          // error on use of invalid child elements 
+ 
     useRuleAureliaRequire = true;         // error on bad require tag usage (aurelia-flavor)
     useRuleAureliaSlot = true;            // error on bad slot usage (aurelia-flavor)
     useRuleAureliaTemplate = true;        // error on bad template usage (aurelia-flavor)
@@ -142,6 +143,28 @@ export class Config {
             attrs: ["repeat.for", "if.bind", "with.bind"],
             msg: "template controllers shouldn't be placed on the same element"
         }
+    ];
+
+    /**
+    * ID Attribute Rule
+    *
+    */
+    idAttributeOpts = {
+      allowEmptyId: false,
+      allowDuplicateId: false,
+      allowIllegalChars: false,
+      ignoreAny: /\$\{[\s\S]+\}/,
+    };
+
+    /**
+    * Valid Child Rule
+    */
+    validChildOpts = [ 
+      // { element: "name", allow: [], /*OR*/ exclude: []},
+      { element: "tr", allow: ["td", "th"] },
+      { element: "ul", allow: ["li"] },
+      { element: "ol", allow: ["li"] },
+      { element: "dl", allow: ["dt, dd"] },
     ];
 
     /**

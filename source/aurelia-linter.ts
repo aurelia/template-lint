@@ -7,6 +7,7 @@ import { ObsoleteTagRule } from 'template-lint';
 import { ObsoleteAttributeRule } from 'template-lint';
 import { IdAttributeRule } from 'template-lint';
 import { AttributeValueRule } from 'template-lint';
+import { ValidChildRule } from 'template-lint';
 import { ConflictingAttributesRule, ConflictingAttributes } from 'template-lint';
 
 
@@ -53,7 +54,8 @@ export class AureliaLinter {
       rules.push(new ConflictingAttributesRule(<ConflictingAttributes[]>config.conflictingAttributeOpts));
     if (this.config.useRuleId)
       rules.push(new IdAttributeRule(this.config.idAttributeOpts));
-
+    if (this.config.useRuleValidChildren)
+      rules.push(new ValidChildRule(this.config.validChildOpts));
 
     if (this.config.useRuleAureliaRequire)
       rules.push(new RequireRule());
