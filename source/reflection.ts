@@ -83,16 +83,32 @@ export class Reflection {
   getDeclForType(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
     if (!source || !typeName) return null;
 
-    let types = source.statements.filter(x =>
-      x.kind == ts.SyntaxKind.ClassDeclaration ||
-      x.kind == ts.SyntaxKind.InterfaceDeclaration);
+    if (source.kind == ts.SyntaxKind.SourceFile) {
+      let types = source.statements.filter(x =>
+        x.kind == ts.SyntaxKind.ClassDeclaration ||
+        x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
-    let result = <ts.DeclarationStatement>types.find(x => (<ts.DeclarationStatement>x).name.getText() === typeName);
+      let result = <ts.DeclarationStatement>types.find(x => (<ts.DeclarationStatement>x).name.getText() === typeName);
 
-    if (result)
-      return result;
+      if (result)
+        return result;
+      return this.getDeclForImportedType(source, typeName);
 
-    return this.getDeclForImportedType(source, typeName);
+    }
+    else if (source.kind == ts.SyntaxKind.ModuleDeclaration) {
+      let module = <ts.ModuleDeclaration><any>source;
+      let body = module.body;
+
+      if (module.body.kind == ts.SyntaxKind.ModuleBlock) {
+        let moduleBlock = <ts.ModuleBlock>body;
+
+        let classes = moduleBlock.statements.filter(x =>
+          x.kind == ts.SyntaxKind.ClassDeclaration ||
+          x.kind == ts.SyntaxKind.InterfaceDeclaration);
+
+        return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() === typeName);
+      }
+    }
   }
 
   getDeclForImportedType(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
@@ -138,31 +154,7 @@ export class Reflection {
     if (!inportSourceFile)
       return null;
 
-    if (inportSourceFile.kind == ts.SyntaxKind.SourceFile) {
-      let classes = inportSourceFile.statements.filter(x =>
-
-        x.kind == ts.SyntaxKind.ClassDeclaration ||
-        x.kind == ts.SyntaxKind.InterfaceDeclaration);
-
-      return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() == typeName);
-    }
-    else if (inportSourceFile.kind == ts.SyntaxKind.ModuleDeclaration) {
-      let module = <ts.ModuleDeclaration>inportSourceFile;
-      let body = module.body;
-
-      if (module.body.kind == ts.SyntaxKind.ModuleBlock) {
-        let moduleBlock = <ts.ModuleBlock>body;
-
-        let classes = moduleBlock.statements.filter(x =>
-          x.kind == ts.SyntaxKind.ClassDeclaration ||
-          x.kind == ts.SyntaxKind.InterfaceDeclaration);
-
-        return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() === typeName);
-      }
-    }
-    else {
-      // console.log("getDeclForImportedType - Unknown kind - " + sourceDecl.kind);
-    }
+    return this.getDeclForType(inportSourceFile, typeName);
   }
 
   public resolveClassElementType(node: ts.ClassElement): ts.TypeNode {
