@@ -45,7 +45,7 @@
     "merge2": "^1.0.2",
     "run-sequence": "^1.2.1",
     "tslint": "^3.14.0",
-    "typescript-formatter": "^2.3.0"
+    "typescript-formatter": "^3.0.1"
   },
   "scripts": {
     "test": "gulp test"
