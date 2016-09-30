@@ -80,7 +80,7 @@ export class Reflection {
     });
   }
 
-  getDeclForType(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
+  getDeclForType(source: ts.SourceFile, typeName: string, isBase: boolean = true): ts.DeclarationStatement {
     if (!source || !typeName) return null;
 
     if (source.kind == ts.SyntaxKind.SourceFile) {
@@ -88,12 +88,19 @@ export class Reflection {
         x.kind == ts.SyntaxKind.ClassDeclaration ||
         x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
-      let result = <ts.DeclarationStatement>types.find(x => (<ts.DeclarationStatement>x).name.getText() === typeName);
+      let result: ts.DeclarationStatement = null;
+      
+      if (types)
+        result = <ts.DeclarationStatement>types.find(x => (<ts.DeclarationStatement>x).name.getText() === typeName);
 
-      if (result)
-        return result;
-      return this.getDeclForImportedType(source, typeName);
-
+      if (result) return result;
+      
+      if (isBase)         
+        result = this.getDeclForTypeFromImports(source, typeName);
+      else 
+        result = this.getDeclForTypeFromExports(source, typeName);
+  
+      return result;
     }
     else if (source.kind == ts.SyntaxKind.ModuleDeclaration) {
       let module = <ts.ModuleDeclaration><any>source;
@@ -111,7 +118,53 @@ export class Reflection {
     }
   }
 
-  getDeclForImportedType(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
+  getDeclForTypeFromExports(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
+    if (!source || !typeName) return null;
+
+    let exports = source.statements.filter(x => x.kind == ts.SyntaxKind.ExportDeclaration);
+    let map: { [id: string]: ts.SourceFile } = {};
+    let symbolExportDecl = exports.find(x => {
+      if (!(<any>x).exportClause) {
+        return true;  // export * from "module"
+      }
+
+      // export {Item} from "module"
+
+      let exportSymbols = (<any>x).exportClause.elements;
+      if (!exportSymbols) {
+        return false; 
+      }
+
+      let importModule = (<any>x).moduleSpecifier.text;
+
+      let isMatch = exportSymbols.findIndex(exportSymbol => {
+        return exportSymbol.name.text == typeName;
+      });
+
+      return isMatch != -1;
+    });
+
+    if (!symbolExportDecl)
+      return null;
+
+    let exportModule = (<any>symbolExportDecl).moduleSpecifier.text;
+    let isRelative = exportModule.startsWith(".");
+    let exportSourceModule = exportModule;
+
+    if (isRelative) {
+      let base = Path.parse(source.fileName).dir;
+      exportSourceModule = Path.normalize(Path.join(base, `${exportModule}`));
+    }
+
+    let exportSourceFile = this.pathToSource[exportSourceModule];
+
+    if (!exportSourceFile)
+      return null;
+
+    return this.getDeclForType(exportSourceFile, typeName, false);
+  }
+
+  getDeclForTypeFromImports(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
     if (!source || !typeName) return null;
 
     let imports = source.statements.filter(x => x.kind == ts.SyntaxKind.ImportDeclaration);
@@ -136,7 +189,7 @@ export class Reflection {
 
       return isMatch != -1;
     });
-
+    
     if (!symbolImportDecl)
       return null;
 
@@ -154,7 +207,7 @@ export class Reflection {
     if (!inportSourceFile)
       return null;
 
-    return this.getDeclForType(inportSourceFile, typeName);
+    return this.getDeclForType(inportSourceFile, typeName, false);
   }
 
   public resolveClassElementType(node: ts.ClassElement): ts.TypeNode {

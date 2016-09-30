@@ -748,6 +748,93 @@ describe("Static-Type Binding Tests", () => {
       });
   });
 
+  // #112
+  it("supports importing from file that re-exports all", (done) => {
+
+    let item = `
+    export class Item{
+      prop: string;
+    }`;
+    
+    let common = `
+    export * from './item';
+    `;
+
+    let viewmodel = `
+    import {Item} from './common';
+    export class Foo{
+      items: Item[]
+    }`;
+    
+    let view = `
+    <template>
+       <div repeat.for="item of items">
+        \${item.prop}
+        \${item.pro}
+      </div>
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let linter = new Linter([rule]);
+
+    reflection.add("./path/item.ts", item);
+    reflection.add("./path/common.ts", common);
+    reflection.add("./path/foo.ts", viewmodel);    
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'pro' in type 'Item'");
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      });
+  });
+
+  // #112
+  it("supports importing from file that exports specific item", (done) => {
+
+    let item = `
+    export class Item{
+      prop: string;
+    }`;
+    
+    let common = `
+    export { Item } from './item';
+    `;
+
+    let viewmodel = `
+    import {Item} from './common';
+    export class Foo{
+      items: Item[]
+    }`;
+    
+    let view = `
+    <template>
+       <div repeat.for="item of items">
+        \${item.prop}
+        \${item.pro}
+      </div>
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let linter = new Linter([rule]);
+
+    reflection.add("./path/item.ts", item);
+    reflection.add("./path/common.ts", common);
+    reflection.add("./path/foo.ts", viewmodel);    
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'pro' in type 'Item'");
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      });
+  });
+
+
   it("supports bindable field", (done) => {
     let item = `      
     export class Item{           
