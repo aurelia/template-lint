@@ -139,7 +139,10 @@ export class BindingRule extends ASTBuilder {
       case "NameExpression": {
         if (attr.name == "ref") {
           var name = instruction.sourceExpression.name;
-          node.locals.push(new ASTContext({ name: name, type: <ts.TypeNode>ts.createNode(ts.SyntaxKind.AnyKeyword) }));
+
+          var root = this.resolveRoot(node);
+
+          root.locals.push(new ASTContext({ name: name, type: <ts.TypeNode>ts.createNode(ts.SyntaxKind.AnyKeyword) }));
         }
         this.examineNameExpression(node, <NameExpression>instruction);
 
@@ -213,7 +216,7 @@ export class BindingRule extends ASTBuilder {
     let access = exp.sourceExpression;
     let chain = this.flattenAccessChain(access);
     let resolved = this.resolveAccessScopeToType(node, chain, node.location);
-    
+
     node.locals.push(new ASTContext({ name: "$event" }));
     for (var arg of access.args) {
       let access = arg;
@@ -254,6 +257,12 @@ export class BindingRule extends ASTBuilder {
         }
       }
     });
+  }
+
+  private resolveRoot(node: ASTNode): ASTNode {
+    while (node.parent)
+      node = node.parent;
+    return node;
   }
 
   private resolveViewModel(path: string): ASTContext {
