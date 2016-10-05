@@ -9,15 +9,13 @@ import { Container } from "aurelia-dependency-injection";
 import * as ts from "typescript";
 import * as Path from "path";
 
-import { Rule, Parser, ParserState, Issue, IssueSeverity } from "template-lint";
 import { Reflection } from "../reflection";
 
 import {
-  ASTBuilder,
   ASTElementNode,
   ASTTextNode,
   ASTNode,
-  ASTAttribute,
+  ASTElementAttribute,
   ASTContext,
   FileLoc
 } from "../ast";
@@ -25,7 +23,7 @@ import {
 /**
  *  Rule to ensure static type usage is valid
  */
-export class BindingRule extends ASTBuilder {
+export class BindingRule extends ParserRule {
   public reportBindingAccess = true;
   public reportExceptions = false;
 
