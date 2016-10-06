@@ -1369,8 +1369,38 @@ describe("Static-Type Binding Tests", () => {
     }`;
     let view = `
     <template>      
-      <button ref="someName" click.delegate="someMethod(someName.attributes['expanded'].value)">
+      <button click.delegate="someMethod(someName.attributes['expanded'].value)" ref="someName">
       </button>
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection);
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(0);
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      });
+  });
+
+  
+
+
+  // #125 
+  it("accept binding to ref variables (not a child)", (done) => {
+    let viewmodel = `
+    export class Foo{
+      someMethod(value){}
+    }`;
+    let view = `
+    <template>      
+      <button ref="someName"></button>
+      <div>
+      \${someName.attributes['expanded'].value}
+      </div>
     </template>`;
     let reflection = new Reflection();
     let rule = new BindingRule(reflection);
