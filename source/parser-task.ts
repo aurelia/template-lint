@@ -22,7 +22,7 @@ export abstract class ParserTask {
   * Called when parsing is complete. 
   * If you override finalise(), ensure you `return super.finalise()`)
   */
-  public finalise(root?: ASTNode): Issue[] {
+  public finalise(): Issue[] {
     let issues = this.issues;
     this.issues = [];
     return issues;
