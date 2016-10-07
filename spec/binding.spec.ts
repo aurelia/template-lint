@@ -1506,7 +1506,53 @@ describe("Static-Type Binding Tests", () => {
         });
     });
 
-    // TODO should also detect invalid references from nested objects
+    it("should detect invalid references to nested objects", (done) => {
+      let price = `
+      export interface Price{
+        value:string;
+      }`;
+      let item = `
+      import {Price} from './price';
+      export interface Item{
+        name:string;
+        price:Price;
+      }`;
+      const viewmodel = `
+      import {Item} from './item';
+      export class Foo{
+        field1: Item;
+        field2: Item;
+        
+        @computedFrom("field1.name", "field1.missingField1", "field2.price.value", "field2.price.missingField2")
+        get computedField(){
+          return this.field1 + this.field2;
+        }
+      }`;
+      const view = `
+      <template>
+        \${computedField}
+      </template>`;
+      const reflection = new Reflection();
+      const rule = new BindingRule(reflection, new AureliaReflection());
+      const linter = new Linter([rule]);
+      reflection.add("./foo.ts", viewmodel);
+      reflection.add("./item", item);
+      reflection.add("./price.ts", price);
+      linter.lint(view, "./foo.html")
+        .then((issues) => {
+          try {
+            expect(issues.length).toBe(2);
+            expect(issues[0].message).toBe("cannot find 'missingField1' in type 'Item'");
+            expect(issues[1].message).toBe("cannot find 'missingField2' in type 'Price'");
+          }
+          catch (err) {
+            fail(err);
+          }
+          finally {
+            done();
+          }
+        });
+    });
   });
 
 

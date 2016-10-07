@@ -332,7 +332,7 @@ export class BindingRule extends ASTBuilder {
           resolved = this.resolveLocalType(locals, name);
 
         if (!resolved)
-          resolved = this.resolveStaticType(context, name, loc);
+          resolved = this.resolveStaticType(node, context, name, loc);
       };
     }
     else if (access.constructor.name == "AccessKeyed") {
@@ -382,7 +382,7 @@ export class BindingRule extends ASTBuilder {
     return localVar;
   }
 
-  private resolveStaticType(context: ASTContext, memberName: string, loc: FileLoc): ASTContext {
+  private resolveStaticType(node: ASTNode, context: ASTContext, memberName: string, loc: FileLoc): ASTContext {
 
     if (context == null || context.typeDecl == null)
       return null;
@@ -406,7 +406,7 @@ export class BindingRule extends ASTBuilder {
 
         if (member) {
           if (member.kind === ts.SyntaxKind.GetAccessor) {
-            this.checkDecorators(member, context, loc);
+            this.checkDecorators(node, member, context, loc);
           }
           memberType = this.reflection.resolveClassElementType(member);
         } else {
@@ -485,7 +485,7 @@ export class BindingRule extends ASTBuilder {
     return new ASTContext({ type: memberType, typeDecl: memberTypeDecl, typeValue: memberIsArray ? [] : null });
   }
 
-  private checkDecorators(member, context: ASTContext, loc: FileLoc) {
+  private checkDecorators(node: ASTNode, member, context: ASTContext, loc: FileLoc) {
     if (member.decorators) {
       const memberNode = <Node>member;
       const decorators: NodeArray<Decorator> = member.decorators;
@@ -496,10 +496,9 @@ export class BindingRule extends ASTBuilder {
           var decoratorArguments = decoratorExprNode.arguments;
           const decoratorArgumentsAsText: string[] = decoratorArguments.map((decoratorArg) => decoratorArg.text);
           decoratorArgumentsAsText.forEach((computedDependencyText) => {
-            if (computedDependencyText.indexOf(".") === -1) {
-              this.resolveStaticType(context, computedDependencyText, loc);
-            } else {
-              console.warn("TODO: Checking references from nested object (" + computedDependencyText + ") is not yet implemented for @computedFrom decorator!");
+            var exp = this.auReflection.createTextExpression(`\$\{${computedDependencyText}\}`);
+            if (exp){
+              this.examineInterpolationExpression(node, exp);
             }
           });
         }
