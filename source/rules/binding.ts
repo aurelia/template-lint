@@ -21,6 +21,10 @@ import {
   ASTContext,
   FileLoc
 } from "../ast";
+import Node = ts.Node;
+import NodeArray = ts.NodeArray;
+import Decorator = ts.Decorator;
+import Identifier = ts.Identifier;
 
 /**
  *  Rule to ensure static type usage is valid
@@ -398,6 +402,9 @@ export class BindingRule extends ASTBuilder {
           .find(x => (<any>x.name).text == memberName);
 
         if (member) {
+          if (member.kind === ts.SyntaxKind.GetAccessor) {
+            this.checkDecorators(member, context, loc);
+          }
           memberType = this.reflection.resolveClassElementType(member);
         } else {
           const constr = <ts.ConstructorDeclaration>members.find(ce => ce.kind == ts.SyntaxKind.Constructor);
@@ -473,6 +480,28 @@ export class BindingRule extends ASTBuilder {
     //replace the generic references with the arguments.
 
     return new ASTContext({ type: memberType, typeDecl: memberTypeDecl, typeValue: memberIsArray ? [] : null });
+  }
+
+  private checkDecorators(member, context: ASTContext, loc: FileLoc) {
+    if (member.decorators) {
+      const memberNode = <Node>member;
+      const decorators: NodeArray<Decorator> = member.decorators;
+      decorators.forEach((decorator) => {
+        const decoratorExprNode = <any>decorator.expression;
+        const expr = <Identifier>decoratorExprNode.expression;
+        if (expr.text === "computedFrom") {
+          var decoratorArguments = decoratorExprNode.arguments;
+          const decoratorArgumentsAsText: string[] = decoratorArguments.map((decoratorArg) => decoratorArg.text);
+          decoratorArgumentsAsText.forEach((computedDependencyText) => {
+            if (computedDependencyText.indexOf(".") === -1) {
+              this.resolveStaticType(context, computedDependencyText, loc);
+            } else {
+              console.warn("TODO: Checking references from nested object (" + computedDependencyText + ") is not yet implemented for @computedFrom decorator!");
+            }
+          });
+        }
+      });
+    }
   }
 
   private resolveClassMembers(classDecl: ts.ClassDeclaration): ts.NodeArray<ts.ClassElement> {

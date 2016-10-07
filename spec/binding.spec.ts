@@ -1467,6 +1467,46 @@ describe("Static-Type Binding Tests", () => {
       });
   });
 
+  //#128
+  describe("@computedFrom decorator usages", () => {
+
+    it("should detect invalid references", (done) => {
+      const viewmodel = `
+      export class Foo{
+        field1: number;
+        field2: number;
+        
+        @computedFrom("field1", "missingField1", "field2", "missingField2")
+        get computedField(){
+          return this.field1 + this.field2;
+        }
+      }`;
+      const view = `
+      <template>
+        \${computedField}
+      </template>`;
+      const reflection = new Reflection();
+      const rule = new BindingRule(reflection);
+      const linter = new Linter([rule]);
+      reflection.add("./foo.ts", viewmodel);
+      linter.lint(view, "./foo.html")
+        .then((issues) => {
+          try {
+            expect(issues.length).toBe(2);
+            expect(issues[0].message).toBe("cannot find 'missingField1' in type 'Foo'");
+            expect(issues[1].message).toBe("cannot find 'missingField2' in type 'Foo'");
+          }
+          catch (err) {
+            fail(err);
+          }
+          finally {
+            done();
+          }
+        });
+    });
+
+    // TODO should also detect invalid references from nested objects
+  });
 
 
   /*it("rejects more than one class in view-model file", (done) => {
