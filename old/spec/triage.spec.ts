@@ -2,6 +2,7 @@
 import { Linter, Rule } from 'template-lint';
 import { BindingRule } from '../source/rules/binding';
 import { Reflection } from '../source/reflection';
+import { AureliaReflection } from '../source/aurelia-reflection';
 import { ASTNode } from '../source/ast';
 
 /* Triage - Make sure stuff doesn't blow-up for the time-being. */
@@ -17,7 +18,7 @@ describe("Triage", () => {
       \${value | booboo}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
@@ -37,7 +38,7 @@ describe("Triage", () => {
       \${value.not.checked}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
@@ -57,7 +58,7 @@ describe("Triage", () => {
       \${value.not.checked}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
@@ -86,7 +87,7 @@ describe("Triage", () => {
       \${value.not.checked}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     reflection.add("./path/types.ts", types);
@@ -116,7 +117,7 @@ describe("Triage", () => {
       \${value.not.checked}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     reflection.add("./path/types.ts", types);
@@ -147,7 +148,7 @@ describe("Triage", () => {
       \${value.not.checked}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     reflection.add("./path/types.ts", types);
@@ -169,7 +170,7 @@ describe("Triage", () => {
       \${value.not.checked}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
@@ -191,7 +192,7 @@ describe("Triage", () => {
       \${items.lengh}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -220,7 +221,7 @@ describe("Triage", () => {
       </some-element>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -249,7 +250,7 @@ describe("Triage", () => {
       </some-element>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")

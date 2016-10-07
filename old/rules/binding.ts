@@ -10,6 +10,7 @@ import * as ts from "typescript";
 import * as Path from "path";
 
 import { Reflection } from "../reflection";
+import { AureliaReflection } from '../aurelia-reflection';
 
 import {
   ASTElementNode,
@@ -19,6 +20,10 @@ import {
   ASTContext,
   FileLoc
 } from "../ast";
+import Node = ts.Node;
+import NodeArray = ts.NodeArray;
+import Decorator = ts.Decorator;
+import Identifier = ts.Identifier;
 
 /**
  *  Rule to ensure static type usage is valid
@@ -32,6 +37,7 @@ export class BindingRule extends ParserRule {
 
   constructor(
     private reflection: Reflection,
+    auReflection: AureliaReflection,
     opt?: {
       reportBindingSyntax?: boolean,
       reportBindingAccess?: boolean,
@@ -39,7 +45,8 @@ export class BindingRule extends ParserRule {
       localProvidors?: string[],
       restrictedAccess?: string[]
     }) {
-    super();
+
+    super(auReflection);
 
     if (opt)
       Object.assign(this, opt);
@@ -323,7 +330,7 @@ export class BindingRule extends ParserRule {
           resolved = this.resolveLocalType(locals, name);
 
         if (!resolved)
-          resolved = this.resolveStaticType(context, name, loc);
+          resolved = this.resolveStaticType(node, context, name, loc);
       };
     }
     else if (access.constructor.name == "AccessKeyed") {
@@ -373,7 +380,7 @@ export class BindingRule extends ParserRule {
     return localVar;
   }
 
-  private resolveStaticType(context: ASTContext, memberName: string, loc: FileLoc): ASTContext {
+  private resolveStaticType(node: ASTNode, context: ASTContext, memberName: string, loc: FileLoc): ASTContext {
 
     if (context == null || context.typeDecl == null)
       return null;
@@ -396,6 +403,9 @@ export class BindingRule extends ParserRule {
           .find(x => (<any>x.name).text == memberName);
 
         if (member) {
+          if (member.kind === ts.SyntaxKind.GetAccessor) {
+            this.checkDecorators(node, member, context, loc);
+          }
           memberType = this.reflection.resolveClassElementType(member);
         } else {
           const constr = <ts.ConstructorDeclaration>members.find(ce => ce.kind == ts.SyntaxKind.Constructor);
@@ -471,6 +481,27 @@ export class BindingRule extends ParserRule {
     //replace the generic references with the arguments.
 
     return new ASTContext({ type: memberType, typeDecl: memberTypeDecl, typeValue: memberIsArray ? [] : null });
+  }
+
+  private checkDecorators(node: ASTNode, member, context: ASTContext, loc: FileLoc) {
+    if (member.decorators) {
+      const memberNode = <Node>member;
+      const decorators: NodeArray<Decorator> = member.decorators;
+      decorators.forEach((decorator) => {
+        const decoratorExprNode = <any>decorator.expression;
+        const expr = <Identifier>decoratorExprNode.expression;
+        if (expr.text === "computedFrom") {
+          var decoratorArguments = decoratorExprNode.arguments;
+          const decoratorArgumentsAsText: string[] = decoratorArguments.map((decoratorArg) => decoratorArg.text);
+          decoratorArgumentsAsText.forEach((computedDependencyText) => {
+            var exp = this.auReflection.createTextExpression(`\$\{${computedDependencyText}\}`);
+            if (exp){
+              this.examineInterpolationExpression(node, exp);
+            }
+          });
+        }
+      });
+    }
   }
 
   private resolveClassMembers(classDecl: ts.ClassDeclaration): ts.NodeArray<ts.ClassElement> {
