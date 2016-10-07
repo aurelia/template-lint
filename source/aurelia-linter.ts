@@ -17,6 +17,7 @@ import { TemplateRule } from './rules/template';
 import { BindingRule } from './rules/binding';
 
 import { Reflection } from './reflection';
+import { AureliaReflection } from './aurelia-reflection';
 import { Config } from './config';
 
 import { initialize } from 'aurelia-pal-nodejs';
@@ -26,6 +27,7 @@ initialize();
 export class AureliaLinter {
   linter: Linter;
   reflection: Reflection;
+  auReflection: AureliaReflection;
   config: Config;
 
   private init: Promise<void>;
@@ -37,6 +39,7 @@ export class AureliaLinter {
 
     this.config = config;
     this.reflection = new Reflection();
+    this.auReflection = new AureliaReflection();
 
     let rules = [];
 
@@ -68,6 +71,7 @@ export class AureliaLinter {
       rules.push(
         new BindingRule(
           this.reflection,
+          this.auReflection,
           {
             reportBindingSyntax: this.config.useRuleAureliaBindingSyntax,
             reportBindingAccess: this.config.useRuleAureliaBindingAccess,

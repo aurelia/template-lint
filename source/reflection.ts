@@ -89,17 +89,17 @@ export class Reflection {
         x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
       let result: ts.DeclarationStatement = null;
-      
+
       if (types)
         result = <ts.DeclarationStatement>types.find(x => (<ts.DeclarationStatement>x).name.getText() === typeName);
 
       if (result) return result;
-      
-      if (isBase)         
+
+      if (isBase)
         result = this.getDeclForTypeFromImports(source, typeName);
-      else 
+      else
         result = this.getDeclForTypeFromExports(source, typeName);
-  
+
       return result;
     }
     else if (source.kind == ts.SyntaxKind.ModuleDeclaration) {
@@ -132,7 +132,7 @@ export class Reflection {
 
       let exportSymbols = (<any>x).exportClause.elements;
       if (!exportSymbols) {
-        return false; 
+        return false;
       }
 
       let importModule = (<any>x).moduleSpecifier.text;
@@ -189,7 +189,7 @@ export class Reflection {
 
       return isMatch != -1;
     });
-    
+
     if (!symbolImportDecl)
       return null;
 

@@ -4,6 +4,7 @@ import { Container } from 'aurelia-dependency-injection';
 import { Rule, Parser, ParserState, Issue, IssueSeverity } from 'template-lint';
 import ts = require('typescript');
 
+
 import {
   ViewResources,
   BindingLanguage,
@@ -14,20 +15,15 @@ import {
   from 'aurelia-templating';
 import { ASTAttribute as P5ASTAttribute } from "parse5";
 
+import { AureliaReflection } from './aurelia-reflection';
+
 export class ASTBuilder extends Rule {
   public root: ASTNode;
   public reportBindingSyntax = true;
 
-  private resources: ViewResources;
-  private bindingLanguage: TemplatingBindingLanguage;
-  private container: Container;
-
-  constructor() {
+  constructor(protected auReflection?: AureliaReflection) {
     super();
-
-    this.container = new Container();
-    this.resources = this.container.get(ViewResources);
-    this.bindingLanguage = this.container.get(TemplatingBindingLanguage);
+    this.auReflection = this.auReflection || new AureliaReflection();
   }
 
   init(parser: Parser) {
@@ -68,14 +64,13 @@ export class ASTBuilder extends Rule {
     });
   }
 
-  private createAttributeInstruction(tag: string, name: string, value: string, line: number, column: number): any {
+
+  protected createAttributeInstruction(tag: string, name: string, value: string, line: number, column: number): any {
 
     var instruction: any = null;
 
     try {
-      let info: any = this.bindingLanguage.inspectAttribute(this.resources, tag, name, value);
-      if (info)
-        instruction = this.bindingLanguage.createAttributeInstruction(this.resources, { tagName: tag }, info, undefined);
+      instruction = this.auReflection.createAttributeInstruction(tag, name, value);
     } catch (error) {
       this.reportSyntaxIssue(error, line, column);
     }
@@ -83,12 +78,12 @@ export class ASTBuilder extends Rule {
     return instruction;
   }
 
-  private createTextExpression(text: string, line: number, column: number): InterpolationBindingExpression {
+  protected createTextExpression(text: string, line: number, column: number): InterpolationBindingExpression {
 
     var exp: InterpolationBindingExpression = null;
 
     try {
-      exp = this.bindingLanguage.inspectTextContent(this.resources, text);
+      exp = this.auReflection.createTextExpression(text);
     } catch (error) {
       this.reportSyntaxIssue(error, line, column);
     }

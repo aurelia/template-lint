@@ -2,6 +2,7 @@
 import { Linter, Rule } from 'template-lint';
 import { BindingRule } from '../source/rules/binding';
 import { Reflection } from '../source/reflection';
+import { AureliaReflection } from '../source/aurelia-reflection';
 import { ASTNode } from '../source/ast';
 
 describe("Static-Type Binding Tests", () => {
@@ -10,7 +11,7 @@ describe("Static-Type Binding Tests", () => {
 
     it("will fail bad repeat.for syntax", (done) => {
       var linter: Linter = new Linter([
-        new BindingRule(new Reflection())
+        new BindingRule(new Reflection(), new AureliaReflection())
       ]);
       linter.lint('<div repeat.for="item of"></div>')
         .then((issues) => {
@@ -37,7 +38,7 @@ describe("Static-Type Binding Tests", () => {
           \${missing3}
       </template>`;
       let reflection = new Reflection();
-      let rule = new BindingRule(reflection);
+      let rule = new BindingRule(reflection, new AureliaReflection());
       let linter = new Linter([rule]);
       reflection.add("./foo.ts", viewmodel);
       linter.lint(view, "./foo.html")
@@ -70,7 +71,7 @@ describe("Static-Type Binding Tests", () => {
         \${item}
       </template>`;
       let reflection = new Reflection();
-      let rule = new BindingRule(reflection);
+      let rule = new BindingRule(reflection, new AureliaReflection());
       let linter = new Linter([rule]);
       reflection.add("./foo.ts", viewmodel);
       reflection.add("./path/item.ts", item);
@@ -101,7 +102,7 @@ describe("Static-Type Binding Tests", () => {
         \${item.info}
       </template>`;
       let reflection = new Reflection();
-      let rule = new BindingRule(reflection);
+      let rule = new BindingRule(reflection, new AureliaReflection());
       let linter = new Linter([rule]);
       reflection.add("./foo.ts", viewmodel);
       reflection.add("./path/item.ts", item);
@@ -129,7 +130,7 @@ describe("Static-Type Binding Tests", () => {
         </li>
       </template>`;
       let reflection = new Reflection();
-      let rule = new BindingRule(reflection);
+      let rule = new BindingRule(reflection, new AureliaReflection());
       let linter = new Linter([rule]);
       reflection.add("./foo.ts", viewmodel);
       linter.lint(view, "./foo.html")
@@ -150,7 +151,7 @@ describe("Static-Type Binding Tests", () => {
 
   it("will fail bad interpolation syntax in text node", (done) => {
     var linter: Linter = new Linter([
-      new BindingRule(new Reflection())
+      new BindingRule(new Reflection(), new AureliaReflection())
     ]);
     linter.lint('<div>${..}</div>')
       .then((issues) => {
@@ -170,7 +171,7 @@ describe("Static-Type Binding Tests", () => {
       \${name}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -194,7 +195,7 @@ describe("Static-Type Binding Tests", () => {
       <div css="width: \${width}px; height: \${height}px;"></div>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -215,7 +216,7 @@ describe("Static-Type Binding Tests", () => {
       <div css="width: \${widt}px; height: \${hight}px;"></div>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -237,7 +238,7 @@ describe("Static-Type Binding Tests", () => {
       \${nam}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -261,7 +262,7 @@ describe("Static-Type Binding Tests", () => {
       <div if.bind="condition"></div>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -281,7 +282,7 @@ describe("Static-Type Binding Tests", () => {
       <div if.bind="!condition"></div>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -301,7 +302,7 @@ describe("Static-Type Binding Tests", () => {
       <input type="text" value.bind="name">
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -331,7 +332,7 @@ describe("Static-Type Binding Tests", () => {
       \${item.info}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -360,7 +361,7 @@ describe("Static-Type Binding Tests", () => {
       \${item.infooo}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -389,7 +390,7 @@ describe("Static-Type Binding Tests", () => {
     let view = `
     <template with.bind="item"></template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -417,7 +418,7 @@ describe("Static-Type Binding Tests", () => {
     let view = `
     <template with.bind="itm"></template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -447,7 +448,7 @@ describe("Static-Type Binding Tests", () => {
     let view = `
     <template repeat.for="item of itms"></template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -473,7 +474,7 @@ describe("Static-Type Binding Tests", () => {
       \${nam}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo-camel.ts", viewmodel);
     linter.lint(view, "./foo-camel.html")
@@ -507,7 +508,7 @@ describe("Static-Type Binding Tests", () => {
         \${getPerson().rol}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./nested/person.ts", person);
@@ -547,7 +548,7 @@ describe("Static-Type Binding Tests", () => {
       </template>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./person.ts", person);
@@ -578,7 +579,7 @@ describe("Static-Type Binding Tests", () => {
         </option>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./person.ts", person);
@@ -607,7 +608,7 @@ describe("Static-Type Binding Tests", () => {
         </option>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./person.ts", person);
@@ -628,7 +629,7 @@ describe("Static-Type Binding Tests", () => {
       <input type="text" value.bind="name">
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -649,7 +650,7 @@ describe("Static-Type Binding Tests", () => {
       <input type="text" value.bind="name">
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -672,7 +673,7 @@ describe("Static-Type Binding Tests", () => {
       <input type="text" value.bind="protectedMember">
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, { restrictedAccess: ["private"] });
+    let rule = new BindingRule(reflection, new AureliaReflection(), { restrictedAccess: ["private"] });
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -701,7 +702,7 @@ describe("Static-Type Binding Tests", () => {
       \${person.nme}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     reflection.addTypings(lib);
@@ -735,7 +736,7 @@ describe("Static-Type Binding Tests", () => {
       \${missing}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let rule = new BindingRule(reflection, new AureliaReflection(), { reportExceptions: true });
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     reflection.addTypings(lib);
@@ -755,7 +756,7 @@ describe("Static-Type Binding Tests", () => {
     export class Item{
       prop: string;
     }`;
-    
+
     let common = `
     export * from './item';
     `;
@@ -765,7 +766,7 @@ describe("Static-Type Binding Tests", () => {
     export class Foo{
       items: Item[]
     }`;
-    
+
     let view = `
     <template>
        <div repeat.for="item of items">
@@ -774,12 +775,12 @@ describe("Static-Type Binding Tests", () => {
       </div>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let rule = new BindingRule(reflection, new AureliaReflection(), { reportExceptions: true });
     let linter = new Linter([rule]);
 
     reflection.add("./path/item.ts", item);
     reflection.add("./path/common.ts", common);
-    reflection.add("./path/foo.ts", viewmodel);    
+    reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
       .then((issues) => {
         try {
@@ -798,7 +799,7 @@ describe("Static-Type Binding Tests", () => {
     export class Item{
       prop: string;
     }`;
-    
+
     let common = `
     export { Item } from './item';
     `;
@@ -808,7 +809,7 @@ describe("Static-Type Binding Tests", () => {
     export class Foo{
       items: Item[]
     }`;
-    
+
     let view = `
     <template>
        <div repeat.for="item of items">
@@ -817,12 +818,12 @@ describe("Static-Type Binding Tests", () => {
       </div>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let rule = new BindingRule(reflection, new AureliaReflection(), { reportExceptions: true });
     let linter = new Linter([rule]);
 
     reflection.add("./path/item.ts", item);
     reflection.add("./path/common.ts", common);
-    reflection.add("./path/foo.ts", viewmodel);    
+    reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
       .then((issues) => {
         try {
@@ -854,7 +855,7 @@ describe("Static-Type Binding Tests", () => {
       \${value.nae}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection(), new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./item.ts", item);
@@ -879,7 +880,7 @@ describe("Static-Type Binding Tests", () => {
       \${constructorPrivateField}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -909,7 +910,7 @@ describe("Static-Type Binding Tests", () => {
       \${items[indx].inf}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item.ts", item);
@@ -949,7 +950,7 @@ describe("Static-Type Binding Tests", () => {
       \${c.dynamic4}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let rule = new BindingRule(reflection, new AureliaReflection(), { reportExceptions: true });
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
@@ -981,7 +982,7 @@ describe("Static-Type Binding Tests", () => {
       \${item.vale}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/item", item);
@@ -1013,7 +1014,7 @@ describe("Static-Type Binding Tests", () => {
       \${index.will.never.know.how.wrong.this.is}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.js", viewmodel);
     linter.lint(view, "./foo.html")
@@ -1045,7 +1046,7 @@ describe("Static-Type Binding Tests", () => {
       \${items.lengh}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./item", item);
@@ -1080,7 +1081,7 @@ describe("Static-Type Binding Tests", () => {
       \${items[0].vale}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./item", item);
@@ -1114,7 +1115,7 @@ describe("Static-Type Binding Tests", () => {
       \${valu}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./base.ts", base);
@@ -1154,7 +1155,7 @@ describe("Static-Type Binding Tests", () => {
      \${item.valu}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./item.ts", item);
@@ -1194,7 +1195,7 @@ describe("Static-Type Binding Tests", () => {
     </template>`;
 
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./item.ts", item);
@@ -1234,7 +1235,7 @@ describe("Static-Type Binding Tests", () => {
     </template>`;
 
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./item.ts", item);
@@ -1266,7 +1267,7 @@ describe("Static-Type Binding Tests", () => {
     </template>`;
 
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let rule = new BindingRule(reflection, new AureliaReflection(), { reportExceptions: true });
     let linter = new Linter([rule]);
     reflection.add("./page.ts", pageViewModel);
     linter.lint(pageView, "./page.html")
@@ -1294,7 +1295,7 @@ describe("Static-Type Binding Tests", () => {
       \${missing}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let rule = new BindingRule(reflection, new AureliaReflection(), { reportExceptions: true });
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
@@ -1321,7 +1322,7 @@ describe("Static-Type Binding Tests", () => {
       </svg>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let rule = new BindingRule(reflection, new AureliaReflection(), { reportExceptions: true });
     let linter = new Linter([rule]);
     reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
@@ -1346,7 +1347,7 @@ describe("Static-Type Binding Tests", () => {
     `;
 
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, { reportExceptions: true });
+    let rule = new BindingRule(reflection, new AureliaReflection(), { reportExceptions: true });
     let linter = new Linter([rule]);
 
     try {
@@ -1373,7 +1374,7 @@ describe("Static-Type Binding Tests", () => {
       </button>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -1386,7 +1387,7 @@ describe("Static-Type Binding Tests", () => {
       });
   });
 
-  
+
 
 
   // #125 
@@ -1403,7 +1404,7 @@ describe("Static-Type Binding Tests", () => {
       </div>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -1426,7 +1427,7 @@ describe("Static-Type Binding Tests", () => {
       </button>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -1453,7 +1454,7 @@ describe("Static-Type Binding Tests", () => {
       <button ref="someName" keyup.delegate="method($evnt)"></button>
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -1486,7 +1487,7 @@ describe("Static-Type Binding Tests", () => {
         \${computedField}
       </template>`;
       const reflection = new Reflection();
-      const rule = new BindingRule(reflection);
+      const rule = new BindingRule(reflection, new AureliaReflection());
       const linter = new Linter([rule]);
       reflection.add("./foo.ts", viewmodel);
       linter.lint(view, "./foo.html")
@@ -1519,7 +1520,7 @@ describe("Static-Type Binding Tests", () => {
     <template>
     </template>`
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     linter.lint(view, "./foo.html")
@@ -1558,7 +1559,7 @@ describe("Static-Type Binding Tests", () => {
       \${person.pet.colr}
     </template>`
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection);
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./path/person.ts", person);    
@@ -1594,7 +1595,7 @@ describe("Static-Type Binding Tests", () => {
       </template>`
   
       let reflection = new Reflection();
-      let rule = new BindingRule(reflection);
+      let rule = new BindingRule(reflection, new AureliaReflection());
       let linter = new Linter([rule]);
       reflection.add("./item.ts", itemCustomElement);
       reflection.add("./page.ts", pageViewModel);

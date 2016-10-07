@@ -98,7 +98,7 @@ export class Config {
   /**
   * Valid Child Rule
   */
-  validChildOpts = [ 
+  validChildOpts = [
     { element: "tr", allow: ["td", "th"] },
     { element: "ul", allow: ["li"] },
     { element: "ol", allow: ["li"] },

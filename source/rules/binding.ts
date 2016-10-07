@@ -11,6 +11,7 @@ import * as Path from "path";
 
 import { Rule, Parser, ParserState, Issue, IssueSeverity } from "template-lint";
 import { Reflection } from "../reflection";
+import { AureliaReflection } from '../aurelia-reflection';
 
 import {
   ASTBuilder,
@@ -38,6 +39,7 @@ export class BindingRule extends ASTBuilder {
 
   constructor(
     private reflection: Reflection,
+    auReflection: AureliaReflection,
     opt?: {
       reportBindingSyntax?: boolean,
       reportBindingAccess?: boolean,
@@ -45,7 +47,8 @@ export class BindingRule extends ASTBuilder {
       localProvidors?: string[],
       restrictedAccess?: string[]
     }) {
-    super();
+
+    super(auReflection);
 
     if (opt)
       Object.assign(this, opt);
