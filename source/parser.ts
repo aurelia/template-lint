@@ -7,7 +7,7 @@ import { ASTGen } from './ast';
 
 import { File } from './file';
 import { FileResult } from './file-result';
-import { Readable } from 'stream';
+import { Readable, Stream } from 'stream';
 import { Issue } from './issue';
 
 export class Parser extends SAXParser {
@@ -81,7 +81,7 @@ export class Parser extends SAXParser {
 
         issues = issues.sort((a, b) => (a.line - b.line) * 1000 + (a.column - b.column));
 
-        return <FileResult>{ issues: issues, file: file, root: ast.root };
+        return <FileResult>{ issues: issues, file: file }
       });
   }
 
