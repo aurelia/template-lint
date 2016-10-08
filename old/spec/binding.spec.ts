@@ -855,7 +855,7 @@ describe("Static-Type Binding Tests", () => {
       \${value.nae}
     </template>`;
     let reflection = new Reflection();
-    let rule = new BindingRule(reflection, new AureliaReflection(), new AureliaReflection());
+    let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./item.ts", item);
