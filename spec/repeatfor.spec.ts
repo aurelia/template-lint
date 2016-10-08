@@ -1,12 +1,12 @@
 
 import { Linter, Rule } from 'template-lint';
 import { ASTBuilder } from '../source/ast';
+import { Reflection } from '../source/reflection';
 
 describe("RepeatFor Testing", () => {
 
   var linter: Linter = new Linter([
-    new ASTBuilder()
-  ]);
+    new ASTBuilder(new Reflection())]);
 
   it("will pass item of items", (done) => {
     linter.lint('<div repeat.for="item of items"></div>')

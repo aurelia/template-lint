@@ -33,7 +33,7 @@ describe("Abstract Syntax Tree", () => {
     expect(locals[0].type).toEqual(<ts.TypeNode>ts.createNode(ts.SyntaxKind.StringKeyword));
   });
   it("will create correct AST when void present", (done) => {
-    var builder = new ASTBuilder();
+    var builder = new ASTBuilder(new Reflection());
     var linter: Linter = new Linter([
       builder
     ]);

@@ -31,4 +31,14 @@ export class AureliaReflection {
     exp = this.bindingLanguage.inspectTextContent(this.resources, text);
     return exp;
   }
+
+  toDashCase(value: string) {
+    return value.replace(/([a-z][A-Z])/g, function (g) { return g[0] + "-" + g[1].toLowerCase(); });
+  }
+
+  customElementToDash(value: string) {
+    if (value.endsWith("CustomElement"))
+      value = value.substring(0, value.length - "CustomElement".length);
+    return this.toDashCase(value.charAt(0).toLowerCase() + value.slice(1));
+  }
 }

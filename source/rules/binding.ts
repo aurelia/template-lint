@@ -38,7 +38,7 @@ export class BindingRule extends ASTBuilder {
   public restrictedAccess = ["private", "protected"];
 
   constructor(
-    private reflection: Reflection,
+    reflection: Reflection,
     auReflection: AureliaReflection,
     opt?: {
       reportBindingSyntax?: boolean,
@@ -47,16 +47,15 @@ export class BindingRule extends ASTBuilder {
       localProvidors?: string[],
       restrictedAccess?: string[]
     }) {
-
-    super(auReflection);
+    super(reflection, auReflection);
 
     if (opt)
       Object.assign(this, opt);
   }
 
-  init(parser: Parser, path?: string) {
-    super.init(parser);
-    this.root.context = this.resolveViewModel(path);
+  init(parser: Parser, filepath?: string) {
+    super.init(parser, filepath);
+    this.root.context = this.resolveViewModel(filepath);
   }
 
   finalise(): Issue[] {
@@ -94,6 +93,13 @@ export class BindingRule extends ASTBuilder {
   }
 
   private examineElementNode(node: ASTElementNode) {
+
+    var customResource = this.resources.find(x => x.name == node.tag);
+
+    if (customResource != null) {
+      node.typeDecl = customResource.type;
+    }
+
     let attrs = node.attrs.sort((a, b) => {
       var ai = this.localProvidors.indexOf(a.name);
       var bi = this.localProvidors.indexOf(b.name);
@@ -136,7 +142,21 @@ export class BindingRule extends ASTBuilder {
 
     switch (instructionName) {
       case "BehaviorInstruction": {
-        this.examineBehaviorInstruction(node, <BehaviorInstruction>instruction);
+        var behaviorInstruction = <BehaviorInstruction>instruction;
+        this.examineBehaviorInstruction(node, behaviorInstruction);
+
+        if (node.typeDecl && node.typeDecl.kind == ts.SyntaxKind.ClassDeclaration && (<ts.ClassDeclaration>node.typeDecl).members) {
+          var members = (<ts.ClassDeclaration>node.typeDecl).members;
+
+          if (members.findIndex(x => x.name.getText() == behaviorInstruction.attrName) == -1) {
+            this.reportIssue(<Issue>{
+              message: `cannot find '${behaviorInstruction.attrName}' in type '${node.typeDecl.name.getText()}'`,
+              severity: IssueSeverity.Error,
+              line: attr.location.line,
+              column: attr.location.column
+            });
+          }
+        }
         break;
       }
       case "ListenerExpression": {

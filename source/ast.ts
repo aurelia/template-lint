@@ -3,6 +3,7 @@ import { AccessMember, AccessScope, AccessKeyed, NameExpression, ValueConverter 
 import { Container } from 'aurelia-dependency-injection';
 import { Rule, Parser, ParserState, Issue, IssueSeverity } from 'template-lint';
 import ts = require('typescript');
+import * as path from 'path';
 
 
 import {
@@ -15,20 +16,27 @@ import {
   from 'aurelia-templating';
 import { ASTAttribute as P5ASTAttribute } from "parse5";
 
+import { Reflection } from './reflection';
 import { AureliaReflection } from './aurelia-reflection';
 
 export class ASTBuilder extends Rule {
   public root: ASTNode;
+  public resources: Array<{ name: string, type: ts.DeclarationStatement, kind: string }>;
   public reportBindingSyntax = true;
+  private basePath: string;
 
-  constructor(protected auReflection?: AureliaReflection) {
+
+  constructor(protected reflection: Reflection, protected auReflection?: AureliaReflection) {
     super();
     this.auReflection = this.auReflection || new AureliaReflection();
+    this.resources = [];
   }
 
-  init(parser: Parser) {
+  init(parser: Parser, filepath: string) {
     var current = new ASTNode();
     this.root = current;
+
+    this.basePath = filepath ? path.dirname(filepath) : "";
 
     parser.on("startTag", (tag, attrs, selfClosing, loc) => {
       let next = new ASTElementNode();
@@ -49,6 +57,37 @@ export class ASTBuilder extends Rule {
       current.children.push(next);
       if (!parser.isVoid(tag))
         current = next;
+
+      //triage #67
+      if (tag === "require") {
+        var from = attrs.find(x => x.name == "from");
+
+        if (from == null || from.value == null || from.value == "")
+          return;
+
+        var lookup = path.normalize(path.join(this.basePath, from.value));
+        var source = <ts.SourceFile>this.reflection.pathToSource[lookup];
+
+        if (source == null)
+          return;
+
+        var customElement = <ts.ClassDeclaration>source.statements.find(
+          (x) => {
+            return x.kind == ts.SyntaxKind.ClassDeclaration &&
+              (<ts.ClassDeclaration>x).name.getText().endsWith("CustomElement");
+          });
+
+        if (!customElement)
+          return;
+
+        var res = {
+          kind: "custom-element",
+          name: this.auReflection.customElementToDash((<ts.ClassDeclaration>customElement).name.getText()),
+          type: customElement
+        };
+
+        this.resources.push(res);
+      };
     });
 
     parser.on("endTag", (tag, attrs, selfClosing, loc) => {
@@ -207,6 +246,7 @@ export class ASTAttribute {
 export class ASTElementNode extends ASTNode {
   public tag: string;
   public attrs: ASTAttribute[];
+  public typeDecl: ts.DeclarationStatement;
 
   constructor() {
     super();

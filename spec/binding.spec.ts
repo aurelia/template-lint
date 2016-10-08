@@ -1555,6 +1555,45 @@ describe("Static-Type Binding Tests", () => {
     });
   });
 
+  //#67
+  describe("custom elements", () => {
+
+    it("should detect invalid bindable attributes on custom elements", (done) => {
+      let item = `
+      export class ItemCustomElement{
+        target:string;
+      }`;
+      const viewmodel = `    
+      export class Foo{
+        myname:string;
+      }`;
+      const view = `
+      <template>
+        <require from='./item'></require>
+        <item target.bind="myname" missing.bind="alsoMissing"></item>
+      </template>`;
+      const reflection = new Reflection();
+      const rule = new BindingRule(reflection, new AureliaReflection());
+      const linter = new Linter([rule]);
+      reflection.add("./foo.ts", viewmodel);
+      reflection.add("./item", item);
+      linter.lint(view, "./foo.html")
+        .then((issues) => {
+          try {
+            expect(issues.length).toBe(2);
+            expect(issues[1].message).toBe("cannot find 'missing' in type 'ItemCustomElement'");
+            expect(issues[0].message).toBe("cannot find 'alsoMissing' in type 'Foo'");
+          }
+          catch (err) {
+            fail(err);
+          }
+          finally {
+            done();
+          }
+        });
+    });
+  });
+
 
   /*it("rejects more than one class in view-model file", (done) => {
     let viewmodel = `
