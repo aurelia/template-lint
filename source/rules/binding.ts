@@ -497,7 +497,7 @@ export class BindingRule extends ASTBuilder {
           const decoratorArgumentsAsText: string[] = decoratorArguments.map((decoratorArg) => decoratorArg.text);
           decoratorArgumentsAsText.forEach((computedDependencyText) => {
             var exp = this.auReflection.createTextExpression(`\$\{${computedDependencyText}\}`);
-            if (exp){
+            if (exp) {
               this.examineInterpolationExpression(node, exp);
             }
           });
