@@ -7,7 +7,7 @@ describe("Project", () => {
       try {
         var project = new Project();
 
-        var result = await project.process(<File>{ content: "", path: "foo", kind: FileKind.Source });
+        var result = await project.process(new File({ content: "", path: "foo", kind: FileKind.Source }));
 
         expect(result).not.toBeNull();
 
@@ -22,7 +22,7 @@ describe("Project", () => {
       try {
         var project = new Project();
 
-        var expected = await project.process(<File>{ content: "", path: "foo", kind: FileKind.Source });
+        var expected = await project.process(new File({ content: "", path: "foo", kind: FileKind.Source }));
         var result = project.getResult("foo");
 
         expect(result).toBe(expected);
@@ -39,7 +39,7 @@ describe("Project", () => {
       try {
         var project = new Project();
 
-        await project.process(<File>{ content: "", kind: FileKind.Source });
+        await project.process(new File({ content: "", kind: FileKind.Source }));
         var result = project.getResult("foo");
 
         expect(result).toBeUndefined();

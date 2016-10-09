@@ -13,11 +13,11 @@ export class FileAnalyser {
   }
 
   async analyse(file: File): Promise<File> {
-    file = {
+    file = new File({
       content: file.content,
       kind: file.kind,
       path: file.path
-    };
+    });
 
     for (var task of this.chain) {
       let final = await task.process(file);

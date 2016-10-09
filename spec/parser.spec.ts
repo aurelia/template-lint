@@ -12,11 +12,11 @@ describe("Task: Parser", () => {
 
         project.use(new ParserFileTask(opts));
 
-        var file = <File>{ 
+        var file = new File({ 
           content: "<template></template>", 
           path: "foo.html",
           kind: FileKind.Html 
-        };
+        });
 
         var result = await project.process(file);
 

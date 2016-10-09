@@ -2,7 +2,7 @@ import { File } from './file';
 import { FileTask } from './file-task';
 
 export class FileTaskChain implements FileTask {
-  private chain: FileTask[];
+  private chain = new Array<FileTask>();
   public isFinal: boolean;
 
   constructor() {
