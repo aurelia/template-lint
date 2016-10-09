@@ -26,6 +26,7 @@ export abstract class ParserHook {
   * Save an issue that will be added to the file . 
   */
   protected reportIssue(issue: Issue) {
+    this.file.issues = this.file.issues || [];
     if (issue) {
       this.file.issues.push(issue);
     }
