@@ -2,35 +2,54 @@ import { Project } from '../source/index';
 import { File, FileKind } from '../source/index';
 
 describe("Project", () => {
-  it("should return the result for file after processing", async (done) => {
-    try {
-      var project = new Project();
+  describe("Processing", () => {
+    it("should return the result for file", async (done) => {
+      try {
+        var project = new Project();
 
-      var result = await project.process(<File>{ content: "", path: "foo", kind: FileKind.Source });
+        var result = await project.process(<File>{ content: "", path: "foo", kind: FileKind.Source });
 
-      expect(result).not.toBeNull();
+        expect(result).not.toBeNull();
 
-    } catch (err) {
-      fail(err);
-    }
-    finally {
-      done();
-    }
-  });
-  it("should maintains the result for file after processing", async (done) => {
-    try {
-      var project = new Project();
+      } catch (err) {
+        fail(err);
+      }
+      finally {
+        done();
+      }
+    });
+    it("should maintain the file result when file has a path", async (done) => {
+      try {
+        var project = new Project();
 
-      var expected = await project.process(<File>{ content: "", path: "foo", kind: FileKind.Source });
-      var result = project.getResult("foo");
+        var expected = await project.process(<File>{ content: "", path: "foo", kind: FileKind.Source });
+        var result = project.getResult("foo");
 
-      expect(result).toBe(expected);
+        expect(result).toBe(expected);
 
-    } catch (err) {
-      fail(err);
-    }
-    finally {
-      done();
-    }
+      } catch (err) {
+        fail(err);
+      }
+      finally {
+        done();
+      }
+    });
+
+    it("should not maintain the file result when file has not path", async (done) => {
+      try {
+        var project = new Project();
+
+        await project.process(<File>{ content: "", kind: FileKind.Source });
+        var result = project.getResult("foo");
+
+        expect(result).toBeUndefined();
+
+      } catch (err) {
+        fail(err);
+      }
+      finally {
+        done();
+      }
+    });
   });
 });
