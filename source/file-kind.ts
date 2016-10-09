@@ -1,4 +1,4 @@
-export enum FileKind{
+export enum FileKind {
   Source,
   Html
 }

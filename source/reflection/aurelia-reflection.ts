@@ -1,8 +1,10 @@
-
-
 import { TemplatingBindingLanguage, InterpolationBindingExpression } from "aurelia-templating-binding";
 import { ViewResources, BindingLanguage, BehaviorInstruction } from "aurelia-templating";
 import { Container } from "aurelia-dependency-injection";
+import { initialize } from 'aurelia-pal-nodejs';
+import 'aurelia-polyfills';
+
+initialize();
 
 export class AureliaReflection {
   container: Container;

@@ -4,13 +4,13 @@ import { File } from './file';
 import { FileKind } from './file-kind';
 export { FileKind } from './file-kind';
 
-export interface File {  
+export interface File {
   content: string;
   kind: FileKind;
 
   path?: string;
 
   ext?: string;
-  issues?: Issue[];  
+  issues?: Issue[];
   imports?: string[];
 }

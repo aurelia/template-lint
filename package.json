@@ -55,7 +55,7 @@
     "@types/parse5": "0.0.30",
     "aurelia-binding": "^1.0.0",
     "aurelia-dependency-injection": "^1.0.0",
-    "aurelia-pal-nodejs": "^1.0.0-alpha.4",
+    "aurelia-pal-nodejs": "^1.0.0-alpha.1",
     "aurelia-polyfills": "^1.0.0",
     "aurelia-templating": "^1.0.0",
     "aurelia-templating-binding": "^1.0.0",

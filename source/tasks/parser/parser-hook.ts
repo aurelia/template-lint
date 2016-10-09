@@ -20,7 +20,7 @@ export abstract class ParserHook {
   /**
   * Called when parsing is complete. 
   */
-  public finalise(){}
+  public finalise() { }
 
   /**
   * Save an issue that will be added to the file . 

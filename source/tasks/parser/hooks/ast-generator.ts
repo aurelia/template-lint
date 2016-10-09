@@ -8,7 +8,7 @@ import { Options } from '../../../options';
 export class ASTGenerator extends ParserHook {
   public root: ASTNode = null;
 
-  constructor(private opts:Options) { super(); }
+  constructor(private opts: Options) { super(); }
 
   init(parser: Parser, file: File) {
 
@@ -29,7 +29,7 @@ export class ASTGenerator extends ParserHook {
         if (attrLoc == undefined)
           attrLoc = { startOffset: -1, endOffset: -1, line: -1, col: -1 };
 
-        attr.location = <ASTLocation>{ start: attrLoc.startOffset, end: attrLoc.endOffset, line: attrLoc.line, column: attrLoc.col, path: file.path  };
+        attr.location = <ASTLocation>{ start: attrLoc.startOffset, end: attrLoc.endOffset, line: attrLoc.line, column: attrLoc.col, path: file.path };
 
         return attr;
       });
@@ -47,7 +47,7 @@ export class ASTGenerator extends ParserHook {
     parser.on("text", (text, loc) => {
       let child = new ASTTextNode();
       child.parent = current;
-      child.location = <ASTLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: file.path  };
+      child.location = <ASTLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: file.path };
       current.children.push(child);
     });
   }

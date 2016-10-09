@@ -7,7 +7,7 @@ import { ParserHook } from './parser/parser-hook';
 import { ASTGenerator } from './parser/hooks/ast-generator';
 
 export class ParserFileTask implements FileTask {
-  constructor(private opts: Options){    
+  constructor(private opts: Options) {
   }
 
   async process(file: File): Promise<boolean> {
@@ -17,7 +17,7 @@ export class ParserFileTask implements FileTask {
     var hooks = [new ASTGenerator(this.opts)];
 
     await parser.process(file, hooks);
-    
+
     return false;
   }
 }

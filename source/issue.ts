@@ -12,4 +12,3 @@ export interface Issue {
   end?: number;
   detail?: string;
 }
-

@@ -5,6 +5,8 @@
     "sourceMap": true,
     "noEmitOnError": true,
     "newLine": "LF",
-    "declaration": true
+    "declaration": true,
+    "experimentalDecorators" : true,
+    "emitDecoratorMetadata": true
   }
 }

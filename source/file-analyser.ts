@@ -7,8 +7,8 @@ export class FileAnalyser {
   constructor() {
     this.chain = [];
   }
-  
-  use(task: FileTask) {    
+
+  use(task: FileTask) {
     this.chain.push(task);
   }
 
