@@ -35,40 +35,42 @@ export class ASTNode {
 
   public static inheritLocals(node: ASTNode, ancestor?: number): ASTContext[] {
     let locals: ASTContext[] = [];
+    let tmpNode: ASTNode = node;
 
     if (ancestor) {
-      while (node != null && ancestor >= 0) {
-        node = node.parent;
+      while (tmpNode != null && ancestor >= 0) {
+        tmpNode = tmpNode.parent;
         ancestor -= 1;
       }
     }
 
-    while (node != null) {
-      node.locals.forEach(x => {
+    while (tmpNode != null) {
+      tmpNode.locals.forEach(x => {
         let index = locals.findIndex(y => y.name == x.name);
 
         if (index == -1)
           locals.push(x);
       });
 
-      node = node.parent;
+      tmpNode = tmpNode.parent;
     }
 
     return locals;
   }
 
   public static inheritContext(node: ASTNode, ancestor?: number): ASTContext {
+    let tmpNode: ASTNode = node;
     if (ancestor) {
-      while (node != null && ancestor >= 0) {
-        node = node.parent;
+      while (tmpNode != null && ancestor >= 0) {
+        tmpNode = tmpNode.parent;
         ancestor -= 1;
       }
     }
 
-    while (node != null) {
-      if (node.context != null)
-        return node.context;
-      node = node.parent;
+    while (tmpNode != null) {
+      if (tmpNode.context != null)
+        return tmpNode.context;
+      tmpNode = tmpNode.parent;
     }
     return null;
   }
