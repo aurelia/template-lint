@@ -11,6 +11,8 @@ export class File {
   public imports?: string[];
 
   constructor(opts: { content: string, kind: FileKind, path?: string, issues?: Array<Issue>, imports?: string[] }) {
+    if (opts == null)
+      throw Error("opts cannot be null");
     if (opts.content == null)
       throw Error("content cannot be null");
     if (opts.kind == null)
