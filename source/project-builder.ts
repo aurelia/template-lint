@@ -4,26 +4,20 @@ import { Project } from './project';
 import { Options } from './options';
 
 export class ProjectBuilder {
-  build(opts: Options): Project {
-    opts = opts || {};
-
-    var project = new Project();
-
+  build(opts: Options = {}): Project {
+    let project = new Project();
     project.use(this.buildHtmlChain(opts));
-
     return project;
   }
 
   private buildHtmlChain(opts: Options) {
-    var chain = new FileTaskChain();
-
+    let chain = new FileTaskChain();
     chain.use(this.buildHtmlParser(opts));
-
     return chain;
   }
 
   private buildHtmlParser(opts: Options) {
-    var parser = new ParserFileTask(opts);
+    let parser = new ParserFileTask(opts);
     return parser;
   }
 }
