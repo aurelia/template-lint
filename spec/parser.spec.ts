@@ -2,6 +2,8 @@ import { Project } from '../source/index';
 import { Options } from '../source/index';
 import { File, FileKind } from '../source/index';
 import { ParserFileTask} from '../source/tasks/parser-file-task';
+import {ASTElementNode} from "../source/ast/ast-element-node";
+import {ASTNode} from "../source/ast/ast-node";
 
 describe("Task: Parser", () => {
   describe("Hook: AST Generator", () => {
@@ -20,7 +22,12 @@ describe("Task: Parser", () => {
 
         var result = await project.process(file);
 
-        expect(result["ast"]).toBeDefined();     
+        var ast: ASTNode = result["ast"];
+        expect(ast).toBeDefined();
+        const astNodes = ast.children;
+        expect(astNodes.length).toBe(1);
+        const rootNode = <ASTElementNode>astNodes[0];
+        expect(rootNode.name).toBe("template");
 
       } catch (err) {
         fail(err);
