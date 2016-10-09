@@ -4,9 +4,9 @@ import * as glob from "glob";
 import * as fs from "fs";
 
 /*
-* Manage Reflection information for available sources
+* Manage Source Reflection information for available sources
 */
-export class Reflection {
+export class SourceReflection {
   public sourceFiles: ts.SourceFile[] = [];
   public pathToSource = {};
 

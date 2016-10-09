@@ -1,6 +1,5 @@
 import { SAXParser, StartTagLocationInfo, ASTAttribute } from 'parse5';
-import * as parse5 from 'parse5';
-import { Issue, IssueSeverity } from './issue';
+import { Issue, IssueSeverity } from '../../issue';
 
 /**
  *  Helper to maintain the current state of open tags  
@@ -29,7 +28,7 @@ export class ParserState {
     this.voids = voids;
   }
 
-  initPreRules(parser: SAXParser) {
+  initPreHooks(parser: SAXParser) {
     this.stack = [];
     this.issues = [];
 
@@ -94,7 +93,7 @@ export class ParserState {
     });
   }
 
-  initPostRules(parser: SAXParser) {
+  initPostHooks(parser: SAXParser) {
     var self = this;
 
     parser.on("startTag", () => {

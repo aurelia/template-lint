@@ -2,13 +2,12 @@ import { SAXParser, StartTagLocationInfo } from 'parse5';
 import * as parse5 from 'parse5';
 
 import { ParserState } from './parser-state';
-import { ParserTask } from './parser-task';
-import { ASTGen } from './ast';
+import { ParserHook } from './parser-hook';
 
-import { File } from './file';
-import { FileResult } from './file-result';
+import { File, FileKind } from '../../file';
+import { FileTask } from '../../file-task';
+import { Issue } from '../../issue';
 import { Readable, Stream } from 'stream';
-import { Issue } from './issue';
 
 export class Parser extends SAXParser {
   constructor(public state: ParserState) {
@@ -24,28 +23,32 @@ export class Parser extends SAXParser {
     return this.state.isScope(name);
   }
 
-  public init(tasks: ParserTask[], path: string) {
-    this.state.initPreRules(this);
+  public init(hooks: ParserHook[], file: File) {
+    this.state.initPreHooks(this);
 
-    tasks.forEach((rule) => {
-      rule.init(this, path);
+    hooks.forEach((hook) => {
+      hook.init(this, file);
     });
 
-    this.state.initPostRules(this);
+    this.state.initPostHooks(this);
   }
 
   public finalise() {
     this.state.finalise();
   }
 
-  static process(file: File, tasks: ParserTask[]): Promise<FileResult> {
+  public async process(file: File, hooks: ParserHook[]): Promise<void> {
+
+    if (!file)
+      throw Error("file is null");
+
     var parserState = new ParserState();
     var parser = new Parser(parserState);
     var content = file.content;
 
-    tasks = tasks || [];
+    hooks = hooks || [];
 
-    parser.init(tasks, file.path);
+    parser.init(hooks, file);
 
     if (typeof (file.content) === 'string') {
       var stream: Readable = new Readable();
@@ -66,23 +69,16 @@ export class Parser extends SAXParser {
       });
     });
 
-    return completed
+    await completed
       .then(() => {
-        return Promise.all(tasks.map((rule) => {
-          return rule.finalise();
+        return Promise.all(hooks.map((hook) => {
+          return hook.finalise();
         }));
-      })
-      .then(results => {
-        var issues = new Array<Issue>();
-
-        results.forEach(parts => {
-          issues = issues.concat(parts);
-        });
-
-        issues = issues.sort((a, b) => (a.line - b.line) * 1000 + (a.column - b.column));
-
-        return <FileResult>{ issues: issues, file: file }
       });
+
+    for (var issue of this.state.issues) {
+      file.issues.push(issue);
+    }
   }
 
   private static isStream(input): input is Stream {
