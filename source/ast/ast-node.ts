@@ -4,11 +4,11 @@ import { ASTLocation } from './ast-location';
 import { ASTElementAttribute } from './ast-element-attribute';
 
 export class ASTNode {
-  public context: ASTContext = null;
+  public context: ASTContext | null = null;
   public locals: ASTContext[] = [];
-  public parent: ASTNode = null;
+  public parent: ASTNode | null = null;
   public children: ASTNode[] = [];
-  public location: ASTLocation = null;
+  public location: ASTLocation | null = null;
 
   constructor(opt?: {
     context?: ASTContext,
@@ -18,11 +18,11 @@ export class ASTNode {
     location?: ASTLocation,
   }) {
     if (opt) {
-      this.context = opt.context;
+      this.context = opt.context || null;
       this.locals = opt.locals || [];
-      this.parent = opt.parent;
+      this.parent = opt.parent || null;
       this.children = opt.children || [];
-      this.location = opt.location;
+      this.location = opt.location || null;
     }
   }
 
@@ -35,7 +35,7 @@ export class ASTNode {
 
   public static inheritLocals(node: ASTNode, ancestor?: number): ASTContext[] {
     let locals: ASTContext[] = [];
-    let tmpNode: ASTNode = node;
+    let tmpNode: ASTNode | null = node;
 
     if (ancestor) {
       while (tmpNode != null && ancestor >= 0) {
@@ -58,8 +58,8 @@ export class ASTNode {
     return locals;
   }
 
-  public static inheritContext(node: ASTNode, ancestor?: number): ASTContext {
-    let tmpNode: ASTNode = node;
+  public static inheritContext(node: ASTNode, ancestor?: number): ASTContext | null {
+    let tmpNode: ASTNode | null = node;
     if (ancestor) {
       while (tmpNode != null && ancestor >= 0) {
         tmpNode = tmpNode.parent;

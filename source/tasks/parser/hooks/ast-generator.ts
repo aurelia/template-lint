@@ -5,18 +5,19 @@ import { ParserHook } from '../parser-hook';
 import { Parser } from '../parser';
 
 export class ASTGenHook extends ParserHook {
-  public root: ASTNode = null;
+  public root: ASTNode | null = null;
 
   constructor(private opts: Options) { super(); }
 
   initHooks() {
 
-    var current = this.root = new ASTNode();
+    var current: ASTNode | null = this.root = new ASTNode();
 
     this.parser.on("startTag", (tag, attrs, selfClosing, loc) => {
       let next = new ASTElementNode();
       next.name = tag;
       next.parent = current;
+      if (loc == null) throw new Error("loc is " + loc);
       next.location = <ASTLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: this.file.path };
       next.attrs = attrs.map((x, i) => {
         var attr = new ASTElementAttribute();
@@ -33,21 +34,22 @@ export class ASTGenHook extends ParserHook {
         return attr;
       });
 
-      current.children.push(next);
+      current!.children.push(next);
 
       if (!this.parser.isVoid(tag))
         current = next;
     });
 
     this.parser.on("endTag", (tag, attrs, selfClosing, loc) => {
-      current = current.parent;
+      current = current!.parent;
     });
 
     this.parser.on("text", (text, loc) => {
+      if (loc == null) throw new Error("loc is " + loc);
       let child = new ASTTextNode();
       child.parent = current;
       child.location = <ASTLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: this.file.path };
-      current.children.push(child);
+      current!.children.push(child);
     });
   }
   finalise(){

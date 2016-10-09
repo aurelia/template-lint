@@ -24,7 +24,8 @@ export class SelfCloseHook extends ParserHook {
         return;
       }
 
-      if (selfClosing && this.parser.state.isVoid(name) == false) {      
+      if (selfClosing && this.parser.state.isVoid(name) == false) {
+        if (loc == null) throw new Error("loc is " + loc);
         let issue = <Issue>{
           message: "self-closing element",
           severity: IssueSeverity.Error,

@@ -80,7 +80,7 @@ export class SourceReflection {
     });
   }
 
-  getDeclForType(source: ts.SourceFile, typeName: string, isBase: boolean = true): ts.DeclarationStatement {
+  getDeclForType(source: ts.SourceFile, typeName: string, isBase: boolean = true): ts.DeclarationStatement | null {
     if (!source || !typeName) return null;
 
     if (source.kind == ts.SyntaxKind.SourceFile) {
@@ -88,10 +88,10 @@ export class SourceReflection {
         x.kind == ts.SyntaxKind.ClassDeclaration ||
         x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
-      let result: ts.DeclarationStatement = null;
+      let result: ts.DeclarationStatement | null = null;
 
       if (types)
-        result = <ts.DeclarationStatement>types.find(x => (<ts.DeclarationStatement>x).name.getText() === typeName);
+        result = <ts.DeclarationStatement>types.find(x => (<ts.DeclarationStatement>x).name!.getText() === typeName);
 
       if (result) return result;
 
@@ -106,19 +106,20 @@ export class SourceReflection {
       let module = <ts.ModuleDeclaration><any>source;
       let body = module.body;
 
-      if (module.body.kind == ts.SyntaxKind.ModuleBlock) {
+      if (module.body!.kind == ts.SyntaxKind.ModuleBlock) {
         let moduleBlock = <ts.ModuleBlock>body;
 
         let classes = moduleBlock.statements.filter(x =>
           x.kind == ts.SyntaxKind.ClassDeclaration ||
           x.kind == ts.SyntaxKind.InterfaceDeclaration);
 
-        return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name.getText() === typeName);
+        return <ts.DeclarationStatement>classes.find(x => (<ts.DeclarationStatement>x).name!.getText() === typeName);
       }
     }
+    return null;
   }
 
-  getDeclForTypeFromExports(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
+  getDeclForTypeFromExports(source: ts.SourceFile, typeName: string): ts.DeclarationStatement | null {
     if (!source || !typeName) return null;
 
     let exports = source.statements.filter(x => x.kind == ts.SyntaxKind.ExportDeclaration);
@@ -164,7 +165,7 @@ export class SourceReflection {
     return this.getDeclForType(exportSourceFile, typeName, false);
   }
 
-  getDeclForTypeFromImports(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
+  getDeclForTypeFromImports(source: ts.SourceFile, typeName: string): ts.DeclarationStatement | null {
     if (!source || !typeName) return null;
 
     let imports = source.statements.filter(x => x.kind == ts.SyntaxKind.ImportDeclaration);
@@ -210,7 +211,7 @@ export class SourceReflection {
     return this.getDeclForType(inportSourceFile, typeName, false);
   }
 
-  public resolveClassElementType(node: ts.ClassElement): ts.TypeNode {
+  public resolveClassElementType(node: ts.ClassElement): ts.TypeNode | null | undefined {
     if (!node) return null;
     switch (node.kind) {
       case ts.SyntaxKind.PropertyDeclaration:
@@ -228,7 +229,7 @@ export class SourceReflection {
     }
   }
 
-  public resolveTypeElementType(node: ts.TypeElement): ts.TypeNode {
+  public resolveTypeElementType(node: ts.TypeElement): ts.TypeNode | null | undefined {
     if (!node) return null;
     switch (node.kind) {
       case ts.SyntaxKind.PropertySignature:
@@ -243,7 +244,7 @@ export class SourceReflection {
     }
   }
 
-  public resolveTypeName(node: ts.TypeNode): string {
+  public resolveTypeName(node: ts.TypeNode | null): string | null {
     if (!node) return null;
     switch (node.kind) {
       case ts.SyntaxKind.ArrayType:
@@ -252,7 +253,7 @@ export class SourceReflection {
       case ts.SyntaxKind.TypeReference:
         let ref = <ts.TypeReferenceNode>node;
         if (ref.typeName.getText() == "Array") {
-          return this.resolveTypeName(ref.typeArguments[0]);
+          return this.resolveTypeName(ref.typeArguments![0]);
         }
         return ref.typeName.getText();
       case ts.SyntaxKind.StringKeyword:

@@ -12,8 +12,8 @@ export class ParserState {
   public issues: Issue[];
 
   public scope: string;
-  public nextScope: string;
-  public nextNode: ParserStateNode;
+  public nextScope: string | null;
+  public nextNode: ParserStateNode | null;
 
   constructor(scopes?: string[], voids?: string[]) {
     if (scopes == null)
@@ -55,6 +55,7 @@ export class ParserState {
           nextScope = name;
 
         this.nextScope = nextScope;
+        if (location == null) throw new Error("location is " + location);
         this.nextNode = new ParserStateNode(currentScope, name, attrs, isVoid, location);
       }
     });
@@ -66,6 +67,7 @@ export class ParserState {
       }
 
       if (this.isVoid(name)) {
+        if (loc == null) throw new Error("loc is " + loc);
         let issue = <Issue>{
           message: "void elements should not have a closing tag",
           line: loc.line,
@@ -77,6 +79,7 @@ export class ParserState {
         this.issues.push(issue);
       }
       else if (stack.length <= 0 || stack[stack.length - 1].name != name) {
+        if (loc == null) throw new Error("loc is " + loc);
         let issue = <Issue>{
           message: "mismatched close tag",
           line: loc.line,
