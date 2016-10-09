@@ -22,7 +22,6 @@ export class ProjectBuilder {
     return chain;
   }
 
-
   private buildHtmlParser(opts: Options) {
     var parser = new ParserFileTask(opts);
     return parser;

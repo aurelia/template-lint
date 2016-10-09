@@ -4,3 +4,5 @@ export * from './file';
 export * from './file-task';
 export * from './file-analyser';
 export * from './project';
+export * from './project-builder';
+export * from './options';

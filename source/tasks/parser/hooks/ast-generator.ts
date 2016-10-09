@@ -1,24 +1,23 @@
 import { ASTElementAttribute, ASTElementNode, ASTTextNode, ASTLocation, ASTNode } from '../../../ast';
+import { Options } from '../../../options';
 import { File } from '../../../file';
 import { ParserHook } from '../parser-hook';
 import { Parser } from '../parser';
-import { Options } from '../../../options';
 
-
-export class ASTGenerator extends ParserHook {
+export class ASTGenHook extends ParserHook {
   public root: ASTNode = null;
 
   constructor(private opts: Options) { super(); }
 
-  init(parser: Parser, file: File) {
+  initHooks() {
 
     var current = this.root = new ASTNode();
 
-    parser.on("startTag", (tag, attrs, selfClosing, loc) => {
+    this.parser.on("startTag", (tag, attrs, selfClosing, loc) => {
       let next = new ASTElementNode();
       next.name = tag;
       next.parent = current;
-      next.location = <ASTLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: file.path };
+      next.location = <ASTLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: this.file.path };
       next.attrs = attrs.map((x, i) => {
         var attr = new ASTElementAttribute();
 
@@ -29,26 +28,29 @@ export class ASTGenerator extends ParserHook {
         if (attrLoc == undefined)
           attrLoc = { startOffset: -1, endOffset: -1, line: -1, col: -1 };
 
-        attr.location = <ASTLocation>{ start: attrLoc.startOffset, end: attrLoc.endOffset, line: attrLoc.line, column: attrLoc.col, path: file.path };
+        attr.location = <ASTLocation>{ start: attrLoc.startOffset, end: attrLoc.endOffset, line: attrLoc.line, column: attrLoc.col, path: this.file.path };
 
         return attr;
       });
 
       current.children.push(next);
 
-      if (!parser.isVoid(tag))
+      if (!this.parser.isVoid(tag))
         current = next;
     });
 
-    parser.on("endTag", (tag, attrs, selfClosing, loc) => {
+    this.parser.on("endTag", (tag, attrs, selfClosing, loc) => {
       current = current.parent;
     });
 
-    parser.on("text", (text, loc) => {
+    this.parser.on("text", (text, loc) => {
       let child = new ASTTextNode();
       child.parent = current;
-      child.location = <ASTLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: file.path };
+      child.location = <ASTLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: this.file.path };
       current.children.push(child);
     });
+  }
+  finalise(){
+    this.file["ast"] = this.root;
   }
 }

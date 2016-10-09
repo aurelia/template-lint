@@ -35,7 +35,6 @@ export class Project extends EventEmitter {
     var result = await this.analyser.analyse(file);
 
     this.addResult(result);
-
     return result;
   }
 

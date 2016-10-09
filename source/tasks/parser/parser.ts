@@ -76,10 +76,11 @@ export class Parser extends SAXParser {
         }));
       });
 
-    file.issues = file.issues || [];
-    
-    for (var issue of this.state.issues) {
-      file.issues.push(issue);
+    if (this.state.issues) {
+      file.issues = file.issues || [];
+      for (var issue of this.state.issues) {
+        file.issues.push(issue);
+      }
     }
   }
 

@@ -1,4 +1,5 @@
 export enum FileKind {
+  Html,
   Source,
-  Html
+  Typing  
 }
