@@ -8,7 +8,7 @@ import { ParserHook } from './parser/parser-hook';
 import { ASTGenHook } from './parser/hooks/ast-generator';
 import { SelfCloseHook } from './parser/hooks/self-close';
 
-export class ParserFileTask implements FileTask {
+export class ParserTask implements FileTask {
   constructor(private opts: Options) {
   }
 
