@@ -8,10 +8,12 @@ import { ParserHook } from './parser/parser-hook';
 import { ASTGenHook } from './parser/hooks/ast-generator';
 import { SelfCloseHook } from './parser/hooks/self-close';
 
-export class ParserTask implements FileTask {
-  constructor(private opts: Options) {
-  }
-
+/**
+ * Parse HTML  
+ */
+export class HtmlParseTask implements FileTask {
+  constructor(private opts: Options) {}
+  
   async process(file: File): Promise<boolean> {
 
     var parserState = new ParserState();

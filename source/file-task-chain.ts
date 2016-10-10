@@ -2,12 +2,9 @@ import { File } from './file';
 import { FileTask } from './file-task';
 
 export class FileTaskChain implements FileTask {
-  private chain = new Array<FileTask>();
-  public isFinal: boolean;
-
-  constructor() {
-    this.chain = [];
-    this.isFinal = false;
+  constructor(
+    private chain = new Array<FileTask>(), 
+    public isFinal: boolean = false) {
   }
 
   use(task: FileTask) {

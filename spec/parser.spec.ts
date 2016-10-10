@@ -1,7 +1,7 @@
 import { Project } from '../source/index';
 import { Options } from '../source/index';
 import { File, FileKind } from '../source/index';
-import { ParserFileTask} from '../source/tasks/parser-file-task';
+import { HtmlParseTask} from '../source/tasks/html-parse';
 import {ASTElementNode} from "../source/ast/ast-element-node";
 import {ASTNode} from "../source/ast/ast-node";
 
@@ -12,7 +12,7 @@ describe("Task: Parser", () => {
         var opts = <Options>{};
         var project = new Project();
 
-        project.use(new ParserFileTask(opts));
+        project.use(new HtmlParseTask(opts));
 
         var file = new File({ 
           content: "<template></template>", 

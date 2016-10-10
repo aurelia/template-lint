@@ -8,7 +8,7 @@ export class File {
   public kind: FileKind;
   public path?: string;
   public issues = new Array<Issue>();
-  public imports?: string[];
+  public imports?: string[];  
 
   constructor(opts: { content: string, kind: FileKind, path?: string, issues?: Array<Issue>, imports?: string[] }) {
     if (opts == null)
@@ -19,10 +19,6 @@ export class File {
       throw Error("kind cannot be null");
     if (opts.path && opts.path.trim() == "")
       throw Error("path cannot be empty string");
-    if (opts.issues === null)
-      throw Error("issues cannot be null");
-    if (opts.imports === null)
-      throw Error("issues cannot be null");
 
     Object.assign(this, opts);
   }
