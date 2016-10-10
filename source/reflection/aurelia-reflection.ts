@@ -29,8 +29,6 @@ export class AureliaReflection {
   }
 
   public createTextExpression(text: string): InterpolationBindingExpression {
-    var exp: InterpolationBindingExpression = null;
-    exp = this.bindingLanguage.inspectTextContent(this.resources, text);
-    return exp;
+    return this.bindingLanguage.inspectTextContent(this.resources, text);
   }
 }

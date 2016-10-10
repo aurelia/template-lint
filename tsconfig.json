@@ -6,6 +6,7 @@
     "noEmitOnError": true,
     "newLine": "LF",
     "declaration": true,
+    "strictNullChecks": true,
     "experimentalDecorators" : true,
     "emitDecoratorMetadata": true
   }

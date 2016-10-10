@@ -4,11 +4,11 @@ import { ASTLocation } from './ast-location';
 import { ASTElementAttribute } from './ast-element-attribute';
 
 export class ASTNode {
-  public context: ASTContext = null;
+  public context: ASTContext | null = null;
   public locals: ASTContext[] = [];
-  public parent: ASTNode = null;
+  public parent: ASTNode | null = null;
   public children: ASTNode[] = [];
-  public location: ASTLocation = null;
+  public location: ASTLocation | null = null;
 
   constructor(opt?: {
     context?: ASTContext,
@@ -18,11 +18,11 @@ export class ASTNode {
     location?: ASTLocation,
   }) {
     if (opt) {
-      this.context = opt.context;
+      this.context = opt.context || null;
       this.locals = opt.locals || [];
-      this.parent = opt.parent;
+      this.parent = opt.parent || null;
       this.children = opt.children || [];
-      this.location = opt.location;
+      this.location = opt.location || null;
     }
   }
 
@@ -35,40 +35,42 @@ export class ASTNode {
 
   public static inheritLocals(node: ASTNode, ancestor?: number): ASTContext[] {
     let locals: ASTContext[] = [];
+    let tmpNode: ASTNode | null = node;
 
     if (ancestor) {
-      while (node != null && ancestor >= 0) {
-        node = node.parent;
+      while (tmpNode != null && ancestor >= 0) {
+        tmpNode = tmpNode.parent;
         ancestor -= 1;
       }
     }
 
-    while (node != null) {
-      node.locals.forEach(x => {
+    while (tmpNode != null) {
+      tmpNode.locals.forEach(x => {
         let index = locals.findIndex(y => y.name == x.name);
 
         if (index == -1)
           locals.push(x);
       });
 
-      node = node.parent;
+      tmpNode = tmpNode.parent;
     }
 
     return locals;
   }
 
-  public static inheritContext(node: ASTNode, ancestor?: number): ASTContext {
+  public static inheritContext(node: ASTNode, ancestor?: number): ASTContext | null {
+    let tmpNode: ASTNode | null = node;
     if (ancestor) {
-      while (node != null && ancestor >= 0) {
-        node = node.parent;
+      while (tmpNode != null && ancestor >= 0) {
+        tmpNode = tmpNode.parent;
         ancestor -= 1;
       }
     }
 
-    while (node != null) {
-      if (node.context != null)
-        return node.context;
-      node = node.parent;
+    while (tmpNode != null) {
+      if (tmpNode.context != null)
+        return tmpNode.context;
+      tmpNode = tmpNode.parent;
     }
     return null;
   }
