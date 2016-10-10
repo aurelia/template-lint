@@ -26,16 +26,20 @@ export class HtmlRequireTask implements FileTask {
     const requires = elements.filter(x => x.name == "require");
 
     for (let req of requires) {
-      let from = req.attrs.find(x => x.name == "from");
-      if (!from) {
+      let attrFrom = req.attrs.find(x => x.name == "from");
+      if (!attrFrom) {
         file.issues.push({
-          message: "require missing a from attribute",
+          message: "require must have a 'from' attribute",
           severity: IssueSeverity.Error,
           line: req.location!.line,
           column: req.location!.column,
           start: req.location!.start,
           end: req.location!.end
         });
+      }
+      else
+      {
+        file.imports[attrFrom.value] = true;
       }
     }
 

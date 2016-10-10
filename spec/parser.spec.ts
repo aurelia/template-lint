@@ -10,9 +10,7 @@ describe("Task: Parser", () => {
     it("should generate AST node in file result", async (done) => {
       try {
         var opts = <Options>{};
-        var project = new Project();
-
-        project.use(new HtmlParseTask(opts));
+        var task = new HtmlParseTask(opts);
 
         var file = new File({ 
           content: "<template></template>", 
@@ -20,13 +18,14 @@ describe("Task: Parser", () => {
           kind: FileKind.Html 
         });
 
-        var result = await project.process(file);
+        await task.process(file);
 
-        var ast: ASTNode = result["ast"];
-        expect(ast).toBeDefined();
+        const ast: ASTNode = file["ast"];
         const astNodes = ast.children;
-        expect(astNodes.length).toBe(1);
         const rootNode = <ASTElementNode>astNodes[0];
+
+        expect(ast).toBeDefined();       
+        expect(astNodes.length).toBe(1);
         expect(rootNode.name).toBe("template");
 
       } catch (err) {

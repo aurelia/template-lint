@@ -1,14 +1,17 @@
 import { FileTaskChain } from './file-task-chain';
+import { FileSystem } from './file-system';
 import { Project } from './project';
 import { Options } from './options';
 
 import { HtmlParseTask } from './tasks/html-parse';
 import { HtmlRequireTask } from './tasks/html-require';
 
-export class ProjectBuilder {
-  build(opts: Options = {}): Project {
 
-    let project = new Project();
+export class ProjectBuilder {
+
+  build(fs: FileSystem, opts: Options = {}): Project {
+
+    let project = new Project(fs);
 
     project.use(
       new FileTaskChain([

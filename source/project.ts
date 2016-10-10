@@ -2,6 +2,7 @@ import { SourceReflection } from './reflection/source-reflection';
 import { AureliaReflection } from './reflection/aurelia-reflection';
 import { FileAnalyser } from './file-analyser';
 import { FileTask } from './file-task';
+import { FileSystem } from './file-system'; 
 import { File } from './file';
 import * as path from 'path';
 import { EventEmitter } from 'events';
@@ -12,10 +13,15 @@ export class Project extends EventEmitter {
   private sourceReflection = new SourceReflection();
   private analyser = new FileAnalyser();
 
+  constructor(private fs: FileSystem|null){
+    super();
+    this.setMaxListeners(100);
+  }
+
   use(task: FileTask) {
     this.analyser.use(task);
   }
-
+  
   getResult(path: string) {
     return this.results.get(path); 
   }
