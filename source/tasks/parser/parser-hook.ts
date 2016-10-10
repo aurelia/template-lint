@@ -24,7 +24,7 @@ export abstract class ParserHook {
   /**
   * Called when parsing is complete. 
   */
-  public abstract initHooks();
+  protected abstract initHooks();
 
   /**
   * Called when parsing is complete. 

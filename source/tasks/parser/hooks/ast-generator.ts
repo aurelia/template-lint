@@ -9,7 +9,7 @@ export class ASTGenHook extends ParserHook {
 
   constructor(private opts: Options) { super(); }
 
-  initHooks() {
+  protected initHooks() {
 
     var current: ASTNode | null = this.root = new ASTNode();
 

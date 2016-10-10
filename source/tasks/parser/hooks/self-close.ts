@@ -15,7 +15,7 @@ export class SelfCloseHook extends ParserHook {
     super();    
   }
 
-  initHooks() {
+  protected initHooks() {
     this.parser.on('startTag', (name, attrs, selfClosing, loc) => {
 
       let scope = this.parser.state.scope;
