@@ -16,14 +16,12 @@ export class HtmlParseTask implements FileTask {
   
   async process(file: File): Promise<boolean> {
 
-    var parserState = new ParserState();
-    var parser = new Parser(parserState);
     var hooks = [
       new ASTGenHook(this.opts),
       new SelfCloseHook(this.opts)
     ];
 
-    await parser.process(file, hooks);
+    await Parser.process(file, hooks);
 
     return false;
   }

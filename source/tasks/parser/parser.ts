@@ -10,7 +10,7 @@ import { Issue } from '../../issue';
 import { Readable, Stream } from 'stream';
 
 export class Parser extends SAXParser {
-  constructor(public state: ParserState) {
+  private constructor(public state: ParserState) {
     super({ locationInfo: true });
     this.setMaxListeners(100);
   }
@@ -37,7 +37,7 @@ export class Parser extends SAXParser {
     this.state.finalise();
   }
 
-  public async process(file: File, hooks: ParserHook[]): Promise<void> {
+  public static async process(file: File, hooks: ParserHook[]): Promise<void> {
 
     if (!file)
       throw Error("file is null");
@@ -47,6 +47,7 @@ export class Parser extends SAXParser {
 
     hooks = hooks || [];
     parser.init(hooks, file);
+
     file.content.pipe(parser);
 
     var completed = new Promise<void>(function (resolve, reject) {
@@ -63,15 +64,11 @@ export class Parser extends SAXParser {
         }));
       });
 
-    if (this.state.issues) {
+    if (parserState.issues) {
       file.issues = file.issues || [];
-      for (var issue of this.state.issues) {
+      for (var issue of parserState.issues) {
         file.issues.push(issue);
       }
     }
-  }
-
-  private static isStream(input): input is Stream {
-    return input.pipe && typeof (input.pipe) === "function";
   }
 }

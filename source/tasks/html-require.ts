@@ -25,16 +25,16 @@ export class HtmlRequireTask implements FileTask {
     const elements = <ASTElementNode[]>ast.children.filter(x => x instanceof (ASTElementNode));
     const requires = elements.filter(x => x.name == "require");
 
-    for (let req of requires) {
-      let attr = req.attrs.find(x => x.name == "from");
+    for (let elmt of requires) {
+      let attr = elmt.attrs.find(x => x.name == "from");
 
       if (!attr) {
-        this.reportMissingFrom(file, req.location);
+        this.reportMissingFrom(file, elmt.location);
         continue;
       }
 
       if (!attr.value || attr.value.trim() == "") {
-        this.reportBadFrom(file);
+        this.reportEmptyFrom(file);
         continue;
       }
 
@@ -67,7 +67,7 @@ export class HtmlRequireTask implements FileTask {
     });
   }
 
-  private reportBadFrom(file: File, loc?: ASTLocation | null) {
+  private reportEmptyFrom(file: File, loc?: ASTLocation | null) {
     file.issues.push({
       message: "'from' value cannot be empty",
       severity: IssueSeverity.Error,
