@@ -74,4 +74,13 @@ export class ASTNode {
     }
     return null;
   }
+
+  static async traverse(node: ASTNode, visit: (ASTNode) => Promise<void>) {
+    await visit(node);
+
+    let children = node.children;
+    for (let child of children) {
+      await ASTNode.traverse(child, visit);
+    }
+  }
 }

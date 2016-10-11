@@ -19,23 +19,27 @@ export class HtmlRequireTask implements FileTask {
 
     const ast: ASTNode = file["ast"];
 
-    if (ast == null)
-      return false;
+    if (ast != null) {
+      await ASTNode.traverse(ast, async (node) => await this.visit(node, file, fetch));
+    }
 
-    const elements = <ASTElementNode[]>ast.children.filter(x => x instanceof (ASTElementNode));
-    const requires = elements.filter(x => x.name == "require");
+    return false;
+  }
 
-    for (let elmt of requires) {
-      let attr = elmt.attrs.find(x => x.name == "from");
+  private async visit(node: ASTNode, file: File, fetch: Fetch): Promise<void> {
+
+    if (node instanceof ASTElementNode && node.name == "require") {
+      
+      let attr = node.attrs.find(x => x.name == "from");
 
       if (!attr) {
-        this.reportMissingFrom(file, elmt.location);
-        continue;
+        this.reportMissingFrom(file, node.location);
+        return;
       }
 
       if (!attr.value || attr.value.trim() == "") {
-        this.reportEmptyFrom(file);
-        continue;
+        this.reportEmptyFrom(file, attr.location);
+        return;
       }
 
       let importPath = attr.value;
@@ -47,18 +51,16 @@ export class HtmlRequireTask implements FileTask {
 
       if (importFile === undefined) {
         this.reportNotFound(file, importPath, attr.location);
-        continue;
+        return;
       }
 
       file.imports[importPath] = importFile;
     }
-
-    return false;
   }
 
-  private reportMissingFrom(file: File, loc?: ASTLocation | null) {
+  private reportMissingFrom(file: File, loc: ASTLocation | null) {
     file.issues.push({
-      message: "<require> must have a 'from' attribute",
+      message: "missing a 'from' attribute",
       severity: IssueSeverity.Error,
       line: loc!.line,
       column: loc!.column,
@@ -67,9 +69,9 @@ export class HtmlRequireTask implements FileTask {
     });
   }
 
-  private reportEmptyFrom(file: File, loc?: ASTLocation | null) {
+  private reportEmptyFrom(file: File, loc: ASTLocation | null) {
     file.issues.push({
-      message: "'from' value cannot be empty",
+      message: "'from' cannot be empty",
       severity: IssueSeverity.Error,
       line: loc!.line,
       column: loc!.column,
@@ -78,7 +80,7 @@ export class HtmlRequireTask implements FileTask {
     });
   }
 
-  private reportNotFound(file: File, path: string, loc?: ASTLocation | null) {
+  private reportNotFound(file: File, path: string, loc: ASTLocation | null) {
     file.issues.push({
       message: `cannot find ${path}`,
       severity: IssueSeverity.Error,

@@ -67,9 +67,9 @@ export class Project extends EventEmitter {
       if (fetch) {
         const file = await fetch(path);
 
-        this.processWithFetch(file, _projectFetch);
+        var result = await this.processWithFetch(file, _projectFetch);
 
-        return file;
+        return result;
       }
 
       return undefined;

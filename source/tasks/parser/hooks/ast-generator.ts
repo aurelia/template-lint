@@ -31,6 +31,8 @@ export class ASTGenHook extends ParserHook {
 
         attr.location = <ASTLocation>{ start: attrLoc.startOffset, end: attrLoc.endOffset, line: attrLoc.line, column: attrLoc.col, path: this.file.path };
 
+        attr.value = x.value;
+
         return attr;
       });
 

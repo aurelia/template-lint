@@ -11,7 +11,7 @@ export class File {
   public issues = new Array<Issue>();
   public imports: { [key: string]: File } = {};
 
-  constructor(opts: { content: Stream | string, kind: FileKind, path?: string }) {
+  constructor(opts: { content: Stream | string, kind: FileKind, path?: string, [i: string]: any }) {
     if (opts == null)
       throw Error("opts cannot be null");
 
