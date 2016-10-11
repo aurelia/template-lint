@@ -1,5 +1,6 @@
 import { File } from './file';
 import { FileTask } from './file-task';
+import { Fetch } from './fetch';
 
 export class FileTaskChain implements FileTask {
   constructor(
@@ -11,9 +12,9 @@ export class FileTaskChain implements FileTask {
     this.chain.push(task);
   }
 
-  async process(file: File): Promise<boolean> {
+  async process(file: File, fetch: Fetch): Promise<boolean> {
     for (var task of this.chain) {
-      let final = await task.process(file);
+      let final = await task.process(file, fetch);
       if (final)
         break;
     }

@@ -1,5 +1,6 @@
 import { File } from './file';
 import { FileTask } from './file-task';
+import { Fetch } from './fetch';
 
 export class FileAnalyser {
   private chain: FileTask[];
@@ -12,7 +13,7 @@ export class FileAnalyser {
     this.chain.push(task);
   }
 
-  async analyse(file: File): Promise<File> {
+  async analyse(file: File, fetch: Fetch): Promise<File> {
     file = new File({
       content: file.content,
       kind: file.kind,
@@ -20,10 +21,11 @@ export class FileAnalyser {
     });
 
     for (var task of this.chain) {
-      let final = await task.process(file);
-      if (final)
+      let handled = await task.process(file, fetch);
+      if (handled)
         break;
     }
+
     return file;
   }
 }

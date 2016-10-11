@@ -44,23 +44,10 @@ export class Parser extends SAXParser {
 
     var parserState = new ParserState();
     var parser = new Parser(parserState);
-    var content = file.content;
 
     hooks = hooks || [];
-
     parser.init(hooks, file);
-
-    if (typeof (file.content) === 'string') {
-      var stream: Readable = new Readable();
-      stream.push(file.content);
-      stream.push(null);
-      stream.pipe(parser);
-    } else if (Parser.isStream(content)) {
-      content.pipe(parser);
-    }
-    else {
-      throw new Error("html isn't pipeable");
-    }
+    file.content.pipe(parser);
 
     var completed = new Promise<void>(function (resolve, reject) {
       parser.on("end", () => {

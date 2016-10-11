@@ -6,7 +6,7 @@ describe("Project", () => {
     it("should return the result for file", async (done) => {
       try {
 
-        var project = new Project(null); //todo: mock fs
+        var project = new Project(); 
 
         var result = await project.process(new File({ content: "", path: "foo", kind: FileKind.Source }));
 
@@ -21,7 +21,7 @@ describe("Project", () => {
     });
     it("should maintain the file result when file has a path", async (done) => {
       try {
-        var project = new Project(null); //todo: mock fs
+        var project = new Project();
 
         var expected = await project.process(new File({ content: "", path: "foo", kind: FileKind.Source }));
         var result = project.getResult("foo");
@@ -38,7 +38,7 @@ describe("Project", () => {
 
     it("should not maintain the file result when file has not path", async (done) => {
       try {
-        var project = new Project(null); //todo: mock fs
+        var project = new Project(); 
 
         await project.process(new File({ content: "", kind: FileKind.Source }));
         var result = project.getResult("foo");

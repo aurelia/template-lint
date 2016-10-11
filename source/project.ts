@@ -2,18 +2,18 @@ import { SourceReflection } from './reflection/source-reflection';
 import { AureliaReflection } from './reflection/aurelia-reflection';
 import { FileAnalyser } from './file-analyser';
 import { FileTask } from './file-task';
-import { FileSystem } from './file-system'; 
+import { Fetch } from './fetch';
 import { File } from './file';
 import * as path from 'path';
 import { EventEmitter } from 'events';
 
 export class Project extends EventEmitter {
-  private results: Map<string, File>= new Map<string, File>();
+  private results: Map<string, File> = new Map<string, File>();
   private aureliaReflection = new AureliaReflection();
   private sourceReflection = new SourceReflection();
   private analyser = new FileAnalyser();
 
-  constructor(private fs: FileSystem|null){
+  constructor() {
     super();
     this.setMaxListeners(100);
   }
@@ -21,23 +21,55 @@ export class Project extends EventEmitter {
   use(task: FileTask) {
     this.analyser.use(task);
   }
-  
+
   getResult(path: string) {
-    return this.results.get(path); 
+    return this.results.get(path);
   }
 
-  async process(file: File): Promise<File> {
-    let result = await this.analyser.analyse(file);
+  process(file: File, fetch?: Fetch): Promise<File> {
+
+    var _fetch = this.createProjectFetch(fetch);
+
+    return this.processWithFetch(file, _fetch);
+  }
+
+  private async processWithFetch(file: File, fetch: Fetch): Promise<File> {
+
+    let result = await this.analyser.analyse(file, fetch);
 
     this.addResult(result);
 
     return result;
   }
 
+  /**
+   * Add a result to the cache if it has a file key
+   */
   private addResult(file: File) {
     if (!file.path || file.path == "")
       return;
 
     this.results.set(file.path, file);
+  }
+
+  /**
+   * wrap the native fetch 
+   */
+  private createProjectFetch(fetch?: Fetch): Fetch {
+    var cache = this.results;
+
+    return ((path: string) => {
+      var existing = cache[path];
+
+      if (existing)
+        return existing;
+
+      if (fetch) {
+        const file = fetch(path);
+        return file;
+      }
+
+      return undefined;
+    });
   }
 }
