@@ -16,7 +16,7 @@ describe("Task: Html Parse", () => {
   describe("Traversal State", () => {
     it("should create an issue when non-void element is not closed", async (done) => {
       try {
-        var opts = <Options>{};
+        var opts = new Options();
         var task = new HtmlParseTask(opts);
 
         var file = new File({
@@ -42,7 +42,7 @@ describe("Task: Html Parse", () => {
     });
     it("should create an issue when closing-element doesn't match open element", async (done) => {
       try {
-        var opts = <Options>{};
+        var opts = new Options();
         var task = new HtmlParseTask(opts);
 
         var file = new File({
@@ -58,7 +58,7 @@ describe("Task: Html Parse", () => {
         expect(issues).toBeDefined();
         expect(issues.length).toBe(2);
         expect(issues[0].message).toBe("mismatched close tag");
-        expect(issues[1].message).toBe("suspected unclosed element detected");        
+        expect(issues[1].message).toBe("suspected unclosed element detected");
 
       } catch (err) {
         fail(err);
@@ -76,7 +76,7 @@ describe("Task: Html Parse", () => {
   describe("Hook: AST Generator", () => {
     it("should generate AST node in file result", async (done) => {
       try {
-        var opts = <Options>{};
+        var opts = new Options();
         var task = new HtmlParseTask(opts);
 
         var file = new File({
@@ -110,7 +110,7 @@ describe("Task: Html Parse", () => {
   describe("Hook: Self Close", () => {
     it("should create an issue for non-void self-closing element", async (done) => {
       try {
-        var opts = <Options>{};
+        var opts = new Options();
         var task = new HtmlParseTask(opts);
 
         var file = new File({

@@ -11,10 +11,11 @@ import _path = require('path');
 import postix = _path.posix;
 
 /**
- * Check require elements and gather resources
+ * Check require elements and gather imported file
  */
-export class HtmlRequireTask implements FileTask {
-  constructor(private opts: Options) { }
+export class HtmlRequireTask implements FileTask { 
+  constructor(private opts: Options) {
+  }
 
   async process(file: File, fetch: Fetch): Promise<boolean> {
     if (file.kind !== FileKind.Html)
@@ -32,7 +33,7 @@ export class HtmlRequireTask implements FileTask {
   private async visit(node: ASTNode, file: File, fetch: Fetch): Promise<void> {
 
     if (node instanceof ASTElementNode && node.name == "require") {
-      
+
       let attr = node.attrs.find(x => x.name == "from");
 
       if (!attr) {
@@ -43,15 +44,23 @@ export class HtmlRequireTask implements FileTask {
       if (!attr.value || attr.value.trim() == "") {
         this.reportEmptyFrom(file, attr.location);
         return;
+
       }
 
       let requirePath = attr.value.replace(/\\/g, "/");
+
+      if (file.imports[requirePath] !== undefined) {
+        this.reportDuplicate(file, attr.location);
+        return;
+      }
+
       let nodePath = (file.path || "").replace(/\\/g, "/");
       let importPath = postix.normalize(postix.join(postix.dirname(nodePath), requirePath));
+      
+      if (postix.extname(importPath) === ""){
+        importPath += "." + this.opts["source-ext"];
+      }
 
-      if (file.imports[requirePath] !== undefined)
-        throw Error("cyclic loop?");
-        
       let importFile = await fetch(importPath);
 
       if (importFile === undefined) {
@@ -61,6 +70,17 @@ export class HtmlRequireTask implements FileTask {
 
       file.imports[requirePath] = importFile;
     }
+  }
+
+  private reportDuplicate(file: File, loc: ASTLocation | null) {
+    file.issues.push({
+      message: "duplicate require ",
+      severity: IssueSeverity.Info,
+      line: loc!.line,
+      column: loc!.column,
+      start: loc!.start,
+      end: loc!.end
+    });
   }
 
   private reportMissingFrom(file: File, loc: ASTLocation | null) {

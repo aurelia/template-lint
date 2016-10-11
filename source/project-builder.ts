@@ -8,7 +8,7 @@ import { HtmlRequireTask } from './tasks/html-require';
 
 export class ProjectBuilder {
 
-  build(opts: Options = {}): Project {
+  build(opts: Options = new Options()): Project {
 
     let project = new Project();
 

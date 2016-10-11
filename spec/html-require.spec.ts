@@ -13,7 +13,7 @@ describe("Task: Html Require Element", () => {
   describe("Value", () => {
     it("should create an issue when 'from' missing", async (done) => {
       try {
-        var opts = <Options>{};
+        var opts = new Options();
 
         var file = new File({
           content: '<template><require></require></template>',
@@ -43,7 +43,7 @@ describe("Task: Html Require Element", () => {
     });
     it("should create an issue when 'from' value is empty", async (done) => {
       try {
-        var opts = <Options>{};
+        var opts = new Options();
 
         var file = new File({
           content: '<template><require from></require></template>',
@@ -76,10 +76,10 @@ describe("Task: Html Require Element", () => {
   describe("Fetch", () => {
     it("should be called with require's 'from' path value", async (done) => {
       try {
-        var opts = <Options>{};
+        var opts = new Options();
 
         var file = new File({
-          content: '<template><require from="bar"></require></template>',
+          content: '<template><require from="foo"></require></template>',
           path: "foo.html",
           kind: FileKind.Html
         });
@@ -99,9 +99,9 @@ describe("Task: Html Require Element", () => {
         });
 
         expect(fetchCount).toBe(1);
-        expect(fetchRequest).toBe("bar");
-        expect(file.imports["bar"]).toBeDefined();
-        expect(file.imports["bar"]).toBe(fetchExpected);
+        expect(fetchRequest).toBe("foo.ts");
+        expect(file.imports["foo"]).toBeDefined();
+        expect(file.imports["foo"]).toBe(fetchExpected);
 
       } catch (err) {
         fail(err);
@@ -113,7 +113,7 @@ describe("Task: Html Require Element", () => {
 
     it("should call fetch with absolute path", async (done) => {
       try {
-        var opts = <Options>{};
+        var opts = new Options();
 
         var fooFile = new File({
           content: '<template><require from="../bar.html"></require></template>',
@@ -137,7 +137,7 @@ describe("Task: Html Require Element", () => {
         await html.process(fooFile);
         await task.process(fooFile, async (path) => {
           fetchCount += 1;
-          fetchRequest = path;          
+          fetchRequest = path;
           return barFile;
         });
 
@@ -154,7 +154,7 @@ describe("Task: Html Require Element", () => {
 
     it("should normalise window-style paths and fetch postix style", async (done) => {
       try {
-        var opts = <Options>{};
+        var opts = new Options();
 
         var fooFile = new File({
           content: '<template><require from="..\\bar.html"></require></template>',
@@ -178,7 +178,7 @@ describe("Task: Html Require Element", () => {
         await html.process(fooFile);
         await task.process(fooFile, async (path) => {
           fetchCount += 1;
-          fetchRequest = path;          
+          fetchRequest = path;
           return barFile;
         });
 
@@ -196,7 +196,7 @@ describe("Task: Html Require Element", () => {
 
     it("should create an issue when fetch returns undefined", async (done) => {
       try {
-        var opts = <Options>{};
+        var opts = new Options();
 
         var file = new File({
           content: '<template><require from="bar"></require></template>',
@@ -214,6 +214,47 @@ describe("Task: Html Require Element", () => {
 
         expect(issues.length).toBe(1);
         expect(issues[0].message).toBe("cannot find bar");
+
+      } catch (err) {
+        fail(err);
+      }
+      finally {
+        done();
+      }
+    });
+
+    it("should append source extension if missing", async (done) => {
+      try {
+        var opts = new Options({ ["source-ext"]: "js" });
+
+        var fooFile = new File({
+          content: '<template><require from=".\\..\\bar"></require></template>',
+          path: ".\\some\\path\\to\\foo.html",
+          kind: FileKind.Html
+        });
+
+        var barFile = new File({
+          content: '',
+          path: "some\\path\\bar",
+          kind: FileKind.Source
+        });
+
+        var html = new HtmlParseTask(opts);
+        var task = new HtmlRequireTask(opts);
+
+        var fetchExpected = barFile;
+        var fetchCount = 0;
+        var fetchRequest = "";
+
+        await html.process(fooFile);
+        await task.process(fooFile, async (path) => {
+          fetchCount += 1;
+          fetchRequest = path;
+          return barFile;
+        });
+
+        expect(fetchCount).toBe(1);
+        expect(fetchRequest).toBe("some/path/bar.js");
 
       } catch (err) {
         fail(err);
