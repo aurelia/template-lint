@@ -117,6 +117,47 @@ describe("Task: Html Require Element", () => {
 
         var fooFile = new File({
           content: '<template><require from="../bar.html"></require></template>',
+          path: "some/path/to/foo.html",
+          kind: FileKind.Html
+        });
+
+        var barFile = new File({
+          content: '',
+          path: "some/path/bar.html",
+          kind: FileKind.Html
+        });
+
+        var html = new HtmlParseTask(opts);
+        var task = new HtmlRequireTask(opts);
+
+        var fetchExpected = barFile;
+        var fetchCount = 0;
+        var fetchRequest = "";
+
+        await html.process(fooFile);
+        await task.process(fooFile, async (path) => {
+          fetchCount += 1;
+          fetchRequest = path;          
+          return barFile;
+        });
+
+        expect(fetchCount).toBe(1);
+        expect(fetchRequest).toBe("some/path/bar.html");
+
+      } catch (err) {
+        fail(err);
+      }
+      finally {
+        done();
+      }
+    });
+
+    it("should normalise window-style paths and fetch postix style", async (done) => {
+      try {
+        var opts = <Options>{};
+
+        var fooFile = new File({
+          content: '<template><require from="..\\bar.html"></require></template>',
           path: "some\\path\\to\\foo.html",
           kind: FileKind.Html
         });
@@ -142,7 +183,7 @@ describe("Task: Html Require Element", () => {
         });
 
         expect(fetchCount).toBe(1);
-        expect(fetchRequest).toBe("some\\path\\bar.html");
+        expect(fetchRequest).toBe("some/path/bar.html");
 
       } catch (err) {
         fail(err);

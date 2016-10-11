@@ -3,7 +3,9 @@ import { Issue } from "./issue";
 import { ASTNode } from "./ast";
 import { FileKind } from './file-kind';
 export { FileKind } from './file-kind';
-import * as Path from 'path';
+
+import _path = require('path');
+import postix = _path.posix;
 
 
 export class File {
@@ -37,7 +39,7 @@ export class File {
       this.content = stream;
     }
     if (this.path) {
-      this.path = Path.normalize(this.path);
+      this.path = postix.normalize(this.path).replace(/\\/g, "/");
     }
   }
 }

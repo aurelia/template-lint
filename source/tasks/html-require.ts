@@ -7,7 +7,8 @@ import { ASTNode, ASTElementNode, ASTLocation } from '../ast';
 import { ASTGenHook } from './parser/hooks/ast-generator';
 import { SelfCloseHook } from './parser/hooks/self-close';
 
-import * as path from 'path';
+import _path = require('path');
+import postix = _path.posix;
 
 /**
  * Check require elements and gather resources
@@ -44,19 +45,13 @@ export class HtmlRequireTask implements FileTask {
         return;
       }
 
-      let requirePath = attr.value;
+      let requirePath = attr.value.replace(/\\/g, "/");
+      let nodePath = (file.path || "").replace(/\\/g, "/");
+      let importPath = postix.normalize(postix.join(postix.dirname(nodePath), requirePath));
 
       if (file.imports[requirePath] !== undefined)
         throw Error("cyclic loop?");
-
-      console.log("file.path = " + file.path );
-      
-      let importPath = path.normalize(path.join(path.dirname(file.path || ""), requirePath));
-
-      console.log("require path = " + requirePath);
-
-      console.log("import path = " + importPath);
-
+        
       let importFile = await fetch(importPath);
 
       if (importFile === undefined) {

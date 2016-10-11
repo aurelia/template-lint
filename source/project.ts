@@ -4,8 +4,10 @@ import { FileAnalyser } from './file-analyser';
 import { FileTask } from './file-task';
 import { Fetch } from './fetch';
 import { File } from './file';
-import * as path from 'path';
 import { EventEmitter } from 'events';
+
+import _path = require('path');
+import postix = _path.posix;
 
 export class Project extends EventEmitter {
   private results: Map<string, File> = new Map<string, File>();
@@ -26,8 +28,7 @@ export class Project extends EventEmitter {
     return this.results.get(path);
   }
 
-  process(file: File, fetch?: Fetch): Promise<File> {
-
+  process(file: File, fetch?: Fetch): Promise<File> {   
     var _fetch = this.createProjectFetch(fetch);
 
     return this.processWithFetch(file, _fetch);
