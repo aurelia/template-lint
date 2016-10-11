@@ -44,20 +44,27 @@ export class HtmlRequireTask implements FileTask {
         return;
       }
 
-      let importRequest = attr.value;
+      let requirePath = attr.value;
 
-      if (file.imports[importRequest] !== undefined)
+      if (file.imports[requirePath] !== undefined)
         throw Error("cyclic loop?");
+
+      console.log("file.path = " + file.path );
       
-      let importPath = path.normalize(path.join(path.dirname(file.path || ""), importRequest));
+      let importPath = path.normalize(path.join(path.dirname(file.path || ""), requirePath));
+
+      console.log("require path = " + requirePath);
+
+      console.log("import path = " + importPath);
+
       let importFile = await fetch(importPath);
 
       if (importFile === undefined) {
-        this.reportNotFound(file, importRequest, attr.location);
+        this.reportNotFound(file, requirePath, attr.location);
         return;
       }
 
-      file.imports[importRequest] = importFile;
+      file.imports[requirePath] = importFile;
     }
   }
 

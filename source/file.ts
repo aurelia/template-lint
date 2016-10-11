@@ -24,19 +24,20 @@ export class File {
     if (opts.path) {
       if (opts.path.trim() == "")
         throw Error("path cannot be empty string");
-      opts.path = Path.normalize(opts.path);
-    }
-    
-    if (typeof opts.content == "string") {
-
-      var stream: Readable = new Readable();
-      stream.push(opts.content);
-      stream.push(null);
-
-      opts.content = stream;
     }
 
     Object.assign(this, opts);
-  }
 
+    if (typeof this.content == "string") {
+
+      var stream: Readable = new Readable();
+      stream.push(this.content);
+      stream.push(null);
+
+      this.content = stream;
+    }
+    if (this.path) {
+      this.path = Path.normalize(this.path);
+    }
+  }
 }
