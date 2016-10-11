@@ -58,18 +58,23 @@ export class Project extends EventEmitter {
   private createProjectFetch(fetch?: Fetch): Fetch {
     var cache = this.results;
 
-    return ((path: string) => {
+    var _projectFetch = async (path: string) => {
       var existing = cache[path];
 
       if (existing)
         return existing;
 
       if (fetch) {
-        const file = fetch(path);
+        const file = await fetch(path);
+
+        this.processWithFetch(file, _projectFetch);
+
         return file;
       }
 
       return undefined;
-    });
+    };
+
+    return _projectFetch;
   }
 }

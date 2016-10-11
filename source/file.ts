@@ -9,7 +9,7 @@ export class File {
   public kind: FileKind;
   public path?: string;
   public issues = new Array<Issue>();
-  public imports: { [key: string]: boolean } = {};
+  public imports: { [key: string]: File } = {};
 
   constructor(opts: { content: Stream | string, kind: FileKind, path?: string }) {
     if (opts == null)

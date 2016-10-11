@@ -1,3 +1,3 @@
 import { File } from './file';
 
-export type Fetch = ((path: string) => File|undefined);
+export type Fetch = ((path: string) => Promise<File>);
