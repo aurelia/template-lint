@@ -14,18 +14,18 @@ export class FileAnalyser {
   }
 
   async analyse(file: File, fetch: Fetch): Promise<File> {
-    file = new File({
+    let _file = new File({
       content: file.content,
       kind: file.kind,
       path: file.path
     });
 
     for (var task of this.chain) {
-      let handled = await task.process(file, fetch);
+      let handled = await task.process(_file, fetch);
       if (handled)
         break;
     }
 
-    return file;
+    return _file;
   }
 }

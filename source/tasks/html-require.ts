@@ -7,6 +7,8 @@ import { ASTNode, ASTElementNode, ASTLocation } from '../ast';
 import { ASTGenHook } from './parser/hooks/ast-generator';
 import { SelfCloseHook } from './parser/hooks/self-close';
 
+import * as path from 'path';
+
 /**
  * Check require elements and gather resources
  */
@@ -42,19 +44,20 @@ export class HtmlRequireTask implements FileTask {
         return;
       }
 
-      let importPath = attr.value;
+      let importRequest = attr.value;
 
-      if (file.imports[importPath] !== undefined)
+      if (file.imports[importRequest] !== undefined)
         throw Error("cyclic loop?");
-
+      
+      let importPath = path.normalize(path.join(path.dirname(file.path || ""), importRequest));
       let importFile = await fetch(importPath);
 
       if (importFile === undefined) {
-        this.reportNotFound(file, importPath, attr.location);
+        this.reportNotFound(file, importRequest, attr.location);
         return;
       }
 
-      file.imports[importPath] = importFile;
+      file.imports[importRequest] = importFile;
     }
   }
 
