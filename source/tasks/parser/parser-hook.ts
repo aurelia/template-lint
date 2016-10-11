@@ -17,14 +17,14 @@ export abstract class ParserHook {
     if (!file) throw Error("file is null");
     this.parser = parser;
     this.file = file;
-    this.initHooks();
+    this.hook();
   }
 
 
   /**
-  * Called when parsing is complete. 
+  * hook into the parser events
   */
-  protected abstract initHooks();
+  protected abstract hook();
 
   /**
   * Called when parsing is complete. 

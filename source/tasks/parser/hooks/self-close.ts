@@ -1,6 +1,6 @@
 "use strict";
 
-import { Issue, IssueSeverity} from '../../../issue';
+import { Issue, IssueSeverity } from '../../../issue';
 import { Options } from '../../../options';
 import { File } from '../../../file';
 import { ParserHook } from '../parser-hook';
@@ -10,12 +10,11 @@ import { Parser } from '../parser';
  * Hook to ensure non-void elements do not self-close
  */
 export class SelfCloseHook extends ParserHook {
-  constructor(private opts: Options)
-  {
-    super();    
+  constructor(private opts: Options) {
+    super();
   }
 
-  protected initHooks() {
+  protected hook() {
     this.parser.on('startTag', (name, attrs, selfClosing, loc) => {
 
       let scope = this.parser.state.scope;
@@ -38,5 +37,5 @@ export class SelfCloseHook extends ParserHook {
       }
     });
   }
-  finalise(){}
+  finalise() { }
 }
