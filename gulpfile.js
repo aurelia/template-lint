@@ -39,9 +39,9 @@ gulp.task('compile:typescript', ['clean:typescript'], function () {
     typescript: require('typescript')
   });
 
-  var tsResult =  gulp.src([paths.source + '**/*.ts', "node_modules/@types/**/index.d.ts", "!node_modules/@types/**/node_modules/**/index.d.ts"])
+  var tsResult =  gulp.src(paths.source + '**/*.ts')
     .pipe(sourcemap.init())
-    .pipe(ts(project));
+    .pipe(project());
 
   return merge([
     tsResult.dts.pipe(gulp.dest(paths.output)),
@@ -92,9 +92,9 @@ gulp.task('compile:tests', ['compile:typescript', 'clean:tests'], function () {
     typescript: require('typescript')
   });
 
-  var tsResult = gulp.src([paths.spec + '**/*spec.ts', "node_modules/@types/**/index.d.ts", "!node_modules/@types/**/node_modules/**/index.d.ts"])
+  var tsResult = gulp.src(paths.spec + '**/*spec.ts')
     .pipe(sourcemap.init())
-    .pipe(ts(project));
+    .pipe(project());
 
   return tsResult.js
     .pipe(sourcemap.write('.', {
