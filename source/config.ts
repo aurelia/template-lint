@@ -102,7 +102,8 @@ export class Config {
     { element: "tr", allow: ["td", "th"] },
     { element: "ul", allow: ["li"] },
     { element: "ol", allow: ["li"] },
-    { element: "dl", allow: ["dt, dd"] },
+    { element: "dl", allow: ["dt", "dd"] },
+    { element: "select", allow: ["option", "optgroup"] },
   ];
 
   /**
