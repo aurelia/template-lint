@@ -23,18 +23,10 @@ export class ProjectBuilder {
   private buildHtmlChain(opts: Options) {
     let chain = new FileTaskChain();
 
-    chain.use(this.buildHtmlParser(opts));
+    chain.use(new HtmlParseTask(opts));
     chain.use(new HtmlRequireTask(opts));
-    //chain.use(new ResolveImportsTask(opts, project));
     //chain.use(new ResolveResourcesTask(project));
 
     return chain;
   }
-
-  private buildHtmlParser(opts: Options) {
-    let parser = new HtmlParseTask(opts);
-    return parser;
-  }
-
-
 }
