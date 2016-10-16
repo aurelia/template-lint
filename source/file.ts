@@ -10,7 +10,7 @@ export { FileKind } from './file-kind';
 export { FileLocation } from './file-location';
 
 import _path = require('path');
-import postix = _path.posix;
+import $path = _path.posix;
 
 export class File {
   public content: Stream;
@@ -43,7 +43,7 @@ export class File {
       this.content = stream;
     }
     if (this.path) {
-      this.path = postix.normalize(this.path).replace(/\\/g, "/");
+      this.path = $path.normalize(this.path).replace(/\\/g, "/");
     }
   }
 }

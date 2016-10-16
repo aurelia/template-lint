@@ -7,7 +7,7 @@ import { File } from './file';
 import { EventEmitter } from 'events';
 
 import _path = require('path');
-import postix = _path.posix;
+import $path = _path.posix;
 
 export class Project extends EventEmitter {
   private results: Map<string, File> = new Map<string, File>();
