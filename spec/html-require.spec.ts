@@ -197,6 +197,7 @@ describe("Task: Html Require Element", () => {
     it("should create an issue when fetch returns undefined", async (done) => {
       try {
         var opts = new Options();
+        opts["report-html-require-not-found"] = true;
 
         var file = new File({
           content: '<template><require from="bar"></require></template>',

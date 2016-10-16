@@ -68,7 +68,8 @@ export class HtmlRequireTask implements FileTask {
       let importFile = await fetch(importPath);
 
       if (importFile === undefined) {
-        this.reportNotFound(file, requirePath, attr.location);
+        if (this.opts["report-html-require-not-found"])
+          this.reportNotFound(file, requirePath, attr.location);
         return;
       }
 
