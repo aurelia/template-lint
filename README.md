@@ -23,7 +23,7 @@ The goal of `aurelia-template-lint` is to detect problems with your template htm
 
 *Note: node.js 6 is required.*
 
-*Note: it is recommended you use this via the [gulp plugin](https://github.com/MeirionHughes/gulp-aurelia-template-lint).*
+*Note: it is recommended you use this via the [gulp plugin](https://github.com/MeirionHughes/gulp-aurelia-template-lint). There is also a [webpack loader](https://www.npmjs.com/package/aurelia-template-lint-loader) available* 
 
 *Note: If you use this library directly, in a production environment (ci), then ensure you lock to a minor version as this library is under development and subject to breaking changes on minor versions*
 
