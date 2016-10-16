@@ -49,6 +49,11 @@ export class HtmlRequireTask implements FileTask {
 
       let requirePath = attr.value.replace(/\\/g, "/");
 
+      // triage #134
+      if (requirePath.indexOf("!") != -1){                
+        return;
+      }
+
       if (file.imports[requirePath] !== undefined) {
         this.reportDuplicate(file, attr.location);
         return;

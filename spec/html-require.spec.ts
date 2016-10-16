@@ -264,6 +264,36 @@ describe("Task: Html Require Element", () => {
       }
     });
 
+     it("should ignore any loader", async (done) => {
+      try {
+        var opts = new Options({ "source-ext" : "js" });
+
+        var fooFile = new File({
+          content: '<template><require from="./bar!text"></require></template>',
+          path: "foo.html",
+          kind: FileKind.Html
+        });
+
+        var html = new HtmlParseTask(opts);
+        var task = new HtmlRequireTask(opts);
+
+        var fetchCount = 0;
+
+        await html.process(fooFile);
+        await task.process(fooFile, async (path) => {
+          fetchCount += 1;
+        });
+
+        expect(fetchCount).toBe(0);
+
+      } catch (err) {
+        fail(err);
+      }
+      finally {
+        done();
+      }
+    });
+
 
   });
 });
