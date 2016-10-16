@@ -1,14 +1,15 @@
-export interface IOptions {
-  "source-ext": "ts" | "js";
-}
-
-export class Options implements IOptions {
+export class Options {
   "source-ext": "ts" | "js" = "ts";
+  "require-report-not-found" = false;
 
-  constructor(opts?: IOptions) {
+  constructor(opts?: {
+    "source-ext"?: "ts" | "js",
+    "require-report-not-found"?: boolean
+  }) {
+
     if (!opts)
       return;
 
-    this["source-ext"] = opts["source-ext"] || this["source-ext"];
+    Object.assign(this, opts);
   }
 }

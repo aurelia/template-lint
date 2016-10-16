@@ -225,7 +225,7 @@ describe("Task: Html Require Element", () => {
 
     it("should append source extension if missing", async (done) => {
       try {
-        var opts = new Options({ ["source-ext"]: "js" });
+        var opts = new Options({ "source-ext" : "js" });
 
         var fooFile = new File({
           content: '<template><require from=".\\..\\bar"></require></template>',
