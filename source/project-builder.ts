@@ -4,6 +4,7 @@ import { Options } from './options';
 
 import { HtmlParseTask } from './tasks/html-parse';
 import { HtmlRequireTask } from './tasks/html-require';
+import { HtmlViewImportTask } from './tasks/html-view-import';
 
 
 export class ProjectBuilder {
@@ -25,6 +26,7 @@ export class ProjectBuilder {
 
     chain.use(new HtmlParseTask(opts));
     chain.use(new HtmlRequireTask(opts));
+    chain.use(new HtmlViewImportTask(opts));
     //chain.use(new ResolveResourcesTask(project));
 
     return chain;

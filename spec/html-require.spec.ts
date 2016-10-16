@@ -101,7 +101,7 @@ describe("Task: Html Require Element", () => {
         expect(fetchCount).toBe(1);
         expect(fetchRequest).toBe("foo.ts");
         expect(file.imports["foo"]).toBeDefined();
-        expect(file.imports["foo"]).toBe(fetchExpected);
+        expect(file.imports["foo"].file).toBe(fetchExpected);
 
       } catch (err) {
         fail(err);
@@ -225,7 +225,8 @@ describe("Task: Html Require Element", () => {
 
     it("should append source extension if missing", async (done) => {
       try {
-        var opts = new Options({ "source-ext" : "js" });
+        var opts = new Options();        
+        opts["source-ext"] = "js";
 
         var fooFile = new File({
           content: '<template><require from=".\\..\\bar"></require></template>',
@@ -264,9 +265,13 @@ describe("Task: Html Require Element", () => {
       }
     });
 
-     it("should ignore any loader", async (done) => {
+  });
+
+  describe("Triage", () => {
+    it("should ignore any loader", async (done) => {
       try {
-        var opts = new Options({ "source-ext" : "js" });
+        var opts = new Options();        
+        opts["source-ext"] = "js";
 
         var fooFile = new File({
           content: '<template><require from="./bar!text"></require></template>',
@@ -293,7 +298,5 @@ describe("Task: Html Require Element", () => {
         done();
       }
     });
-
-
   });
 });

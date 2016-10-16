@@ -1,4 +1,4 @@
-export interface ASTLocation {
+export interface FileLocation {
   line: number;
   column: number;
   start: number;

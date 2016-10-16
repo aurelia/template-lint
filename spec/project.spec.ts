@@ -19,6 +19,7 @@ describe("Project", () => {
         done();
       }
     });
+    
     it("should maintain the file result when file has a path", async (done) => {
       try {
         var project = new Project();

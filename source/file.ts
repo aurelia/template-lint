@@ -2,18 +2,22 @@ import { Stream, Readable } from 'stream';
 import { Issue } from "./issue";
 import { ASTNode } from "./ast";
 import { FileKind } from './file-kind';
+import { FileLocation } from './file-location';
+import { FileImport } from './file-import';
+
+export { FileImport } from './file-import';
 export { FileKind } from './file-kind';
+export { FileLocation } from './file-location';
 
 import _path = require('path');
 import postix = _path.posix;
-
 
 export class File {
   public content: Stream;
   public kind: FileKind;
   public path?: string;
   public issues = new Array<Issue>();
-  public imports: { [key: string]: File } = {};
+  public imports: { [path: string]: FileImport } = {};
 
   constructor(opts: { content: Stream | string, kind: FileKind, path?: string, [i: string]: any }) {
     if (opts == null)

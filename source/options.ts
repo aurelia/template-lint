@@ -1,15 +1,8 @@
 export class Options {
   "source-ext": "ts" | "js" = "ts";
-  "require-report-not-found" = false;
+  "report-html-require-not-found" = false;
+  "report-html-require-view-when-viewmodel-exists" = true;
 
-  constructor(opts?: {
-    "source-ext"?: "ts" | "js",
-    "require-report-not-found"?: boolean
-  }) {
-
-    if (!opts)
-      return;
-
-    Object.assign(this, opts);
+  constructor() {
   }
 }

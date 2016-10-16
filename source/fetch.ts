@@ -1,3 +1,4 @@
 import { File } from './file';
 
-export type Fetch = ((path: string) => Promise<File>);
+export type FetchOptions = { process: boolean };
+export type Fetch = ((path: string, opts?: FetchOptions) => Promise<File>);

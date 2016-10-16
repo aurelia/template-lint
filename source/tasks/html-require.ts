@@ -1,9 +1,9 @@
 import { FileTask } from '../file-task';
-import { File, FileKind } from '../file';
+import { File, FileKind, FileLocation } from '../file';
 import { Fetch } from '../fetch';
 import { Issue, IssueSeverity } from '../issue';
 import { Options } from '../options';
-import { ASTNode, ASTElementNode, ASTLocation } from '../ast';
+import { ASTNode, ASTElementNode } from '../ast';
 import { ASTGenHook } from './parser/hooks/ast-generator';
 import { SelfCloseHook } from './parser/hooks/self-close';
 
@@ -13,7 +13,7 @@ import postix = _path.posix;
 /**
  * Check require elements and gather imported file
  */
-export class HtmlRequireTask implements FileTask { 
+export class HtmlRequireTask implements FileTask {
   constructor(private opts: Options) {
   }
 
@@ -44,13 +44,12 @@ export class HtmlRequireTask implements FileTask {
       if (!attr.value || attr.value.trim() == "") {
         this.reportEmptyFrom(file, attr.location);
         return;
-
       }
 
       let requirePath = attr.value.replace(/\\/g, "/");
 
       // triage #134
-      if (requirePath.indexOf("!") != -1){                
+      if (requirePath.indexOf("!") != -1) {
         return;
       }
 
@@ -61,8 +60,8 @@ export class HtmlRequireTask implements FileTask {
 
       let nodePath = (file.path || "").replace(/\\/g, "/");
       let importPath = postix.normalize(postix.join(postix.dirname(nodePath), requirePath));
-      
-      if (postix.extname(importPath) === ""){
+
+      if (postix.extname(importPath) === "") {
         importPath += "." + this.opts["source-ext"];
       }
 
@@ -73,11 +72,11 @@ export class HtmlRequireTask implements FileTask {
         return;
       }
 
-      file.imports[requirePath] = importFile;
+      file.imports[requirePath] = { file: importFile, location: node.location };
     }
   }
 
-  private reportDuplicate(file: File, loc: ASTLocation | null) {
+  private reportDuplicate(file: File, loc: FileLocation | null) {
     file.issues.push({
       message: "duplicate require ",
       severity: IssueSeverity.Info,
@@ -88,7 +87,7 @@ export class HtmlRequireTask implements FileTask {
     });
   }
 
-  private reportMissingFrom(file: File, loc: ASTLocation | null) {
+  private reportMissingFrom(file: File, loc: FileLocation | null) {
     file.issues.push({
       message: "missing a 'from' attribute",
       severity: IssueSeverity.Error,
@@ -99,7 +98,7 @@ export class HtmlRequireTask implements FileTask {
     });
   }
 
-  private reportEmptyFrom(file: File, loc: ASTLocation | null) {
+  private reportEmptyFrom(file: File, loc: FileLocation | null) {
     file.issues.push({
       message: "'from' cannot be empty",
       severity: IssueSeverity.Error,
@@ -110,7 +109,7 @@ export class HtmlRequireTask implements FileTask {
     });
   }
 
-  private reportNotFound(file: File, path: string, loc: ASTLocation | null) {
+  private reportNotFound(file: File, path: string, loc: FileLocation | null) {
     file.issues.push({
       message: `cannot find ${path}`,
       severity: IssueSeverity.Error,

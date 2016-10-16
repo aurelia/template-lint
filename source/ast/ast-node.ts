@@ -1,6 +1,7 @@
 
+import { FileLocation } from '../file-location';
+
 import { ASTContext } from './ast-context';
-import { ASTLocation } from './ast-location';
 import { ASTElementAttribute } from './ast-element-attribute';
 
 export class ASTNode {
@@ -8,14 +9,14 @@ export class ASTNode {
   public locals: ASTContext[] = [];
   public parent: ASTNode | null = null;
   public children: ASTNode[] = [];
-  public location: ASTLocation | null = null;
+  public location: FileLocation | null = null;
 
   constructor(opt?: {
     context?: ASTContext,
     locals?: ASTContext[],
     parent?: ASTNode,
     children?: ASTNode[],
-    location?: ASTLocation,
+    location?: FileLocation,
   }) {
     if (opt) {
       this.context = opt.context || null;

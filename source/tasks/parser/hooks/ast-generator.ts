@@ -1,6 +1,7 @@
-import { ASTElementAttribute, ASTElementNode, ASTTextNode, ASTLocation, ASTNode } from '../../../ast';
+import { ASTElementAttribute, ASTElementNode, ASTTextNode, ASTNode } from '../../../ast';
+
 import { Options } from '../../../options';
-import { File } from '../../../file';
+import { File, FileLocation } from '../../../file';
 import { ParserHook } from '../parser-hook';
 import { Parser } from '../parser';
 
@@ -18,7 +19,7 @@ export class ASTGenHook extends ParserHook {
       next.name = tag;
       next.parent = current;
       if (loc == null) throw new Error("loc is " + loc);
-      next.location = <ASTLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: this.file.path };
+      next.location = <FileLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: this.file.path };
       next.attrs = attrs.map((x, i) => {
         var attr = new ASTElementAttribute();
 
@@ -29,7 +30,7 @@ export class ASTGenHook extends ParserHook {
         if (attrLoc == undefined)
           attrLoc = { startOffset: -1, endOffset: -1, line: -1, col: -1 };
 
-        attr.location = <ASTLocation>{ start: attrLoc.startOffset, end: attrLoc.endOffset, line: attrLoc.line, column: attrLoc.col, path: this.file.path };
+        attr.location = <FileLocation>{ start: attrLoc.startOffset, end: attrLoc.endOffset, line: attrLoc.line, column: attrLoc.col, path: this.file.path };
 
         attr.value = x.value;
 
@@ -50,7 +51,7 @@ export class ASTGenHook extends ParserHook {
       if (loc == null) throw new Error("loc is " + loc);
       let child = new ASTTextNode();
       child.parent = current;
-      child.location = <ASTLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: this.file.path };
+      child.location = <FileLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: this.file.path };
       current!.children.push(child);
     });
   }
