@@ -40,8 +40,9 @@ describe("Project", () => {
       try {
         var project = new Project(); 
 
-        await project.process(new File({ content: "", kind: FileKind.Source }));
-        var result = project.getResult("foo");
+        await project.process(new File({ path: "", content: "", kind: FileKind.Source }));
+
+        var result = project.getResult("");
 
         expect(result).toBeUndefined();
 
