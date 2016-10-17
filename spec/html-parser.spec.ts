@@ -88,11 +88,15 @@ describe("Task: Html Parse", () => {
         await task.process(file);
 
         const ast: ASTNode = file["ast"];
-        const astNodes = ast.children;
-        const rootNode = <ASTElementNode>astNodes[0];
 
         expect(ast).toBeDefined();
+
+        const astNodes = ast.children;
+
         expect(astNodes.length).toBe(1);
+
+        const rootNode = <ASTElementNode>astNodes[0];
+
         expect(rootNode.name).toBe("template");
 
       } catch (err) {
