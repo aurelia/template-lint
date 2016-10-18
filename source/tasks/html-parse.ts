@@ -12,8 +12,8 @@ import { SelfCloseHook } from './parser/hooks/self-close';
  * Parse HTML  
  */
 export class HtmlParseTask implements FileTask {
-  constructor(private opts: Options) {}
-  
+  constructor(private opts: Options) { }
+
   async process(file: File): Promise<boolean> {
 
     var hooks = [

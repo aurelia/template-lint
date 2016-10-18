@@ -1,5 +1,6 @@
 import { SAXParser, StartTagLocationInfo, ASTAttribute } from 'parse5';
 import { Issue, IssueSeverity } from '../../issue';
+import { FileLocation } from '../../file-location';
 
 /**
  *  Helper to maintain the current state of open tags  
@@ -68,26 +69,30 @@ export class ParserState {
 
       if (this.isVoid(name)) {
         if (loc == null) throw new Error("loc is " + loc);
-        let issue = <Issue>{
+        let issue = new Issue({
           message: "void elements should not have a closing tag",
-          line: loc.line,
-          column: loc.col,
           severity: IssueSeverity.Error,
-          start: loc.startOffset,
-          end: loc.endOffset
-        };
+          location: new FileLocation({
+            line: loc.line,
+            column: loc.col,
+            start: loc.startOffset,
+            end: loc.endOffset
+          })
+        });
         this.issues.push(issue);
       }
       else if (stack.length <= 0 || stack[stack.length - 1].name != name) {
         if (loc == null) throw new Error("loc is " + loc);
-        let issue = <Issue>{
+        let issue = new Issue({
           message: "mismatched close tag",
-          line: loc.line,
-          column: loc.col,
           severity: IssueSeverity.Error,
-          start: loc.startOffset,
-          end: loc.endOffset
-        };
+          location: new FileLocation({
+            line: loc.line,
+            column: loc.col,
+            start: loc.startOffset,
+            end: loc.endOffset
+          })
+        });
         this.issues.push(issue);
       }
       else {
@@ -115,15 +120,16 @@ export class ParserState {
 
     if (stack.length > 0) {
       let element = stack[stack.length - 1];
-      let issue = <Issue>{
+      let issue = new Issue({
         message: "suspected unclosed element detected",
         severity: IssueSeverity.Error,
-        line: element.location.line,
-        column: element.location.col,
-        start: element.location.startOffset,
-        end: element.location.endOffset
-
-      };
+        location: new FileLocation({
+          line: element.location.line,
+          column: element.location.col,
+          start: element.location.startOffset,
+          end: element.location.endOffset
+        })
+      });
       this.issues.push(issue);
     }
   }

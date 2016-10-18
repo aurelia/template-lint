@@ -226,7 +226,7 @@ describe("Task: Html Require Element", () => {
 
     it("should append source extension if missing", async (done) => {
       try {
-        var opts = new Options();        
+        var opts = new Options();
         opts["source-ext"] = "js";
 
         var fooFile = new File({
@@ -271,7 +271,7 @@ describe("Task: Html Require Element", () => {
   describe("Triage", () => {
     it("should ignore any loader", async (done) => {
       try {
-        var opts = new Options();        
+        var opts = new Options();
         opts["source-ext"] = "js";
 
         var fooFile = new File({

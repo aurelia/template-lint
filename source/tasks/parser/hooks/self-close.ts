@@ -2,7 +2,7 @@
 
 import { Issue, IssueSeverity } from '../../../issue';
 import { Options } from '../../../options';
-import { File } from '../../../file';
+import { File, FileLocation } from '../../../file';
 import { ParserHook } from '../parser-hook';
 import { Parser } from '../parser';
 
@@ -25,14 +25,16 @@ export class SelfCloseHook extends ParserHook {
 
       if (selfClosing && this.parser.state.isVoid(name) == false) {
         if (loc == null) throw new Error("loc is " + loc);
-        let issue = <Issue>{
+        let issue = new Issue({
           message: "self-closing element",
           severity: IssueSeverity.Error,
-          line: loc.line,
-          column: loc.col,
-          start: loc.startOffset,
-          end: loc.endOffset
-        };
+          location: new FileLocation({
+            line: loc.line,
+            column: loc.col,
+            start: loc.startOffset,
+            end: loc.endOffset
+          }),
+        });
         this.reportIssue(issue);
       }
     });
