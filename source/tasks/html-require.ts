@@ -77,47 +77,35 @@ export class HtmlRequireTask implements FileTask {
     }
   }
 
-  private reportDuplicate(file: File, loc: FileLocation | null) {
+  private reportDuplicate(file: File, loc: FileLocation) {
     file.issues.push({
       message: "duplicate require ",
       severity: IssueSeverity.Info,
-      line: loc!.line,
-      column: loc!.column,
-      start: loc!.start,
-      end: loc!.end
+      location: loc
     });
   }
 
-  private reportMissingFrom(file: File, loc: FileLocation | null) {
+  private reportMissingFrom(file: File, loc: FileLocation) {
     file.issues.push({
       message: "missing a 'from' attribute",
       severity: IssueSeverity.Error,
-      line: loc!.line,
-      column: loc!.column,
-      start: loc!.start,
-      end: loc!.end
+      location: loc
     });
   }
 
-  private reportEmptyFrom(file: File, loc: FileLocation | null) {
+  private reportEmptyFrom(file: File, loc: FileLocation) {
     file.issues.push({
       message: "'from' cannot be empty",
       severity: IssueSeverity.Error,
-      line: loc!.line,
-      column: loc!.column,
-      start: loc!.start,
-      end: loc!.end
+      location: loc
     });
   }
 
-  private reportNotFound(file: File, path: string, loc: FileLocation | null) {
+  private reportNotFound(file: File, path: string, loc: FileLocation) {
     file.issues.push({
       message: `cannot find ${path}`,
       severity: IssueSeverity.Error,
-      line: loc!.line,
-      column: loc!.column,
-      start: loc!.start,
-      end: loc!.end
+      location: loc
     });
   }
 }

@@ -4,7 +4,7 @@ import { Fetch } from './fetch';
 
 export class FileTaskChain implements FileTask {
   constructor(
-    private chain = new Array<FileTask>(), 
+    private chain = new Array<FileTask>(),
     public isFinal: boolean = false) {
   }
 

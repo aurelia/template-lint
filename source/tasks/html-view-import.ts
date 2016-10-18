@@ -42,14 +42,11 @@ export class HtmlViewImportTask implements FileTask {
     return false;
   }
 
-  private reportViewModelExists(file: File, loc: FileLocation | null) {
+  private reportViewModelExists(file: File, loc: FileLocation) {
     file.issues.push({
       message: `imported view-only template when view-model exists`,
       severity: IssueSeverity.Warning,
-      line: loc!.line,
-      column: loc!.column,
-      start: loc!.start,
-      end: loc!.end
+      location: loc
     });
   }
 }

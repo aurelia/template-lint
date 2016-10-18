@@ -6,7 +6,7 @@ describe("Project", () => {
     it("should return the result for file", async (done) => {
       try {
 
-        var project = new Project(); 
+        var project = new Project();
 
         var result = await project.process(new File({ content: "", path: "foo", kind: FileKind.Source }));
 
@@ -19,7 +19,7 @@ describe("Project", () => {
         done();
       }
     });
-    
+
     it("should maintain the file result when file has a path", async (done) => {
       try {
         var project = new Project();
@@ -39,7 +39,7 @@ describe("Project", () => {
 
     it("should not maintain the file result when file has not path", async (done) => {
       try {
-        var project = new Project(); 
+        var project = new Project();
 
         await project.process(new File({ path: "", content: "", kind: FileKind.Source }));
 

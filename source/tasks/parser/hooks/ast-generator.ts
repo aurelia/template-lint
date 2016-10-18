@@ -19,7 +19,7 @@ export class ASTGenHook extends ParserHook {
       next.name = tag;
       next.parent = current;
       if (loc == null) throw new Error("loc is " + loc);
-      next.location = <FileLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: this.file.path };
+      next.location = new FileLocation({ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col });
       next.attrs = attrs.map((x, i) => {
         var attr = new ASTElementAttribute();
 
@@ -30,7 +30,7 @@ export class ASTGenHook extends ParserHook {
         if (attrLoc == undefined)
           attrLoc = { startOffset: -1, endOffset: -1, line: -1, col: -1 };
 
-        attr.location = <FileLocation>{ start: attrLoc.startOffset, end: attrLoc.endOffset, line: attrLoc.line, column: attrLoc.col, path: this.file.path };
+        attr.location = new FileLocation({ start: attrLoc.startOffset, end: attrLoc.endOffset, line: attrLoc.line, column: attrLoc.col });
 
         attr.value = x.value;
 
@@ -51,11 +51,11 @@ export class ASTGenHook extends ParserHook {
       if (loc == null) throw new Error("loc is " + loc);
       let child = new ASTTextNode();
       child.parent = current;
-      child.location = <FileLocation>{ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col, path: this.file.path };
+      child.location = new FileLocation({ start: loc.startOffset, end: loc.endOffset, line: loc.line, column: loc.col });
       current!.children.push(child);
     });
   }
-  finalise(){
+  finalise() {
     this.file["ast"] = this.root;
   }
 }

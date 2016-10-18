@@ -58,8 +58,8 @@ describe("Task: Html View Import", () => {
 
         viewImportTask.process(foo, fetch);
 
-        expect(foo.issues.length).toBe(1);  
-        expect(foo.issues[0].message).toBe("imported view-only template when view-model exists");  
+        expect(foo.issues.length).toBe(1);
+        expect(foo.issues[0].message).toBe("imported view-only template when view-model exists");
 
       } catch (err) {
         fail(err);

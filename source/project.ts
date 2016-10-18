@@ -28,7 +28,7 @@ export class Project extends EventEmitter {
     return this.results.get(path);
   }
 
-  process(file: File, fetch?: Fetch): Promise<File> {   
+  process(file: File, fetch?: Fetch): Promise<File> {
     var _fetch = this.createProjectFetch(fetch);
 
     return this.processWithFetch(file, _fetch);

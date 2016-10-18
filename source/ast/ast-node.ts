@@ -9,21 +9,21 @@ export class ASTNode {
   public locals: ASTContext[] = [];
   public parent: ASTNode | null = null;
   public children: ASTNode[] = [];
-  public location: FileLocation | null = null;
+  public location: FileLocation;
 
   constructor(opt?: {
     context?: ASTContext,
     locals?: ASTContext[],
     parent?: ASTNode,
     children?: ASTNode[],
-    location?: FileLocation,
+    location: FileLocation,
   }) {
     if (opt) {
       this.context = opt.context || null;
       this.locals = opt.locals || [];
       this.parent = opt.parent || null;
       this.children = opt.children || [];
-      this.location = opt.location || null;
+      this.location = opt.location;
     }
   }
 
