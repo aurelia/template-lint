@@ -6,6 +6,8 @@ import { HtmlParseTask } from './tasks/html-parse';
 import { HtmlRequireTask } from './tasks/html-require';
 import { HtmlViewImportTask } from './tasks/html-view-import';
 
+import { IssueSortTask } from './tasks/issue-sort';
+
 
 export class ProjectBuilder {
 
@@ -13,10 +15,11 @@ export class ProjectBuilder {
 
     let project = new Project();
 
-    project.use(
-      new FileTaskChain([
-        this.buildHtmlChain(opts)
-      ]));
+    // Handle HTML File
+    project.use(this.buildHtmlChain(opts));     
+
+    //Sort the File Issues
+    project.use(new IssueSortTask());
 
     return project;
   }
@@ -27,7 +30,6 @@ export class ProjectBuilder {
     chain.use(new HtmlParseTask(opts));
     chain.use(new HtmlRequireTask(opts));
     chain.use(new HtmlViewImportTask(opts));
-    //chain.use(new ResolveResourcesTask(project));
 
     return chain;
   }
