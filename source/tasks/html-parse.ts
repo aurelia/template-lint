@@ -7,6 +7,7 @@ import { ParserHook } from './parser/parser-hook';
 
 import { ASTGenHook } from './parser/hooks/ast-generator';
 import { SelfCloseHook } from './parser/hooks/self-close';
+import { ObsoleteHook } from './parser/hooks/obsolete';
 
 /**
  * Parse HTML  
@@ -18,7 +19,8 @@ export class HtmlParseTask implements FileTask {
 
     var hooks = [
       new ASTGenHook(this.opts),
-      new SelfCloseHook(this.opts)
+      new SelfCloseHook(this.opts),
+      new ObsoleteHook(this.opts)
     ];
 
     await Parser.process(file, hooks);
