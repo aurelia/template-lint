@@ -1,5 +1,3 @@
-import { SourceReflection } from './reflection/source-reflection';
-import { AureliaReflection } from './reflection/aurelia-reflection';
 import { FileAnalyser } from './file-analyser';
 import { FileTask } from './file-task';
 import { Fetch } from './fetch';
@@ -11,8 +9,6 @@ import $path = _path.posix;
 
 export class Project extends EventEmitter {
   private results: Map<string, File> = new Map<string, File>();
-  private aureliaReflection = new AureliaReflection();
-  private sourceReflection = new SourceReflection();
   private analyser = new FileAnalyser();
 
   constructor() {
