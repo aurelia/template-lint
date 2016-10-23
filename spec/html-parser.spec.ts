@@ -148,8 +148,8 @@ describe("Task: Html Parse", () => {
       try {
         var opts = new Options();
 
-        opts.obsolete.elements.push({ elmt: "undef", msg: "" });
-        opts.obsolete.elements.push({ elmt: "foo", msg: "boo" });
+        opts["obsolete-elements"].push({ elmt: "undef", msg: "" });
+        opts["obsolete-elements"].push({ elmt: "foo", msg: "boo" });
 
         var task = new HtmlParseTask(opts);
 
@@ -178,8 +178,8 @@ describe("Task: Html Parse", () => {
     it("should create an issue for obsolete attribute", async (done) => {
       try {
         var opts = new Options();
-        opts.obsolete.attributes.push({ attr: "pop", msg: "boo" });
-        opts.obsolete.attributes.push({ attr: "undef", msg: "" });
+        opts["obsolete-attributes"].push({ attr: "pop", msg: "boo" });
+        opts["obsolete-attributes"].push({ attr: "undef", msg: "" });
         var task = new HtmlParseTask(opts);
 
         var file = new File({
@@ -207,8 +207,8 @@ describe("Task: Html Parse", () => {
     it("should create an issue for obsolete attribute on matching element", async (done) => {
       try {
         var opts = new Options();
-        opts.obsolete.attributes.push({ attr: "undef", msg: "" });
-        opts.obsolete.attributes.push({ attr: "pop", elmt: "foo", msg: "boo" });
+        opts["obsolete-attributes"].push({ attr: "undef", msg: "" });
+        opts["obsolete-attributes"].push({ attr: "pop", elmt: "foo", msg: "boo" });
         var task = new HtmlParseTask(opts);
 
         var file = new File({
@@ -236,7 +236,7 @@ describe("Task: Html Parse", () => {
     it("should not create an issue for obsolete attribute on non-matching element", async (done) => {
       try {
         var opts = new Options();
-        opts.obsolete.attributes.push({
+        opts["obsolete-attributes"].push({
           attr: "pop",
           elmt: "foo",
           msg: "boo"

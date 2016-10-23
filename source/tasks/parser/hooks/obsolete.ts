@@ -43,7 +43,7 @@ export class ObsoleteHook extends ParserHook {
   finalise() { }
 
   private checkElement(name: string, location: FileLocation) {
-    const obsoletes = this.opts.obsolete.elements;
+    const obsoletes = this.opts["obsolete-elements"];
     const obsoleteIndex = obsoletes.findIndex((x) => x.elmt == name);
 
     if (obsoleteIndex >= 0) {
@@ -54,7 +54,7 @@ export class ObsoleteHook extends ParserHook {
   }
 
   private checkAttribute(name: string, elmt: string, location: FileLocation) {
-    const obsoletes = this.opts.obsolete.attributes;
+    const obsoletes = this.opts["obsolete-attributes"];
     const obsoleteIndex = obsoletes.findIndex((x) => x.attr == name);
 
     if (obsoleteIndex >= 0) {
