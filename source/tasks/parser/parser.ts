@@ -55,20 +55,19 @@ export class Parser extends SAXParser {
         parser.finalise();
         resolve();
       });
+      parser.on("error", err => {
+        reject(err);
+      });
     });
 
-    await completed
-      .then(() => {
-        return Promise.all(hooks.map((hook) => {
-          return hook.finalise();
-        }));
-      });
+    await completed;
 
-    if (parserState.issues) {
-      file.issues = file.issues || [];
-      for (var issue of parserState.issues) {
-        file.issues.push(issue);
-      }
+    for (var hook of hooks) {
+      hook.finalise();
     }
+    
+    for (var issue of parserState.issues) {
+      file.issues.push(issue);
+    }    
   }
 }
