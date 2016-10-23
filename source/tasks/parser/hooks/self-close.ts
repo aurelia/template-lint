@@ -15,6 +15,9 @@ export class SelfCloseHook extends ParserHook {
   }
 
   protected hook() {
+    if (this.opts["report-html-self-close"] == false)
+      return;
+
     this.parser.on('startTag', (name, attrs, selfClosing, loc) => {
 
       let scope = this.parser.state.scope;
@@ -22,7 +25,6 @@ export class SelfCloseHook extends ParserHook {
       if (scope == 'svg' || scope == 'math') {
         return;
       }
-
       if (selfClosing && this.parser.state.isVoid(name) == false) {
         if (loc == null) throw new Error("loc is " + loc);
         let issue = new Issue({

@@ -9,6 +9,7 @@ export class Options {
   );
   "obsolete-attributes" = new Array<obsoleteAttribute>();
 
+  "report-html-self-close" = true;
   "report-html-obsolete-elements" = true;
   "report-html-obsolete-attributes" = true;
   "report-html-require-not-found" = false;
