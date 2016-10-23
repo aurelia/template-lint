@@ -112,13 +112,42 @@ describe("Task: Html Parse", () => {
    * Self-Close Hook Tests
    */
   describe("Hook: Self Close", () => {
-    it("should create an issue for non-void self-closing element", async (done) => {
+    it("should create an issue for non-void self-closing elements", async (done) => {
       try {
         var opts = new Options();
         var task = new HtmlParseTask(opts);
 
         var file = new File({
-          content: "<template/>",
+          content: "<template/><template><div/><custom-element/></template>",
+          path: "foo.html",
+          kind: FileKind.Html
+        });
+
+        await task.process(file);
+
+        const issues = file.issues;
+
+        expect(issues).toBeDefined();
+        expect(issues.length).toBe(3);
+        expect(issues[0].message).toBe("self-closing element");
+        expect(issues[1].message).toBe("self-closing element");
+        expect(issues[2].message).toBe("self-closing element");
+
+      } catch (err) {
+        fail(err);
+      }
+      finally {
+        done();
+      }
+    });
+
+    it("should create an issue for self-closed svg element", async (done) => {
+      try {
+        var opts = new Options();
+        var task = new HtmlParseTask(opts);
+
+        var file = new File({
+          content: "<template><svg/></template>",
           path: "foo.html",
           kind: FileKind.Html
         });
@@ -130,6 +159,85 @@ describe("Task: Html Parse", () => {
         expect(issues).toBeDefined();
         expect(issues.length).toBe(1);
         expect(issues[0].message).toBe("self-closing element");
+
+      } catch (err) {
+        fail(err);
+      }
+      finally {
+        done();
+      }
+    });
+
+    it("should allow self-close within svg scope", async (done) => {
+      try {
+        var opts = new Options();
+        var task = new HtmlParseTask(opts);
+
+        var file = new File({
+          content: "<template><svg><rect/><circle/><line/><text></text><line/></svg></template>",
+          path: "foo.html",
+          kind: FileKind.Html
+        });
+
+        await task.process(file);
+
+        const issues = file.issues;
+
+        expect(issues).toBeDefined();
+        expect(issues.length).toBe(0);
+
+      } catch (err) {
+        fail(err);
+      }
+      finally {
+        done();
+      }
+    });
+
+    it("should create an issue for self-closed math element", async (done) => {
+      try {
+        var opts = new Options();
+        var task = new HtmlParseTask(opts);
+
+        var file = new File({
+          content: "<template><math/></template>",
+          path: "foo.html",
+          kind: FileKind.Html
+        });
+
+        await task.process(file);
+
+        const issues = file.issues;
+
+        expect(issues).toBeDefined();
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toBe("self-closing element");
+
+      } catch (err) {
+        fail(err);
+      }
+      finally {
+        done();
+      }
+    });
+
+    it("should allow self-close within math scope", async (done) => {
+      try {
+        var opts = new Options();
+        var task = new HtmlParseTask(opts);
+
+        var file = new File({
+          content: "<template><math><plus/></math></template>",
+          path: "foo.html",
+          kind: FileKind.Html
+        });
+
+        await task.process(file);
+
+        const issues = file.issues;
+
+        expect(issues).toBeDefined();
+        expect(issues.length).toBe(0);
 
       } catch (err) {
         fail(err);

@@ -57,7 +57,7 @@ export class ParserState {
 
         this.nextScope = nextScope;
         if (location == null) throw new Error("location is " + location);
-        this.nextNode = new ParserStateNode(currentScope, name, attrs, isVoid, location);
+        this.nextNode = new ParserStateNode(this.nextScope, name, attrs, isVoid, location);
       }
     });
 
