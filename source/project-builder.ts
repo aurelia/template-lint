@@ -16,7 +16,7 @@ export class ProjectBuilder {
     let project = new Project();
 
     // Handle HTML File
-    project.use(this.buildHtmlChain(opts));     
+    project.use(this.buildHtmlChain(opts));
 
     //Sort the File Issues
     project.use(new IssueSortTask());

@@ -75,7 +75,7 @@ export class ObsoleteHook extends ParserHook {
       detail: detail,
       location: location
     });
-    
+
     this.reportIssue(issue);
   }
 

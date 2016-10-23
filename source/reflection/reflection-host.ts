@@ -19,11 +19,11 @@ export class ReflectionHost implements ts.CompilerHost {
   }
 
   fileExists = (fileName: string) => this.files.has(fileName);
-  readFile = (fileName: string) => this.files.get(fileName)!.content;
+  readFile = (fileName: string) => this.files.get(fileName) !.content;
   //trace?(s: string): void;
   //directoryExists?(directoryName: string): boolean;
   //realpath?(path: string): string;
-  getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget) => this.files.get(fileName)!.source;
+  getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget) => this.files.get(fileName) !.source;
   //getSourceFileByPath?(fileName: string, path: Path, languageVersion: ScriptTarget, onError?: (message: string) => void): SourceFile;
   //getCancellationToken?(): CancellationToken;
   getDefaultLibFileName = () => "lib.d.ts";

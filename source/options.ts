@@ -6,7 +6,7 @@ export class Options {
   "source-ext": "ts" | "js" = "ts";
   "obsolete-elements" = new Array<obsoleteElement>(
     { elmt: 'content', msg: 'use slot instead' }
-  );  
+  );
   "obsolete-attributes" = new Array<obsoleteAttribute>();
 
   "report-html-obsolete-elements" = true;
@@ -16,4 +16,4 @@ export class Options {
 
   constructor() {
   }
-} 
+}

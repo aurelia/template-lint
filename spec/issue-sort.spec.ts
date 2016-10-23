@@ -38,7 +38,7 @@ describe("Task: Issue Sort", () => {
       }
     });
 
-     it("should place issues without location information at end", async (done) => {
+    it("should place issues without location information at end", async (done) => {
       try {
         var task = new IssueSortTask();
         var file = new File({ content: "", kind: FileKind.Html });
