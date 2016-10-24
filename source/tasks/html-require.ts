@@ -24,7 +24,7 @@ export class HtmlRequireTask implements FileTask {
     const ast: ASTNode = file["ast"];
 
     if (ast != null) {
-      await ASTNode.traverse(ast, async (node) => await this.visit(node, file, fetch));
+      await ASTNode.descend(ast, async (node) => await this.visit(node, file, fetch));
     }
 
     return false;

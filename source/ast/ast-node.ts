@@ -76,12 +76,21 @@ export class ASTNode {
     return null;
   }
 
-  static async traverse(node: ASTNode, visit: (ASTNode) => Promise<void>) {
-    await visit(node);
+  static async descend(node: ASTNode, visit: (ASTNode) => Promise<boolean>): Promise<boolean> {
+    for (let child of node.children) {
+      if (await visit(child) == false)
+        break;
+      if (await ASTNode.descend(child, visit) == false)
+        break;
+    }
+    return true;
+  }
 
-    let children = node.children;
-    for (let child of children) {
-      await ASTNode.traverse(child, visit);
+  static async ascend(node: ASTNode, visit: (ASTNode) => Promise<boolean>): Promise<void> {
+    if (node.parent) {
+      if (await visit(node.parent) == false)
+        return;
+      await ASTNode.ascend(node.parent, visit);
     }
   }
 }
