@@ -48,7 +48,10 @@ export class Parser extends SAXParser {
     hooks = hooks || [];
     parser.init(hooks, file);
 
-    file.content.pipe(parser);
+    var stream: Readable = new Readable();
+    stream.push(file.content);
+    stream.push(null);
+    stream.pipe(parser);
 
     var completed = new Promise<void>(function (resolve, reject) {
       parser.on("end", () => {
@@ -65,9 +68,9 @@ export class Parser extends SAXParser {
     for (var hook of hooks) {
       hook.finalise();
     }
-    
+
     for (var issue of parserState.issues) {
       file.issues.push(issue);
-    }    
+    }
   }
 }

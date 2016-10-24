@@ -13,13 +13,13 @@ import _path = require('path');
 import $path = _path.posix;
 
 export class File {
-  public content: Stream;
+  public content: string;
   public kind: FileKind;
   public path?: string;
   public issues = new Array<Issue>();
   public imports: { [path: string]: FileImport } = {};
 
-  constructor(opts: { content: Stream | string, kind: FileKind, path?: string, [i: string]: any }) {
+  constructor(opts: { content: string, kind: FileKind, path?: string, [i: string]: any }) {
     if (opts == null)
       throw Error("opts cannot be null");
 
@@ -34,14 +34,6 @@ export class File {
 
     Object.assign(this, opts);
 
-    if (typeof this.content == "string") {
-
-      var stream: Readable = new Readable();
-      stream.push(this.content);
-      stream.push(null);
-
-      this.content = stream;
-    }
     if (this.path) {
       this.path = $path.normalize(this.path).replace(/\\/g, "/");
     }
