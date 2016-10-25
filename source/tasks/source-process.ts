@@ -18,9 +18,10 @@ export class SourceProcessTask implements FileTask {
       return false;
 
     if (file.path) {
-      this.host.add(file.path, file.content);
-    }//else todo... 
-
+      const source = this.host.add(file.path, file.content);
+      file["source"] = source;
+    }
+    
     return false;
   }
 }
