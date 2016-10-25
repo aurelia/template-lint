@@ -6,10 +6,21 @@ import * as fs from "fs";
 export class ReflectionHost implements ts.CompilerHost {
   private files = new Map<string, { content: string, source: ts.SourceFile, rev: number }>();
 
-  add(filePath: string, fileContent: string) {
-
+  getSourceByPath(filePath: string): ts.SourceFile | undefined {
     filePath = $path.normalize(filePath);
+    if (this.files.has(filePath))
+      return;
 
+    var entry = this.files.get(filePath);
+
+    if (!entry)
+      return;
+
+    return entry.source;
+  }
+
+  add(filePath: string, fileContent: string) {
+    filePath = $path.normalize(filePath);
     if (this.files.has(filePath))
       return;
 
@@ -18,12 +29,12 @@ export class ReflectionHost implements ts.CompilerHost {
     this.files.set(filePath, { content: fileContent, source: fileSource, rev: 1 });
   }
 
-  fileExists = (fileName: string) => this.files.has(fileName);
-  readFile = (fileName: string) => this.files.get(fileName) !.content;
+  fileExists = (fileName: string) => this.files.has($path.normalize(fileName));
+  readFile = (fileName: string) => this.files.get($path.normalize(fileName)) !.content;
   //trace?(s: string): void;
   //directoryExists?(directoryName: string): boolean;
   //realpath?(path: string): string;
-  getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget) => this.files.get(fileName) !.source;
+  getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget) => this.files.get($path.normalize(fileName)) !.source;
   //getSourceFileByPath?(fileName: string, path: Path, languageVersion: ScriptTarget, onError?: (message: string) => void): SourceFile;
   //getCancellationToken?(): CancellationToken;
   getDefaultLibFileName = () => "lib.d.ts";
@@ -31,7 +42,7 @@ export class ReflectionHost implements ts.CompilerHost {
   writeFile = (name, text, writeByteOrderMark) => { }
   getCurrentDirectory = () => ""
   getDirectories = (path: string) => [];
-  getCanonicalFileName = fileName => fileName;
+  getCanonicalFileName = fileName => $path.normalize(fileName);
   useCaseSensitiveFileNames = () => false;
   getNewLine = () => '\r';
   //resolveModuleNames?(moduleNames: string[], containingFile: string): ResolvedModule[];
