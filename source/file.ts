@@ -4,15 +4,17 @@ import { ASTNode } from "./ast";
 import { FileKind } from './file-kind';
 import { FileLocation } from './file-location';
 import { FileImport } from './file-import';
+import { Resource } from './resource';
+import * as ts from 'typescript';
+
+import _path = require('path');
+import $path = _path.posix;
 
 export { FileImport } from './file-import';
 export { FileKind } from './file-kind';
 export { FileLocation } from './file-location';
 
-import _path = require('path');
-import $path = _path.posix;
-
-export class File {
+export class File implements IFile {
   public content: string;
   public kind: FileKind;
   public path?: string;
@@ -38,4 +40,22 @@ export class File {
       this.path = $path.normalize(this.path).replace(/\\/g, "/");
     }
   }
+}
+
+export interface IFile {
+  content: string;
+  kind: FileKind;
+  path?: string;
+  issues: Array<Issue>;
+  imports: { [path: string]: FileImport };
+}
+
+export interface IHTMLFile extends IFile {
+  ast: ASTNode;
+  resources: string[];
+}
+
+export interface ISourceFile extends IFile {
+  source: ts.SourceFile;
+  resources: Resource[];
 }

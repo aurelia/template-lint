@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 describe("Task: Source Processing", () => {
   describe("When: file added to reflection", () => {
+
     it("Then: 'fileExists' returns true", async (done) => {
       try {
         let filePath = './foo.ts';

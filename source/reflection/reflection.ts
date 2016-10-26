@@ -25,5 +25,6 @@ export class Reflection {
   add(filePath: string, fileContent: string) {
     let source = this._host.add(filePath, fileContent);
     this.program = ts.createProgram(this.getFileNames(), this.options, this._host);
+    return source;
   }
 }

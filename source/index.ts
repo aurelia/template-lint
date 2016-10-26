@@ -7,3 +7,4 @@ export * from './fetch';
 export * from './project';
 export * from './project-builder';
 export * from './options';
+export * from './resource';
