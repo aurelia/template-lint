@@ -60,7 +60,7 @@ export class ReflectionHost implements ts.CompilerHost {
   //realpath?(path: string): string;
   getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget) => {
     //console.log("getSourceFile", fileName);
-    
+
     let name = $path.normalize(fileName);
     let file = this.files.get(name);
 

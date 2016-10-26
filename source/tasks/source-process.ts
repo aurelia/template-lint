@@ -21,7 +21,7 @@ export class SourceProcessTask implements FileTask {
       const source = this.host.add(file.path, file.content);
       file["source"] = source;
     }
-    
+
     return false;
   }
 }

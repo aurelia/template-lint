@@ -105,7 +105,7 @@ describe("Task: Source Processing", () => {
       }
     });
 
-     it("Then: 'getSourceFile returns valid source'", async (done) => {
+    it("Then: 'getSourceFile returns valid source'", async (done) => {
       try {
         let filePath = './foo.ts';
         let file = new File({

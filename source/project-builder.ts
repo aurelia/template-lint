@@ -7,7 +7,7 @@ import { HtmlParseTask } from './tasks/html-parse';
 import { HtmlRequireTask } from './tasks/html-require';
 import { HtmlViewImportTask } from './tasks/html-view-import';
 
-import {SourceProcessTask} from './tasks/source-process';
+import { SourceProcessTask } from './tasks/source-process';
 
 import { IssueSortTask } from './tasks/issue-sort';
 
