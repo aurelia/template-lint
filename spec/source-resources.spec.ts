@@ -6,7 +6,7 @@ import { Issue, IssueSeverity } from '../source/issue';
 import { IssueSortTask } from '../source/tasks/issue-sort';
 
 import { SourceProcessTask } from '../source/tasks/source-process';
-import { SourceGatherResourcesTask } from '../source/tasks/source-gather-resources';
+import { SourceResourcesTask } from '../source/tasks/source-resources';
 import { Reflection } from '../source/reflection/reflection';
 import { Resource, ResourceKind } from '../source/resource';
 
@@ -31,7 +31,7 @@ describe("Task: Gather Aurelia Resources", () => {
         let opts = new Options();
         let ref = new Reflection();
         let setup = new SourceProcessTask(opts, ref);
-        let task = new SourceGatherResourcesTask(opts);
+        let task = new SourceResourcesTask(opts);
 
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
@@ -69,7 +69,7 @@ describe("Task: Gather Aurelia Resources", () => {
         let opts = new Options();
         let ref = new Reflection();
         let setup = new SourceProcessTask(opts, ref);
-        let task = new SourceGatherResourcesTask(opts);
+        let task = new SourceResourcesTask(opts);
 
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
@@ -106,7 +106,7 @@ describe("Task: Gather Aurelia Resources", () => {
         let opts = new Options();
         let ref = new Reflection();
         let setup = new SourceProcessTask(opts, ref);
-        let task = new SourceGatherResourcesTask(opts);
+        let task = new SourceResourcesTask(opts);
 
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
@@ -143,7 +143,7 @@ describe("Task: Gather Aurelia Resources", () => {
         let opts = new Options();
         let ref = new Reflection();
         let setup = new SourceProcessTask(opts, ref);
-        let task = new SourceGatherResourcesTask(opts);
+        let task = new SourceResourcesTask(opts);
 
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
@@ -165,21 +165,21 @@ describe("Task: Gather Aurelia Resources", () => {
   });
 
   describe("Name Convention", () => {
-    it("should register 'foo-bar' as a custom element when class name is 'FooBarCustomElement'", async (done) => {
+    it("should register 'foo-bar-ray' as a custom element when class name is 'FooBarRayCustomElement'", async (done) => {
       try {
         let filePath = './foo.ts';
         let file = new File({
           kind: FileKind.Source,
           path: filePath,
           content: `
-          export class FooBarCustomElement{
+          export class FooBarRayCustomElement{
           }`
         });
 
         let opts = new Options();
         let ref = new Reflection();
         let setup = new SourceProcessTask(opts, ref);
-        let task = new SourceGatherResourcesTask(opts);
+        let task = new SourceResourcesTask(opts);
 
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
@@ -189,7 +189,7 @@ describe("Task: Gather Aurelia Resources", () => {
         expect(resources.length).toBe(1);
         expect(resources[0].kind).toBe(ResourceKind.CustomElement);
         expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
-        expect(resources[0].name).toBe("foo-bar");
+        expect(resources[0].name).toBe("foo-bar-ray");
 
       } catch (err) {
         fail(err);
@@ -200,21 +200,21 @@ describe("Task: Gather Aurelia Resources", () => {
     });
 
 
-    it("should register 'foo-bar' as a custom attribute when class name is 'FooBarCustomAttribute'", async (done) => {
+    it("should register 'foo-bar-ray' as a custom attribute when class name is 'FooBarRayCustomAttribute'", async (done) => {
       try {
         let filePath = './foo.ts';
         let file = new File({
           kind: FileKind.Source,
           path: filePath,
           content: `
-          export class FooBarCustomAttribute{
+          export class FooBarRayCustomAttribute{
           }`
         });
 
         let opts = new Options();
         let ref = new Reflection();
         let setup = new SourceProcessTask(opts, ref);
-        let task = new SourceGatherResourcesTask(opts);
+        let task = new SourceResourcesTask(opts);
 
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
@@ -224,7 +224,7 @@ describe("Task: Gather Aurelia Resources", () => {
         expect(resources.length).toBe(1);
         expect(resources[0].kind).toBe(ResourceKind.CustomAttribute);
         expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
-        expect(resources[0].name).toBe("foo-bar");
+        expect(resources[0].name).toBe("foo-bar-ray");
 
       } catch (err) {
         fail(err);
@@ -234,21 +234,21 @@ describe("Task: Gather Aurelia Resources", () => {
       }
     });
 
-    it("should register 'foo-bar' as a value converter when class name is 'FooBarValueConverter'", async (done) => {
+    it("should register 'foo-bar-ray' as a value converter when class name is 'FooBarRayValueConverter'", async (done) => {
       try {
         let filePath = './foo.ts';
         let file = new File({
           kind: FileKind.Source,
           path: filePath,
           content: `
-          export class FooBarValueConverter{
+          export class FooBarRayValueConverter{
           }`
         });
 
         let opts = new Options();
         let ref = new Reflection();
         let setup = new SourceProcessTask(opts, ref);
-        let task = new SourceGatherResourcesTask(opts);
+        let task = new SourceResourcesTask(opts);
 
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
@@ -258,7 +258,7 @@ describe("Task: Gather Aurelia Resources", () => {
         expect(resources.length).toBe(1);
         expect(resources[0].kind).toBe(ResourceKind.ValueConverter);
         expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
-        expect(resources[0].name).toBe("foo-bar");
+        expect(resources[0].name).toBe("foo-bar-ray");
 
       } catch (err) {
         fail(err);
@@ -268,21 +268,21 @@ describe("Task: Gather Aurelia Resources", () => {
       }
     });
 
-    it("should register 'foo-bar' as a binding behaviour when class name is 'FooBarBindingBehaviour'", async (done) => {
+    it("should register 'foo-bar-ray' as a binding behaviour when class name is 'FooBarRayBindingBehaviour'", async (done) => {
       try {
         let filePath = './foo.ts';
         let file = new File({
           kind: FileKind.Source,
           path: filePath,
           content: `
-          export class FooBarBindingBehaviour{
+          export class FooBarRayBindingBehaviour{
           }`
         });
 
         let opts = new Options();
         let ref = new Reflection();
         let setup = new SourceProcessTask(opts, ref);
-        let task = new SourceGatherResourcesTask(opts);
+        let task = new SourceResourcesTask(opts);
 
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
@@ -292,7 +292,7 @@ describe("Task: Gather Aurelia Resources", () => {
         expect(resources.length).toBe(1);
         expect(resources[0].kind).toBe(ResourceKind.BindingBehaviour);
         expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
-        expect(resources[0].name).toBe("foo-bar");
+        expect(resources[0].name).toBe("foo-bar-ray");
 
       } catch (err) {
         fail(err);

@@ -13,7 +13,7 @@ import { Resource, ResourceKind } from '../resource';
 import * as ts from 'typescript';
 
 /** Extract Aurelia Resources */
-export class SourceGatherResourcesTask implements FileTask {
+export class SourceResourcesTask implements FileTask {
   constructor(private opts: Options) { }
 
   async process(file: File, fetch: Fetch): Promise<boolean> {
