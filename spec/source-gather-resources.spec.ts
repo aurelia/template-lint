@@ -13,14 +13,14 @@ import { Resource, ResourceKind } from '../source/resource';
 import * as ts from 'typescript';
 
 describe("Task: Gather Aurelia Resources", () => {
-  describe("Given: Class Export with customElement Decorator \n When: Processed" , () => {
+  describe("Given: Class Export with customElement Decorator \n When: Processed", () => {
     it("Then: should register 'foo' as a custom element", async (done) => {
       try {
         let filePath = './foo.ts';
         let file = new File({
           kind: FileKind.Source,
           path: filePath,
-          content:       `
+          content: `
           import { customElement } from 'aurelia-framework';
           @customElement("foo")
           export class Foo{
@@ -32,7 +32,7 @@ describe("Task: Gather Aurelia Resources", () => {
         let ref = new Reflection();
         let setup = new SourceProcessTask(opts, ref);
         let task = new SourceGatherResourcesTask(opts);
-                
+
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
 
@@ -41,7 +41,7 @@ describe("Task: Gather Aurelia Resources", () => {
         expect(resources.length).toBe(1);
         expect(resources[0].kind).toBe(ResourceKind.Element);
         expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
-        
+
 
       } catch (err) {
         fail(err);
