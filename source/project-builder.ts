@@ -1,6 +1,8 @@
 import { FileTaskChain } from './file-task-chain';
 import { Project } from './project';
 import { Options } from './options';
+import { ResourceCollection} from './resource-collection';
+
 import { Reflection } from './reflection/reflection';
 
 import { HtmlParseTask } from './tasks/html-parse';
@@ -8,6 +10,8 @@ import { HtmlRequireTask } from './tasks/html-require';
 import { HtmlViewImportTask } from './tasks/html-view-import';
 
 import { SourceProcessTask } from './tasks/source-process';
+import { SourceResourcesTask } from './tasks/source-resources';
+import { SourceConfigTask } from './tasks/source-config';
 
 import { IssueSortTask } from './tasks/issue-sort';
 
@@ -18,12 +22,13 @@ export class ProjectBuilder {
 
     let project = new Project();
     let reflection = new Reflection();
+    let globals = new ResourceCollection();
 
     // Handle HTML File
     project.use(this.buildHtmlChain(opts));
 
     // Handle Source File
-    project.use(this.buildSourceChain(opts, reflection));
+    project.use(this.buildSourceChain(opts, reflection, globals));
 
     //Sort the File Issues
     project.use(new IssueSortTask());
@@ -41,11 +46,13 @@ export class ProjectBuilder {
     return chain;
   }
 
-  private buildSourceChain(opts: Options, reflection: Reflection) {
+  private buildSourceChain(opts: Options, reflection: Reflection, globals: ResourceCollection) {
     let chain = new FileTaskChain();
 
     chain.use(new SourceProcessTask(opts, reflection));
-
+    chain.use(new SourceResourcesTask(opts));
+    chain.use(new SourceConfigTask(opts, globals));
+    
     return chain;
   }
 }
