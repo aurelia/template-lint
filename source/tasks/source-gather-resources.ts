@@ -18,44 +18,115 @@ export class SourceGatherResourcesTask implements FileTask {
 
   async process(file: File, fetch: Fetch): Promise<boolean> {
     if (this.isSourceFile(file)) {
-      await this.extract(file);
+      this.processResources(file);
     }
     return false;
   }
 
-  async extract(file: ISourceFile): Promise<void> {
+  private processResources(file: ISourceFile) {
     const source = file.source;
     const exportedClasses = this.getExportedClasses(source);
 
-    for (var exportedClass of exportedClasses) {
-
-      let decorators = exportedClass.decorators || [];
-
-      for (var decorator of decorators) {
-        var exp = decorator.expression;
-
-        if (this.isCallExpression(exp)) {
-          let callStr = exp.expression.getText();
-          let args = exp.arguments;
-
-          let customElementString = "customElement";
-
-          switch (callStr) {
-            case customElementString:
-              if (args.length == 1 && args[0].kind == ts.SyntaxKind.StringLiteral) {
-                this.registerCustomElement((<ts.StringLiteral>args[0]).text, exportedClass, file);
-              }
-              break;
-            default:
-              break;
-          }
-        }
-      }
+    for (var decl of this.getExportedClasses(source)) {
+      this.processResource(file, decl);
     }
   }
-  private registerCustomElement(name: string, decl: ts.ClassDeclaration, file: ISourceFile) {
+
+  private processResource(file: ISourceFile, decl: ts.ClassDeclaration) {
+    let decorators = decl.decorators || [];
+    let explicitMeta = false;
+
+    for (var decorator of decorators) {
+      var exp = decorator.expression;
+
+      if (this.isCallExpression(exp)) {
+        let callStr = exp.expression.getText();
+        let args = exp.arguments;
+
+        let customElement = "customElement";
+        let customAttribute = "customAttribute";
+        let valueConverter = "valueConverter";
+        let bindingBehaviour = "bindingBehaviour";
+
+        let metaCall: string;
+        let resourceKind: ResourceKind;
+
+        switch (callStr) {
+          case customElement:
+            metaCall = customElement;
+            resourceKind = ResourceKind.CustomElement;
+            break;
+          case customAttribute:
+            metaCall = customAttribute;
+            resourceKind = ResourceKind.CustomAttribute;
+            break;
+          case valueConverter:
+            metaCall = valueConverter;
+            resourceKind = ResourceKind.ValueConverter;
+            break;
+          case bindingBehaviour:
+            metaCall = bindingBehaviour;
+            resourceKind = ResourceKind.BindingBehaviour;
+            break;
+          default:
+            continue;
+        }
+
+        if (explicitMeta) {
+          this.reportMultipleMetaDecorator(metaCall, file, decorator.getStart(), decorator.getEnd());
+          return;
+        }
+
+        explicitMeta = true;
+
+        if (args.length != 1 || args[0].kind != ts.SyntaxKind.StringLiteral) {
+          this.reportUnknownMetaCall(metaCall, file, decorator.getStart(), decorator.getEnd());
+          continue;
+        }
+
+        let resourceName = args[0].getText().replace(/("|'|`)/g, "");
+
+        this.registerResource(resourceName, resourceKind, decl, file);
+      }
+    }
+
+    if (explicitMeta)
+      return;
+
+    const className = decl.name!.getText().trim();
+    let strippedName: string;
+
+    let metaCall: string;
+    let resourceKind: ResourceKind;
+
+    const CustomElement = "CustomElement";
+    const CustomAttribute = "CustomAttribute";
+    const ValueConverter = "ValueConverter";
+    const BindingBehaviour = "BindingBehaviour";
+
+    if (className.endsWith(CustomElement)) {
+      strippedName = className.substring(0, className.length - CustomElement.length);
+      resourceKind = ResourceKind.CustomElement;
+    } else if (className.endsWith(CustomAttribute)) {
+      strippedName = className.substring(0, className.length - CustomAttribute.length);
+      resourceKind = ResourceKind.CustomAttribute;
+    } else if (className.endsWith(ValueConverter)) {
+      strippedName = className.substring(0, className.length - ValueConverter.length);
+      resourceKind = ResourceKind.ValueConverter;
+    } else if (className.endsWith(BindingBehaviour)) {
+      strippedName = className.substring(0, className.length - BindingBehaviour.length);
+      resourceKind = ResourceKind.BindingBehaviour;
+    }
+    else return;
+
+    let convertedName = strippedName.replace(/([a-z][A-Z])/g, function (g) { return g[0] + "-" + g[1]; }).toLowerCase();
+
+    this.registerResource(convertedName, resourceKind, decl, file);
+  }
+
+  private registerResource(name: string, kind: ResourceKind, decl: ts.ClassDeclaration, file: ISourceFile) {
     file.resources = file.resources || [];
-    file.resources.push(new Resource(ResourceKind.Element, decl));
+    file.resources.push(new Resource(name, kind, decl));
   }
 
   private isSourceFile(file: IFile): file is ISourceFile {
@@ -79,5 +150,21 @@ export class SourceGatherResourcesTask implements FileTask {
 
   private isNodeExported(node: ts.Node): boolean {
     return ((node.flags & ts.NodeFlags.Export) !== 0) && (node.parent != null && node.parent.kind === ts.SyntaxKind.SourceFile);
+  }
+
+  private reportUnknownMetaCall(method: string, file: File, start: number, end: number) {
+    file.issues.push({
+      message: `unknown argument case for ${method} decorator`,
+      severity: IssueSeverity.Debug,
+      location: new FileLocation({ start: start, end: end })
+    });
+  }
+
+  private reportMultipleMetaDecorator(method: string, file: File, start: number, end: number) {
+    file.issues.push({
+      message: `more than one aurelia meta decorator`,
+      severity: IssueSeverity.Error,
+      location: new FileLocation({ start: start, end: end })
+    });
   }
 }

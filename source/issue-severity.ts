@@ -2,6 +2,7 @@
  * Issue Severity
  */
 export enum IssueSeverity {
+  Debug = -1, 
   /* information on a better way */
   Info = 0,
   /* an issue that may result in odd results */

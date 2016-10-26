@@ -1,6 +1,7 @@
 import { FileLocation } from './file-location';
 import { IssueSeverity } from './issue-severity';
 export { IssueSeverity } from './issue-severity';
+
 /**
 * information about an issue
 */

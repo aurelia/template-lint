@@ -2,13 +2,13 @@ import * as ts from 'typescript';
 
 export enum ResourceKind {
   Unknown = 0,
-  Element,
-  Attribute,
+  CustomElement,
+  CustomAttribute,
   BindingBehaviour,
-  Converter,
+  ValueConverter,
 }
 
 export class Resource {
-  constructor(public kind: ResourceKind, public decl: ts.ClassDeclaration) {
+  constructor(public name: string, public kind: ResourceKind, public decl: ts.ClassDeclaration) {
   }
 }
