@@ -39,6 +39,8 @@ export class ProjectBuilder {
   private buildHtmlChain(opts: Options) {
     let chain = new FileTaskChain();
 
+    chain.predicate = (x) => x.kind == FileKind.Html;
+
     chain.use(new HtmlParseTask(opts));
     chain.use(new HtmlRequireTask(opts));
     chain.use(new HtmlViewImportTask(opts));
@@ -46,13 +48,16 @@ export class ProjectBuilder {
     return chain;
   }
 
+
   private buildSourceChain(opts: Options, reflection: Reflection, globals: ResourceCollection) {
     let chain = new FileTaskChain();
+
+    chain.predicate = (x) => x.kind == FileKind.Source;
 
     chain.use(new SourceProcessTask(opts, reflection));
     chain.use(new SourceResourcesTask(opts));
     chain.use(new SourceConfigTask(opts, globals));
-    
+
     return chain;
   }
 }
