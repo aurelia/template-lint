@@ -1,4 +1,5 @@
 import { FileTaskChain } from './file-task-chain';
+import { File, FileKind } from './file';
 import { Project } from './project';
 import { Options } from './options';
 import { ResourceCollection} from './resource-collection';
