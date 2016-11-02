@@ -36,12 +36,14 @@ describe("Task: Gather Aurelia Resources", () => {
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
 
-        let resources = (file as ISourceFile).resources;
+        if (file.isSourceFile()) {
+          let resources = file.resources;
 
-        expect(resources.length).toBe(1);
-        expect(resources[0].kind).toBe(ResourceKind.CustomElement);
-        expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
-        expect(resources[0].name).toBe("foo");
+          expect(resources.length).toBe(1);
+          expect(resources[0].kind).toBe(ResourceKind.CustomElement);
+          expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
+          expect(resources[0].name).toBe("foo");
+        } else fail("expected source file");
 
       } catch (err) {
         fail(err);
@@ -74,12 +76,14 @@ describe("Task: Gather Aurelia Resources", () => {
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
 
-        let resources = (file as ISourceFile).resources;
+        if (file.isSourceFile()) {
+          let resources = (file as ISourceFile).resources;
 
-        expect(resources.length).toBe(1);
-        expect(resources[0].kind).toBe(ResourceKind.CustomAttribute);
-        expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
-        expect(resources[0].name).toBe("foo");
+          expect(resources.length).toBe(1);
+          expect(resources[0].kind).toBe(ResourceKind.CustomAttribute);
+          expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
+          expect(resources[0].name).toBe("foo");
+        } else fail("expected source file");
 
       } catch (err) {
         fail(err);
@@ -111,12 +115,14 @@ describe("Task: Gather Aurelia Resources", () => {
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
 
-        let resources = (file as ISourceFile).resources;
+        if (file.isSourceFile()) {
+          let resources = (file as ISourceFile).resources;
 
-        expect(resources.length).toBe(1);
-        expect(resources[0].kind).toBe(ResourceKind.ValueConverter);
-        expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
-        expect(resources[0].name).toBe("foo");
+          expect(resources.length).toBe(1);
+          expect(resources[0].kind).toBe(ResourceKind.ValueConverter);
+          expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
+          expect(resources[0].name).toBe("foo");
+        } else fail("expected source file");
 
       } catch (err) {
         fail(err);
@@ -147,13 +153,14 @@ describe("Task: Gather Aurelia Resources", () => {
 
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
+        if (file.isSourceFile()) {
+          let resources = (file as ISourceFile).resources;
 
-        let resources = (file as ISourceFile).resources;
-
-        expect(resources.length).toBe(1);
-        expect(resources[0].kind).toBe(ResourceKind.BindingBehaviour);
-        expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
-        expect(resources[0].name).toBe("foo");
+          expect(resources.length).toBe(1);
+          expect(resources[0].kind).toBe(ResourceKind.BindingBehaviour);
+          expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
+          expect(resources[0].name).toBe("foo");
+        } else fail("expected source file");
 
       } catch (err) {
         fail(err);
@@ -183,13 +190,14 @@ describe("Task: Gather Aurelia Resources", () => {
 
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
+        if (file.isSourceFile()) {
+          let resources = (file as ISourceFile).resources;
 
-        let resources = (file as ISourceFile).resources;
-
-        expect(resources.length).toBe(1);
-        expect(resources[0].kind).toBe(ResourceKind.CustomElement);
-        expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
-        expect(resources[0].name).toBe("foo-bar-ray");
+          expect(resources.length).toBe(1);
+          expect(resources[0].kind).toBe(ResourceKind.CustomElement);
+          expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
+          expect(resources[0].name).toBe("foo-bar-ray");
+        } else fail("expected source file");
 
       } catch (err) {
         fail(err);
@@ -218,13 +226,14 @@ describe("Task: Gather Aurelia Resources", () => {
 
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
+        if (file.isSourceFile()) {
+          let resources = (file as ISourceFile).resources;
 
-        let resources = (file as ISourceFile).resources;
-
-        expect(resources.length).toBe(1);
-        expect(resources[0].kind).toBe(ResourceKind.CustomAttribute);
-        expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
-        expect(resources[0].name).toBe("foo-bar-ray");
+          expect(resources.length).toBe(1);
+          expect(resources[0].kind).toBe(ResourceKind.CustomAttribute);
+          expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
+          expect(resources[0].name).toBe("foo-bar-ray");
+        } else fail("expected source file");
 
       } catch (err) {
         fail(err);
@@ -252,13 +261,14 @@ describe("Task: Gather Aurelia Resources", () => {
 
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
+        if (file.isSourceFile()) {
+          let resources = (file as ISourceFile).resources;
 
-        let resources = (file as ISourceFile).resources;
-
-        expect(resources.length).toBe(1);
-        expect(resources[0].kind).toBe(ResourceKind.ValueConverter);
-        expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
-        expect(resources[0].name).toBe("foo-bar-ray");
+          expect(resources.length).toBe(1);
+          expect(resources[0].kind).toBe(ResourceKind.ValueConverter);
+          expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
+          expect(resources[0].name).toBe("foo-bar-ray");
+        } else fail("expected source file");
 
       } catch (err) {
         fail(err);
@@ -286,13 +296,14 @@ describe("Task: Gather Aurelia Resources", () => {
 
         await setup.process(file, async (_) => undefined);
         await task.process(file, async (_) => undefined);
+        if (file.isSourceFile()) {
+          let resources = (file as ISourceFile).resources;
 
-        let resources = (file as ISourceFile).resources;
-
-        expect(resources.length).toBe(1);
-        expect(resources[0].kind).toBe(ResourceKind.BindingBehaviour);
-        expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
-        expect(resources[0].name).toBe("foo-bar-ray");
+          expect(resources.length).toBe(1);
+          expect(resources[0].kind).toBe(ResourceKind.BindingBehaviour);
+          expect(resources[0].decl.kind).toBe(ts.SyntaxKind.ClassDeclaration);
+          expect(resources[0].name).toBe("foo-bar-ray");
+        } else fail("expected source file");
 
       } catch (err) {
         fail(err);

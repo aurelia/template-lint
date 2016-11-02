@@ -12,4 +12,12 @@ export class ResourceCollection {
     if (index == -1) return;
     this._resources.splice(index, 1);
   }
+
+  get length(){
+    return this._resources.length;
+  }
+
+  getResourceByIndex(index: number){
+    return this._resources[index];
+  }
 }

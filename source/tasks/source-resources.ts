@@ -1,6 +1,6 @@
 import { FileTask } from '../file-task';
 import { File, FileKind, FileLocation } from '../file';
-import { IFile, ISourceFile, IHTMLFile } from '../file';
+import { IFile, ISourceFile, IHtmlFile } from '../file';
 import { Fetch } from '../fetch';
 import { Issue, IssueSeverity } from '../issue';
 import { Options } from '../options';
@@ -17,7 +17,7 @@ export class SourceResourcesTask implements FileTask {
   constructor(private opts: Options) { }
 
   async process(file: File, fetch: Fetch): Promise<boolean> {
-    if (this.isSourceFile(file)) {
+    if (file.isSourceFile()) {
       this.processResources(file);
     }
     return false;
@@ -129,10 +129,6 @@ export class SourceResourcesTask implements FileTask {
     file.resources.push(new Resource(name, kind, decl));
   }
 
-  private isSourceFile(file: IFile): file is ISourceFile {
-    return file.kind === FileKind.Source;
-  }
-
   private isCallExpression(node: ts.Node): node is ts.CallExpression {
     return node.kind == ts.SyntaxKind.CallExpression;
   }
@@ -152,7 +148,7 @@ export class SourceResourcesTask implements FileTask {
     return ((node.flags & ts.NodeFlags.Export) !== 0) && (node.parent != null && node.parent.kind === ts.SyntaxKind.SourceFile);
   }
 
-  private reportUnknownMetaCall(method: string, file: File, start: number, end: number) {
+  private reportUnknownMetaCall(method: string, file: IFile, start: number, end: number) {
     file.issues.push({
       message: `unknown argument case for ${method} decorator`,
       severity: IssueSeverity.Debug,
@@ -160,7 +156,7 @@ export class SourceResourcesTask implements FileTask {
     });
   }
 
-  private reportMultipleMetaDecorator(method: string, file: File, start: number, end: number) {
+  private reportMultipleMetaDecorator(method: string, file: IFile, start: number, end: number) {
     file.issues.push({
       message: `more than one aurelia meta decorator`,
       severity: IssueSeverity.Error,

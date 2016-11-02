@@ -40,6 +40,14 @@ export class File implements IFile {
       this.path = $path.normalize(this.path).replace(/\\/g, "/");
     }
   }
+
+  isSourceFile(): this is ISourceFile {
+    return this.kind == FileKind.Source;
+  }
+
+  isHtmlFile(): this is IHtmlFile {
+    return this.kind == FileKind.Html;
+  }
 }
 
 export interface IFile {
@@ -50,7 +58,7 @@ export interface IFile {
   imports: { [path: string]: FileImport };
 }
 
-export interface IHTMLFile extends IFile {
+export interface IHtmlFile extends IFile {
   ast: ASTNode;
   resources: string[];
 }
