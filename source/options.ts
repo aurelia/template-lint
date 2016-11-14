@@ -3,7 +3,8 @@ export type obsoleteAttribute = { attr: string, elmt?: string, msg?: string };
 export type conflictingAttributeSet = { attrs: string[], msg?: string };
 
 export class Options {
-  "source-ext": "ts" | "js" = "ts";
+  "process" = true;
+  "source-ext": "ts" | "js" = "ts"; // TODO: remove... 
   "obsolete-elements" = new Array<obsoleteElement>(
     { elmt: 'content', msg: 'use slot instead' }
   );
@@ -14,7 +15,4 @@ export class Options {
   "report-html-obsolete-attributes" = true;
   "report-html-require-not-found" = false;
   "report-html-require-view-when-viewmodel-exists" = true;
-
-  constructor() {
-  }
 }
