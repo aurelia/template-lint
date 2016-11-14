@@ -6,10 +6,7 @@ import { FileLocation } from './file-location';
 import { FileImport } from './file-import';
 import { Resource } from './resource';
 import * as ts from 'typescript';
-
-import _path = require('path');
-import $path = _path.posix;
-
+import { Path } from './utils/safe-path';
 export { FileImport } from './file-import';
 export { FileKind } from './file-kind';
 export { FileLocation } from './file-location';
@@ -37,7 +34,7 @@ export class File implements IFile {
     Object.assign(this, opts);
 
     if (this.path) {
-      this.path = $path.normalize(this.path).replace(/\\/g, "/");
+      this.path = Path.normalize(this.path).replace(/\\/g, "/");
     }
   }
 

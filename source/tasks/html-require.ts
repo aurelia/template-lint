@@ -7,8 +7,7 @@ import { ASTNode, ASTElementNode } from '../ast';
 import { ASTGenHook } from './parser/hooks/ast-generator';
 import { SelfCloseHook } from './parser/hooks/self-close';
 
-import _path = require('path');
-import postix = _path.posix;
+import { Path } from '../utils/safe-path';
 
 /**
  * Check require elements and gather imported file
@@ -59,9 +58,9 @@ export class HtmlRequireTask implements FileTask {
       }
 
       let nodePath = (file.path || "").replace(/\\/g, "/");
-      let importPath = postix.normalize(postix.join(postix.dirname(nodePath), requirePath));
+      let importPath = Path.normalize(Path.join(Path.dirname(nodePath), requirePath));
 
-      if (postix.extname(importPath) === "") {
+      if (Path.extname(importPath) === "") {
         importPath += "." + this.opts["source-ext"];
       }
 

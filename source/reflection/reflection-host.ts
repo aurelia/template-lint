@@ -1,4 +1,4 @@
-import * as $path from "path";
+import {Path} from '../utils/safe-path';
 import * as ts from "typescript";
 import * as glob from "glob";
 import * as fs from "fs";
@@ -9,7 +9,7 @@ export class ReflectionHost implements ts.CompilerHost {
   constructor(public options: ts.CompilerOptions) {
     var defLibPath = ts.getDefaultLibFilePath(this.options);
     var defLib = fs.readFileSync(defLibPath, "utf8");
-    var defLibName = $path.basename(defLibPath);
+    var defLibName = Path.basename(defLibPath);
 
     this.add(defLibName, defLib);
   }
@@ -25,7 +25,7 @@ export class ReflectionHost implements ts.CompilerHost {
   }
 
   getSourceByPath(filePath: string): ts.SourceFile | undefined {
-    filePath = $path.normalize(filePath);
+    filePath = Path.normalize(filePath);
     if (this.files.has(filePath))
       return;
 
@@ -38,7 +38,7 @@ export class ReflectionHost implements ts.CompilerHost {
   }
 
   add(filePath: string, fileContent: string) {
-    filePath = $path.normalize(filePath);
+    filePath = Path.normalize(filePath);
     if (this.files.has(filePath))
       return;
 
@@ -49,11 +49,11 @@ export class ReflectionHost implements ts.CompilerHost {
     return fileSource;
   }
 
-  fileExists = (fileName: string) => this.files.has($path.normalize(fileName));
+  fileExists = (fileName: string) => this.files.has(Path.normalize(fileName));
   readFile = (fileName: string) => {
     //console.log("readFile", fileName);
 
-    return this.files.get($path.normalize(fileName)) !.content;
+    return this.files.get(Path.normalize(fileName)) !.content;
   }
   //trace?(s: string): void;
   //directoryExists?(directoryName: string): boolean;
@@ -61,19 +61,19 @@ export class ReflectionHost implements ts.CompilerHost {
   getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget) => {
     //console.log("getSourceFile", fileName);
 
-    let name = $path.normalize(fileName);
+    let name = Path.normalize(fileName);
     let file = this.files.get(name);
 
     return file!.source;
   }
   //getSourceFileByPath?(fileName: string, path: Path, languageVersion: ScriptTarget, onError?: (message: string) => void): SourceFile;
   //getCancellationToken?(): CancellationToken;
-  getDefaultLibFileName = (options) => $path.basename(ts.getDefaultLibFilePath(options))
+  getDefaultLibFileName = (options) => Path.basename(ts.getDefaultLibFilePath(options))
   //getDefaultLibLocation?(): string;
   writeFile = (name, text, writeByteOrderMark) => { }
   getCurrentDirectory = () => ""
   getDirectories = (path: string) => [];
-  getCanonicalFileName = fileName => $path.normalize(fileName);
+  getCanonicalFileName = fileName => Path.normalize(fileName);
   useCaseSensitiveFileNames = () => false;
   getNewLine = () => '\r';
   //resolveModuleNames?(moduleNames: string[], containingFile: string): ResolvedModule[];

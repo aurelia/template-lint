@@ -7,9 +7,6 @@ import { ASTNode, ASTElementNode } from '../ast';
 import { ASTGenHook } from './parser/hooks/ast-generator';
 import { SelfCloseHook } from './parser/hooks/self-close';
 
-import _path = require('path');
-import postix = _path.posix;
-
 /**
  * Task for view-only imports
  */
