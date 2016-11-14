@@ -1,6 +1,6 @@
 import { FileAnalyser } from './file-analyser';
 import { FileTask } from './file-task';
-import { Fetch } from './fetch';
+import { Fetch, FetchOptions } from './fetch';
 import { File } from './file';
 import { EventEmitter } from 'events';
 
@@ -52,7 +52,7 @@ export class Project extends EventEmitter {
   private createProjectFetch(fetch?: Fetch): Fetch {
     var cache = this.results;
 
-    var _projectFetch = async (path: string) => {
+    var _projectFetch = async (path: string, opts?: FetchOptions) => {
       var existing = cache[path];
 
       if (existing)
@@ -61,7 +61,8 @@ export class Project extends EventEmitter {
       if (fetch) {
         const file = await fetch(path);
 
-        var result = await this.processWithFetch(file, _projectFetch);
+        if (!opts || opts.process)
+          var result = await this.processWithFetch(file, _projectFetch);
 
         return result;
       }
