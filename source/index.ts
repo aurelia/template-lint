@@ -8,6 +8,8 @@ export * from './project';
 export * from './project-builder';
 export * from './options';
 export * from './resource';
+export * from './linter';
+export * from './config';
 
 import { initialize } from 'aurelia-pal-nodejs';
 

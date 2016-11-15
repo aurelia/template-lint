@@ -4,7 +4,6 @@ Sanity check of Aurelia Templates
 
 ![logo](https://d30y9cdsu7xlg0.cloudfront.net/png/30843-200.png)
 
-
 [![NPM version][npm-image]][npm-url]
 [![NPM downloads][npm-downloads]][npm-url]
 [![Travis Status][travis-image]][travis-url]

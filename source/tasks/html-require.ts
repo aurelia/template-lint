@@ -60,10 +60,6 @@ export class HtmlRequireTask implements FileTask {
       let nodePath = (file.path || "").replace(/\\/g, "/");
       let importPath = Path.normalize(Path.join(Path.dirname(nodePath), requirePath));
 
-      if (Path.extname(importPath) === "") {
-        importPath += "." + this.opts["source-ext"];
-      }
-
       let importFile = await fetch(importPath);
 
       if (importFile === undefined) {

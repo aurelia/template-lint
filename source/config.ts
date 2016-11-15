@@ -5,14 +5,15 @@ import { Options } from './options';
 export class Config {
   debug = true;
 
-  basePath = "./";
+  cwd: string = process.cwd();
+
+  basepath = "./";
   source = "./source/**/*.ts";
   markup = "./source/**/*.html";
   typings = "./typings/**/*.d.ts";
 
-  loader = /(![A-z]+)/g;
-  plugins = new Map<string, Fetch>();
+  loaderPattern = /(![A-z]+)/g;
+  loaders = new Map<string, (File) => Promise<File>>();
 
-  options: Options;
-  overrides = new Map<string, Options>();
+  options: Options;  
 }

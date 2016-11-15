@@ -21,8 +21,12 @@ export class Project extends EventEmitter {
     return this.results.get(path);
   }
 
+  getResults() {
+    return this.results.values;
+  }
+
   process(file: File, fetch?: Fetch): Promise<File> {
-    var _fetch = this.createProjectFetch(fetch);
+    var _fetch = this.wrapFetchWithCache(fetch);
 
     return this.processWithFetch(file, _fetch);
   }
@@ -49,17 +53,18 @@ export class Project extends EventEmitter {
   /**
    * wrap the native fetch 
    */
-  private createProjectFetch(fetch?: Fetch): Fetch {
+  private wrapFetchWithCache(fetch?: Fetch): Fetch {
+    
     var cache = this.results;
 
     var _projectFetch = async (path: string, opts?: FetchOptions) => {
-      var existing = cache[path];
-
-      if (existing)
-        return existing;
-
       if (fetch) {
         const file = await fetch(path);
+        const filePath = file.path;
+
+        if (filePath && cache[filePath]) {
+          return cache[filePath];
+        }
 
         if (!opts || opts.process)
           var result = await this.processWithFetch(file, _projectFetch);

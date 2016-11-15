@@ -17,6 +17,10 @@ import { SourceConfigTask } from './tasks/source-config';
 import { IssueSortTask } from './tasks/issue-sort';
 
 
+export interface IProjectBuilder{
+ build(opts: Options): Project;
+}
+
 export class ProjectBuilder {
 
   build(opts: Options = new Options()): Project {

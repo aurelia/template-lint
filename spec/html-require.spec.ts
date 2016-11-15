@@ -99,7 +99,7 @@ describe("Task: Html Require Element", () => {
         });
 
         expect(fetchCount).toBe(1);
-        expect(fetchRequest).toBe("foo.ts");
+        expect(fetchRequest).toBe("foo");
         expect(file.imports["foo"]).toBeDefined();
         expect(file.imports["foo"].file).toBe(fetchExpected);
 
@@ -223,49 +223,6 @@ describe("Task: Html Require Element", () => {
         done();
       }
     });
-
-    it("should append source extension if missing", async (done) => {
-      try {
-        var opts = new Options();
-        opts["source-ext"] = "js";
-
-        var fooFile = new File({
-          content: '<template><require from=".\\..\\bar"></require></template>',
-          path: ".\\some\\path\\to\\foo.html",
-          kind: FileKind.Html
-        });
-
-        var barFile = new File({
-          content: '',
-          path: "some\\path\\bar",
-          kind: FileKind.Source
-        });
-
-        var html = new HtmlParseTask(opts);
-        var task = new HtmlRequireTask(opts);
-
-        var fetchExpected = barFile;
-        var fetchCount = 0;
-        var fetchRequest = "";
-
-        await html.process(fooFile);
-        await task.process(fooFile, async (path) => {
-          fetchCount += 1;
-          fetchRequest = path;
-          return barFile;
-        });
-
-        expect(fetchCount).toBe(1);
-        expect(fetchRequest).toBe("some/path/bar.js");
-
-      } catch (err) {
-        fail(err);
-      }
-      finally {
-        done();
-      }
-    });
-
   });
 
   describe("Triage", () => {
