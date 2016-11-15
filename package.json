@@ -29,10 +29,12 @@
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "devDependencies": {
-    "@types/glob": "^5.0.29",
+    "@types/node": "^6.0.37",
+    "@types/glob": "^5.0.30",
     "@types/jasmine": "^2.2.32",
     "@types/minimatch": "^2.0.28",
     "@types/parse5": "0.0.30",
+    "globby": "^6.1.0",
     "gulp": "^3.9.1",
     "gulp-jasmine": "^2.3.0",
     "gulp-plumber": "^1.1.0",
@@ -52,14 +54,13 @@
     "test": "gulp test"
   },
   "dependencies": {
-    "@types/node": "^6.0.37",
     "aurelia-binding": "^1.0.0",
     "aurelia-dependency-injection": "^1.0.0",
     "aurelia-pal-nodejs": "^1.0.0-alpha.5",
     "aurelia-polyfills": "^1.0.0",
     "aurelia-templating": "^1.0.0",
     "aurelia-templating-binding": "^1.0.0",
-    "glob": "7.0.x",
+    "glob": "^7.1.1",
     "parse5": "2.2.x",
     "typescript": "^2.0.6"
   }

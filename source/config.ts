@@ -8,7 +8,7 @@ export class Config {
   basePath = "./";
   source = "./source/**/*.ts";
   markup = "./source/**/*.html";
-  typings = "./source/**/*.html";
+  typings = "./typings/**/*.d.ts";
 
   loader = /(![A-z]+)/g;
   plugins = new Map<string, Fetch>();
