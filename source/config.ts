@@ -5,7 +5,7 @@ import { Options } from './options';
 export class Config {
   debug = true;
 
-  cwd: string = process.cwd();
+  cwd = process.cwd();
 
   basepath = "./";
   source = "./source/**/*.ts";
@@ -15,5 +15,5 @@ export class Config {
   loaderPattern = /(![A-z]+)/g;
   loaders = new Map<string, (File) => Promise<File>>();
 
-  options: Options;  
+  options = new Options();
 }
