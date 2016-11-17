@@ -16,7 +16,7 @@ Sanity check of Aurelia Templates
 Aurelia is a front-end platform built upon existing (or upcoming) industry standards.
 One such standard is to ensure that all view-markup is parsable by regular browsers; while this allows Aurelia to forgo the need for a custom parser, it does mean poorly formatted html will be ignored without warning. 
 
-The goal of `aurelia-template-lint` is to detect problems with your template html and source before they become problem in the browser, or are ignored by the browser entirely. 
+The goal of `aurelia-template-lint` is to detect problems with your template html and source before they become a problem in the browser, or are ignored by the browser entirely. 
 
 ## Install
 
@@ -163,7 +163,8 @@ export class Config {
       { element: "tr", allow: ["td", "th"] },
       { element: "ul", allow: ["li"] },
       { element: "ol", allow: ["li"] },
-      { element: "dl", allow: ["dt, dd"] },
+      { element: "dl", allow: ["dt", "dd"] },
+      { element: "select", allow: ["option", "optgroup"] },
     ];
 
     /**
