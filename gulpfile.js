@@ -21,7 +21,7 @@ var paths = {
   spec: "spec/"
 }
 
-gulp.task('clean:typescript', function () {
+gulp.task('clean:sources', function () {
   return gulp.src([paths.output ], { read: false })
     .pipe(rimraf());
 });
@@ -31,10 +31,10 @@ gulp.task('clean:tests', function () {
     .pipe(rimraf());
 });
 
-gulp.task('clean', ['clean:tests', 'clean:typescript'], function () {
+gulp.task('clean', ['clean:tests', 'clean:sources'], function () {
 });
 
-gulp.task('compile:typescript', ['clean:typescript'], function () {
+gulp.task('compile:sources', ['clean:sources'], function () {
   var project = ts.createProject('tsconfig.json', {
     typescript: require('typescript')
   });
@@ -57,7 +57,7 @@ gulp.task('compile:typescript', ['clean:typescript'], function () {
   ]);
 });
 
-gulp.task('lint:typescript', function () {
+gulp.task('lint:sources', function () {
   return gulp.src([paths.source + '**/*.ts', paths.spec + '**/*.ts'])
     .pipe(plumber())
     .pipe(tslint({
@@ -87,7 +87,7 @@ gulp.task('format:tests', function () {
 
 gulp.task('format', ['format:sources', 'format:tests'], function () { });
 
-gulp.task('compile:tests', ['compile:typescript', 'clean:tests'], function () {
+gulp.task('compile:tests', ['compile:sources', 'clean:tests'], function () {
   var project = ts.createProject('tsconfig.json', {
     typescript: require('typescript')
   });
@@ -115,7 +115,7 @@ gulp.task('test:jasmine', function (done) {
 });
 
 gulp.task('test', function (done) {
-  runsequence('compile:tests', 'lint:typescript', 'test:jasmine', function (err) {
+  runsequence('compile:tests', 'lint:sources', 'test:jasmine', function (err) {
     runsequence('clean:tests');
     done();
   });
@@ -129,8 +129,8 @@ gulp.task('test-no-compile', function (done) {
 });
 
 gulp.task('watch', ['test'], function () {
-  gulp.watch(paths.source + '**/*.ts', ['test', 'lint:typescript']);
-  gulp.watch(paths.spec + '**/*spec.ts', ['test', 'lint:typescript']);
+  gulp.watch(paths.source + '**/*.ts', ['test', 'lint:sources']);
+  gulp.watch(paths.spec + '**/*spec.ts', ['test', 'lint:sources']);
 });
 
 gulp.task('default', ['test'], function () {
