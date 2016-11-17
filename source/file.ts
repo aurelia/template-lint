@@ -13,7 +13,6 @@ export { FileLocation } from './file-location';
 
 export class File implements IFile {
   public content: string;
-  public hash?: string;
   public kind: FileKind;
   public path?: string;
   public issues = new Array<Issue>();

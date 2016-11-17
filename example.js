@@ -1,18 +1,10 @@
 
-var AureliaLinter = require('./dist/aurelia-linter').AureliaLinter;
-var Config = require('./dist/config').Config;
+var Linter = require('./dist/index').Linter;
 var fs = require('fs');
 
-var config = new Config();
+var linter = new Linter();
 
-config.debug = true;
-config.useRuleAureliaBindingAccess = true;
-config.reflectionOpts.sourceFileGlob = "example/**/*.ts";
-config.reflectionOpts.typingsFileGlob = "example/my-lib.d.ts"
-
-var linter = new AureliaLinter(config);
-
-var htmlpath = "./example/foo.html";
+/*var htmlpath = "./example/foo.html";
 var html = fs.readFileSync(htmlpath, 'utf8');
 
 linter.lint(html, htmlpath)
@@ -21,4 +13,4 @@ linter.lint(html, htmlpath)
       console.log(`${error.message} [ln: ${error.line} col: ${error.column}]`);
       if (error.detail) console.log(`  * ${error.detail}`);
     });
-  });
+  });*/

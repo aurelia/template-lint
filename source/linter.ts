@@ -2,6 +2,7 @@ import { Options } from './options';
 import { Config } from './config';
 import { File, FileKind } from './file';
 import { Fetch } from './fetch';
+import { Issue } from './issue';
 import { Project } from './project';
 import { ProjectBuilder, IProjectBuilder } from './project-builder';
 import { Path } from './utils/safe-path';
@@ -10,11 +11,13 @@ import * as fs from 'fs';
 
 export class Linter {
   protected project: Project;
-  protected fetch: Fetch;
 
-  constructor(protected config: Config, private projectBuilder: IProjectBuilder = new ProjectBuilder()) {
+  constructor(
+    protected config: Config = new Config,
+    protected fetch: Fetch = createDefaultFetch(config),
+    private projectBuilder: IProjectBuilder = new ProjectBuilder()
+  ) {
     this.project = this.projectBuilder.build(config.options);
-    this.fetch = this.createFetch(config);
   }
 
   /** 
@@ -23,7 +26,16 @@ export class Linter {
   async init(): Promise<void> {
     await this.processFiles(this.config.typings, this.fetch);
     await this.processFiles(this.config.source, this.fetch);
-    await this.processFiles(this.config.markup, this.fetch);
+  }
+
+  /**
+   * lint html
+   */
+  async lint(markup: string, path?: string): Promise<Issue[]> {
+    let file = new File({ content: markup, kind: FileKind.Html, path: path });
+    let result = await this.project.process(file, this.fetch);
+
+    return result.issues;
   }
 
   protected processFiles(pattern: string, fetch: Fetch): Promise<string[]> {
@@ -44,40 +56,28 @@ export class Linter {
     });
   }
 
-  protected createFetch(config: Config): Fetch {
-    let srcExt = Path.extname(config.source);
+  // change events... 
+}
 
-    return (uri, _) => {
-      return new Promise((resolve, reject) => {
-        // strip loaders from uri
+function createDefaultFetch(config: Config): Fetch {
+  let srcExt = Path.extname(config.source);
 
-        let uriLoaders = uri.match(config.loaderPattern);
-        uri = uri.replace(config.loaderPattern, "");
+  return (uri, _) => {
+    return new Promise((resolve, reject) => {
+      // strip loaders from uri
 
-        let fullPath = Path.join(config.cwd, config.basepath, uri);
-        let stats: fs.Stats | undefined;
+      let uriLoaders = uri.match(config.loaderPattern);
+      uri = uri.replace(config.loaderPattern, "");
 
-        try {
-          stats = fs.lstatSync(fullPath);
+      let fullPath = Path.join(config.cwd, config.basepath, uri);
+      let stats: fs.Stats | undefined;
 
-          if (stats.isDirectory()) {
-            fullPath = Path.join(fullPath, `index.${srcExt}`);
-            try {
-              stats = fs.lstatSync(fullPath);
-            }
-            catch (err) {
-              resolve(undefined);
-              return;
-            }
-          }
-        } catch (_) {
-          if (Path.extname(fullPath) != "") {
-            resolve(undefined);
-            return;
-          }
+      try {
+        stats = fs.lstatSync(fullPath);
 
+        if (stats.isDirectory()) {
+          fullPath = Path.join(fullPath, `index.${srcExt}`);
           try {
-            fullPath += srcExt;
             stats = fs.lstatSync(fullPath);
           }
           catch (err) {
@@ -85,48 +85,61 @@ export class Linter {
             return;
           }
         }
+      } catch (_) {
+        if (Path.extname(fullPath) != "") {
+          resolve(undefined);
+          return;
+        }
 
-        fs.readFile(fullPath, 'utf8', async (err, data) => {
-          if (err) {
-            resolve(undefined);
-            return;
-          }
+        try {
+          fullPath += srcExt;
+          stats = fs.lstatSync(fullPath);
+        }
+        catch (err) {
+          resolve(undefined);
+          return;
+        }
+      }
 
-          let kind: FileKind;
+      fs.readFile(fullPath, 'utf8', async (err, data) => {
+        if (err) {
+          resolve(undefined);
+          return;
+        }
 
-          if (fullPath.endsWith(".d.ts"))
-            kind = FileKind.Typing;
-          else if (fullPath.endsWith(".ts") || fullPath.endsWith(".js"))
-            kind = FileKind.Source;
-          else if (fullPath.endsWith(".html"))
-            kind = FileKind.Html;
-          else
-            kind = FileKind.Unknown;
+        let kind: FileKind;
 
-          let file = new File({ content: data, path: fullPath, kind: kind });
+        if (fullPath.endsWith(".d.ts"))
+          kind = FileKind.Typing;
+        else if (fullPath.endsWith(".ts") || fullPath.endsWith(".js"))
+          kind = FileKind.Source;
+        else if (fullPath.endsWith(".html"))
+          kind = FileKind.Html;
+        else
+          kind = FileKind.Unknown;
 
-          if (!uriLoaders) {
-            resolve(file);
-            return;
-          }
+        let file = new File({ content: data, path: fullPath, kind: kind });
 
-          for (var uriLoader of uriLoaders) {
-            let loader = config.loaders.get(uriLoader);
-
-            if (loader) {
-              file = await loader(file);
-              if (!file) {
-                resolve(undefined);
-                return;
-              }
-            }
-          }
+        if (!uriLoaders) {
           resolve(file);
           return;
-        });
-      });
-    };
-  }
+        }
 
-  // change events... 
+        for (var uriLoader of uriLoaders) {
+          let loader = config.loaders.get(uriLoader);
+
+          if (loader) {
+            file = await loader(file);
+            if (!file) {
+              resolve(undefined);
+              return;
+            }
+          }
+        }
+        resolve(file);
+        return;
+      });
+    });
+  };
 }
+
