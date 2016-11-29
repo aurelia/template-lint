@@ -99,11 +99,11 @@ export class Config {
   * Valid Child Rule
   */
   validChildOpts = [
-    { element: "tr", allow: ["td", "th"] },
-    { element: "ul", allow: ["li"] },
-    { element: "ol", allow: ["li"] },
-    { element: "dl", allow: ["dt", "dd"] },
-    { element: "select", allow: ["option", "optgroup"] },
+    { element: "tr", allow: ["td", "th", "template"] },
+    { element: "ul", allow: ["li", "template"] },
+    { element: "ol", allow: ["li", "template"] },
+    { element: "dl", allow: ["dt", "dd", "template"] },
+    { element: "select", allow: ["option", "optgroup", "template"] },
   ];
 
   /**
