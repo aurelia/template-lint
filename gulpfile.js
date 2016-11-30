@@ -22,7 +22,7 @@ var paths = {
 }
 
 gulp.task('clean:typescript', function () {
-  return gulp.src([paths.output + '**/*'], { read: false })
+  return gulp.src([paths.output], { read: false })
     .pipe(rimraf());
 });
 
