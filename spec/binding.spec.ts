@@ -1469,9 +1469,9 @@ describe("Static-Type Binding Tests", () => {
   });
 
   //#128
-  describe("@computedFrom decorator usages", () => {
+  xdescribe("@computedFrom decorator usages", () => {
 
-    it("should detect invalid references", (done) => {
+    xit("should detect invalid references", (done) => {
       const viewmodel = `
       export class Foo{
         field1: number;
@@ -1506,7 +1506,7 @@ describe("Static-Type Binding Tests", () => {
         });
     });
 
-    it("should detect invalid references to nested objects", (done) => {
+    xit("should detect invalid references to nested objects", (done) => {
       let price = `
       export interface Price{
         value:string;

@@ -405,9 +405,12 @@ export class BindingRule extends ASTBuilder {
           .find(x => (<any>x.name).text == memberName);
 
         if (member) {
+          /* 
+          //#140 - doesn't support 
           if (member.kind === ts.SyntaxKind.GetAccessor) {
             this.checkDecorators(node, member, context, loc);
           }
+          */
           memberType = this.reflection.resolveClassElementType(member);
         } else {
           const constr = <ts.ConstructorDeclaration>members.find(ce => ce.kind == ts.SyntaxKind.Constructor);
