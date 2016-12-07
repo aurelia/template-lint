@@ -30,13 +30,7 @@ export class Config {
       attr: /^style$/,
       not: /\${(.?)+}/,
       msg: "interpolation not allowed in style attribute"
-    },
-    {
-      attr: /^bindable$/,
-      not: /[a-z][A-Z]/,
-      msg: "camelCase bindable is converted to camel-case",
-      tag: "template"
-    },
+    },    
     {
       tag: "button",
       attr: /^type$/,

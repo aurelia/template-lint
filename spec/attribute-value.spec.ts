@@ -37,7 +37,7 @@ describe("AttributeValue Rule", () => {
       });
   });
 
-  it("complains about camel case bindable", (done) => {
+  xit("complains about camel case bindable", (done) => {
     var html = `<template bindable="myNameIs"></template>`;
 
     linter.lint(html)
@@ -48,7 +48,7 @@ describe("AttributeValue Rule", () => {
       });
   });
 
-  it("okay with non-camel-case bindable", (done) => {
+  xit("okay with non-camel-case bindable", (done) => {
     var html = `<template bindable="mynameis"></template>`;
 
     linter.lint(html)
