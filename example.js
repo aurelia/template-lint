@@ -13,8 +13,8 @@ var linter = new Linter();
 linter.init()
   .then(() => linter.lint("<template></template>"))
   .then((results) => {
-    results.forEach(error => {
-      console.log(`${error.message} [ln: ${error.line} col: ${error.column}]`);
+    results.forEach(error => {      
+      console.log(`${error.message} [ln: ${error.location.line} col: ${error.location.column}]`);
       if (error.detail) console.log(`  * ${error.detail}`);
     });
   });
