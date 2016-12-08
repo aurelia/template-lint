@@ -9,6 +9,7 @@ import { ASTGenHook } from './parser/hooks/ast-generator';
 import { SelfCloseHook } from './parser/hooks/self-close';
 import { Reflection } from '../reflection/reflection';
 import { Resource, ResourceKind } from '../resource';
+import { CaseConvert } from '../utils/case-convert'; 
 
 import * as ts from 'typescript';
 
@@ -119,7 +120,7 @@ export class SourceResourcesTask implements FileTask {
     }
     else return;
 
-    let convertedName = strippedName.replace(/([a-z][A-Z])/g, function (g) { return g[0] + "-" + g[1]; }).toLowerCase();
+    let convertedName = CaseConvert.camelToKebabCase(strippedName);
 
     this.registerResource(convertedName, resourceKind, decl, file);
   }
