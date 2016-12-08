@@ -191,7 +191,8 @@ export class Config {
         localProvidors: [
             "repeat.for", "if.bind", "with.bind"
         ],
-        restrictedAccess: ["private", "protected"]
+        restrictedAccess: ["private", "protected"],
+        reportUnresolvedViewModel: false
     }
 
     

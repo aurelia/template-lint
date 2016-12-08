@@ -30,7 +30,7 @@ export class Config {
       attr: /^style$/,
       not: /\${(.?)+}/,
       msg: "interpolation not allowed in style attribute"
-    },    
+    },
     {
       tag: "button",
       attr: /^type$/,
@@ -123,7 +123,8 @@ export class Config {
     localProvidors: [
       "repeat.for", "if.bind", "with.bind"
     ],
-    restrictedAccess: ["private", "protected"]
+    restrictedAccess: ["private", "protected"],
+    reportUnresolvedViewModel: false
   };
 
 

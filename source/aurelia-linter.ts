@@ -75,6 +75,7 @@ export class AureliaLinter {
           {
             reportBindingSyntax: this.config.useRuleAureliaBindingSyntax,
             reportBindingAccess: this.config.useRuleAureliaBindingAccess,
+            reportUnresolvedViewModel: this.config.aureliaBindingAccessOpts.reportUnresolvedViewModel,
             reportExceptions: this.config.debug,
             localProvidors: this.config.aureliaBindingAccessOpts.localProvidors,
             restrictedAccess: this.config.aureliaBindingAccessOpts.restrictedAccess

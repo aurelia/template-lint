@@ -33,6 +33,7 @@ import Identifier = ts.Identifier;
 export class BindingRule extends ASTBuilder {
   public reportBindingAccess = true;
   public reportExceptions = false;
+  public reportUnresolvedViewModel = false;
 
   public localProvidors = ["ref", "repeat.for", "if.bind", "with.bind"];
   public restrictedAccess = ["private", "protected"];
@@ -43,6 +44,7 @@ export class BindingRule extends ASTBuilder {
     opt?: {
       reportBindingSyntax?: boolean,
       reportBindingAccess?: boolean,
+      reportUnresolvedViewModel?: boolean,
       reportExceptions?: boolean,
       localProvidors?: string[],
       restrictedAccess?: string[]
@@ -282,15 +284,37 @@ export class BindingRule extends ASTBuilder {
 
     let viewModelSource = this.reflection.pathToSource[viewModelFile];
 
-    if (!viewModelSource)
+    if (!viewModelSource) {
+      if (this.reportUnresolvedViewModel) {
+        this.reportIssue(
+          new Issue({
+            message: `no view-model source-file found`,
+            detail: viewModelFile,
+            line: -1,
+            column: -1,
+            severity: IssueSeverity.Warning
+          }));
+      }
+
       return null;
+    }
 
     let classes = <ts.ClassDeclaration[]>viewModelSource.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration);
 
-    /*if(classes.length > 1) // http://stackoverflow.com/questions/29101883/aurelia-view-model-class-naming
-    {
-        this.reportIssue(new Issue({message:"view-model file should only have one class", line:-1, column:-1, severity:IssueSeverity.Warning}))
-    }*/
+    if (classes == null || classes.length == 0) {
+      if (this.reportUnresolvedViewModel) {
+        this.reportIssue(
+          new Issue({
+            message: `no classes found in view-model source-file`,
+            detail: viewModelFile,
+            line: -1,
+            column: -1,
+            severity: IssueSeverity.Warning
+          }));
+      }
+
+      return null;
+    }
 
     let first = classes[0];
     let context = new ASTContext();
