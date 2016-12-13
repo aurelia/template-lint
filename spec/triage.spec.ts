@@ -283,4 +283,36 @@ describe("Triage", () => {
         done();
       });
   });
+
+  // #148
+  it("Ensure inherited properties are supported in static type checking", (done) => {
+    let base = `
+    export class Base {
+      sharedValue:number
+    }`;
+
+    let viewmodel = `
+    import {Base} from './base'
+    export class ExtendedItem extends Base {   
+      extendedValue: int = 5;
+      constructor() {
+        super();     
+      }
+    }`;
+    let view = `
+    <template>
+      <span>\${sharedValue}</span>
+      <span>\${extendedValue}</span>
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, new AureliaReflection());
+    let linter = new Linter([rule]);
+    reflection.add("./path/base.ts", base);
+    reflection.add("./path/foo.ts", viewmodel);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(0);
+        done();
+      });
+  });
 });
