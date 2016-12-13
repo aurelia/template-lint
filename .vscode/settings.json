@@ -4,7 +4,7 @@
     "files.exclude": {
         "node_modules/": false,
         "**/*.map":true,    
-        "**/.js":{"when": "$(basename).ts"} 
+        "**/*.js":{"when": "$(basename).ts"} 
     }
     
 }
