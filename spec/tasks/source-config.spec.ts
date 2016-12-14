@@ -1,15 +1,15 @@
-import { Project } from '../source/index';
-import { Options } from '../source/index';
-import { File, FileLocation, FileKind, FileTask } from '../source/index';
-import { Issue, IssueSeverity } from '../source/issue';
-import { IssueSortTask } from '../source/tasks/issue-sort';
-import { ResourceKind } from '../source/resource';
-import { ResourceCollection } from '../source/resource-collection';
+import { Project } from '../../source/index';
+import { Options } from '../../source/index';
+import { File, FileLocation, FileKind, FileTask } from '../../source/index';
+import { Issue, IssueSeverity } from '../../source/issue';
+import { IssueSortTask } from '../../source/tasks/issue-sort';
+import { ResourceKind } from '../../source/resource';
+import { ResourceCollection } from '../../source/resource-collection';
 
-import { SourceProcessTask } from '../source/tasks/source-process';
-import { SourceConfigTask } from '../source/tasks/source-config';
+import { SourceProcessTask } from '../../source/tasks/source-process';
+import { SourceConfigTask } from '../../source/tasks/source-config';
 
-import { Reflection } from '../source/reflection/reflection';
+import { Reflection } from '../../source/reflection/reflection';
 
 import * as ts from 'typescript';
 

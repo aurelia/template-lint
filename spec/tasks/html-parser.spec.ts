@@ -1,9 +1,9 @@
-import { Project } from '../source/index';
-import { Options } from '../source/index';
-import { File, FileKind } from '../source/index';
-import { HtmlParseTask } from '../source/tasks/html-parse';
-import { ASTElementNode } from "../source/ast/ast-element-node";
-import { ASTNode } from "../source/ast/ast-node";
+import { Project } from '../../source/index';
+import { Options } from '../../source/index';
+import { File, FileKind } from '../../source/index';
+import { HtmlParseTask } from '../../source/tasks/html-parse';
+import { ASTElementNode } from "../../source/ast/ast-element-node";
+import { ASTNode } from "../../source/ast/ast-node";
 
 /**
  * Parser Task Tests

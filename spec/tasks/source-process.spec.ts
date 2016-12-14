@@ -1,11 +1,11 @@
-import { Project } from '../source/index';
-import { Options } from '../source/index';
-import { File, FileLocation, FileKind, FileTask } from '../source/index';
-import { Issue, IssueSeverity } from '../source/issue';
-import { IssueSortTask } from '../source/tasks/issue-sort';
+import { Project } from '../../source/index';
+import { Options } from '../../source/index';
+import { File, FileLocation, FileKind, FileTask } from '../../source/index';
+import { Issue, IssueSeverity } from '../../source/issue';
+import { IssueSortTask } from '../../source/tasks/issue-sort';
 
-import { SourceProcessTask } from '../source/tasks/source-process';
-import { Reflection } from '../source/reflection/reflection';
+import { SourceProcessTask } from '../../source/tasks/source-process';
+import { Reflection } from '../../source/reflection/reflection';
 
 import * as ts from 'typescript';
 

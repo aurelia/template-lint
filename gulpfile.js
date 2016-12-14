@@ -104,12 +104,12 @@ gulp.task('compile:tests', ['compile:sources', 'clean:tests'], function () {
         return relativeSource;
       }
     }))
-    .pipe(replace(/(require\('\..\/source\/)/g, 'require(\'..\/dist\/'))
+    .pipe(replace(/(\/source\/)/g, '\/dist\/'))
     .pipe(gulp.dest(paths.spec));
 });
 
 gulp.task('test:jasmine', function (done) {
-  return gulp.src('spec/*.js')
+  return gulp.src('spec/**/*.js')
     .pipe(plumber())
     .pipe(jasmine({ verbose: true }));
 });

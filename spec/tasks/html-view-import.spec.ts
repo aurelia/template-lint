@@ -1,11 +1,11 @@
-import { Project } from '../source/index';
-import { Options } from '../source/index';
-import { File, FileKind, FileTask } from '../source/index';
-import { HtmlParseTask } from '../source/tasks/html-parse';
-import { HtmlRequireTask } from '../source/tasks/html-require';
-import { HtmlViewImportTask } from '../source/tasks/html-view-import';
-import { ASTElementNode } from "../source/ast/ast-element-node";
-import { ASTNode } from "../source/ast/ast-node";
+import { Project } from '../../source/index';
+import { Options } from '../../source/index';
+import { File, FileKind, FileTask } from '../../source/index';
+import { HtmlParseTask } from '../../source/tasks/html-parse';
+import { HtmlRequireTask } from '../../source/tasks/html-require';
+import { HtmlViewImportTask } from '../../source/tasks/html-view-import';
+import { ASTElementNode } from "../../source/ast/ast-element-node";
+import { ASTNode } from "../../source/ast/ast-node";
 
 /**
  * HTML Template Requires
