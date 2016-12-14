@@ -16,7 +16,7 @@
     }
   ],
   "license": "(Apache-2.0)",
-  "version": "0.9.17",
+  "version": "0.9.21",
   "keywords": [
     "template",
     "html",
@@ -29,13 +29,9 @@
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "devDependencies": {
-    "@types/glob": "^5.0.30",
+    "@types/glob": "^5.0.29",
     "@types/jasmine": "^2.2.32",
     "@types/minimatch": "^2.0.28",
-    "@types/node": "^6.0.37",
-    "@types/parse5": "0.0.30",
-    "@types/string-hash": "^1.1.0",
-    "globby": "^6.1.0",
     "gulp": "^3.9.1",
     "gulp-jasmine": "^2.3.0",
     "gulp-plumber": "^1.1.0",
@@ -44,7 +40,7 @@
     "gulp-shell": "^0.5.2",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-tslint": "^6.0.2",
-    "gulp-typescript": "^3.0.2",
+    "gulp-typescript": "^2.13.6",
     "gulp-typescript-formatter": "^0.1.3",
     "merge2": "^1.0.2",
     "run-sequence": "^1.2.1",
@@ -55,15 +51,17 @@
     "test": "gulp test"
   },
   "dependencies": {
+    "@types/node": "^6.0.37",
+    "@types/parse5": "0.0.30",
     "aurelia-binding": "^1.0.0",
     "aurelia-dependency-injection": "^1.0.0",
-    "aurelia-pal-nodejs": "^1.0.0-alpha.5",
+    "aurelia-pal-nodejs": "^1.0.0-alpha.4",
     "aurelia-polyfills": "^1.0.0",
     "aurelia-templating": "^1.0.0",
     "aurelia-templating-binding": "^1.0.0",
-    "glob": "^7.1.1",
+    "glob": "7.0.x",
     "parse5": "2.2.x",
-    "string-hash": "^1.1.0",
+    "template-lint": "0.8.x",
     "typescript": "2.0.x"
   }
 }

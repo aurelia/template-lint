@@ -31,6 +31,7 @@ import Identifier = ts.Identifier;
 export class BindingRule extends ParserRule {
   public reportBindingAccess = true;
   public reportExceptions = false;
+  public reportUnresolvedViewModel = false;
 
   public localProvidors = ["ref", "repeat.for", "if.bind", "with.bind"];
   public restrictedAccess = ["private", "protected"];
@@ -41,6 +42,7 @@ export class BindingRule extends ParserRule {
     opt?: {
       reportBindingSyntax?: boolean,
       reportBindingAccess?: boolean,
+      reportUnresolvedViewModel?: boolean,
       reportExceptions?: boolean,
       localProvidors?: string[],
       restrictedAccess?: string[]
@@ -280,15 +282,37 @@ export class BindingRule extends ParserRule {
 
     let viewModelSource = this.reflection.pathToSource[viewModelFile];
 
-    if (!viewModelSource)
+    if (!viewModelSource) {
+      if (this.reportUnresolvedViewModel) {
+        this.reportIssue(
+          new Issue({
+            message: `no view-model source-file found`,
+            detail: viewModelFile,
+            line: -1,
+            column: -1,
+            severity: IssueSeverity.Warning
+          }));
+      }
+
       return null;
+    }
 
     let classes = <ts.ClassDeclaration[]>viewModelSource.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration);
 
-    /*if(classes.length > 1) // http://stackoverflow.com/questions/29101883/aurelia-view-model-class-naming
-    {
-        this.reportIssue(new Issue({message:"view-model file should only have one class", line:-1, column:-1, severity:IssueSeverity.Warning}))
-    }*/
+    if (classes == null || classes.length == 0) {
+      if (this.reportUnresolvedViewModel) {
+        this.reportIssue(
+          new Issue({
+            message: `no classes found in view-model source-file`,
+            detail: viewModelFile,
+            line: -1,
+            column: -1,
+            severity: IssueSeverity.Warning
+          }));
+      }
+
+      return null;
+    }
 
     let first = classes[0];
     let context = new ASTContext();
@@ -411,18 +435,7 @@ export class BindingRule extends ParserRule {
           */
           memberType = this.reflection.resolveClassElementType(member);
         } else {
-          const constr = <ts.ConstructorDeclaration>members.find(ce => ce.kind == ts.SyntaxKind.Constructor);
-          if (constr) {
-            const param: ts.ParameterDeclaration = constr.parameters.find(parameter => parameter.name.getText() === memberName);
-            if (param && param.flags) {
-              // Constructor parameters that have public/protected/private modifier, are class members.
-              // Looks like there is no need to inspect `param.modifiers`, because
-              // 1) access restriction is checked bellow
-              // 2) to my understanding, access modifiers are the only flags that can be used on constructor parameters
-              member = param;
-              memberType = param.type;
-            }
-          }
+          [member, memberType] = this.findMemberInCtorDecls(classDecl, memberName);
         }
         if (!member) {
           // "dynamic" members could be defined using index signature: `[x: string]: number;`
@@ -484,6 +497,38 @@ export class BindingRule extends ParserRule {
     //replace the generic references with the arguments.
 
     return new ASTContext({ type: memberType, typeDecl: memberTypeDecl, typeValue: memberIsArray ? [] : null });
+  }
+
+  private findMemberInCtorDecls(classDecl: ts.ClassDeclaration, memberName: string): [ts.ParameterDeclaration, ts.TypeNode] {
+    do {
+      let members = classDecl.members;
+      const constr = <ts.ConstructorDeclaration>members.find(ce => ce.kind == ts.SyntaxKind.Constructor);
+      if (constr) {
+        const param: ts.ParameterDeclaration = constr.parameters.find(parameter => parameter.name.getText() === memberName);
+        if (param && param.flags) {
+          return [param, param.type];
+        }
+      }
+
+      let currentClass = classDecl;
+
+      classDecl = null;
+
+      if (currentClass.heritageClauses != null && currentClass.heritageClauses.length > 0) {
+        let extend = currentClass.heritageClauses.find(x => x.token == ts.SyntaxKind.ExtendsKeyword);
+        if (extend) {
+          let extendType = extend.types[0];
+
+          let memberTypeDecl: ts.Declaration = this.reflection.getDeclForType((<ts.SourceFile>currentClass.parent), extendType.getText());
+
+          if (memberTypeDecl != null && memberTypeDecl.kind == ts.SyntaxKind.ClassDeclaration) {
+            classDecl = <ts.ClassDeclaration>memberTypeDecl;
+          }
+        }
+      }
+    } while (classDecl != null);
+
+    return [null, null];
   }
 
   private checkDecorators(node: ASTNode, member, context: ASTContext, loc: FileLoc) {

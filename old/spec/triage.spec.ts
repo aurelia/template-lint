@@ -263,4 +263,24 @@ describe("Triage", () => {
         finally { done(); }
       });
   });
+
+  // #145
+  it("it will silently ignore no view-model class", (done) => {
+    let viewmodel = `
+    export function Foo() {    
+    }`;
+    let view = `
+    <template>
+      \${value.not.checked}
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, new AureliaReflection());
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(0);
+        done();
+      });
+  });  
 });
