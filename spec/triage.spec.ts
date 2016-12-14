@@ -285,18 +285,17 @@ describe("Triage", () => {
   });
 
   // #148
-  it("Ensure inherited properties are supported in static type checking", (done) => {
+  it("Ensure inherited constructor properties are supported in static type checking", (done) => {
     let base = `
     export class Base {
-      sharedValue:number
+      constructor(public sharedValue:number) {  
+      }
     }`;
-
     let viewmodel = `
     import {Base} from './base'
-    export class ExtendedItem extends Base {   
-      extendedValue: int = 5;
-      constructor() {
-        super();     
+    export class ExtendedItem extends Base {         
+      constructor(sharedValue:number, public extendedValue:number) {
+        super(sharedValue);     
       }
     }`;
     let view = `
