@@ -1555,6 +1555,39 @@ describe("Static-Type Binding Tests", () => {
     });
   });
 
+  // #148
+  it("Support inherited constructor properties", (done) => {
+    let base = `
+    export class Base {
+      constructor(public sharedValue:number, booboo:string) {  
+      }
+    }`;
+    let viewmodel = `
+    import {Base} from './base'
+    export class ExtendedItem extends Base {         
+      constructor(sharedValue:number, public extendedValue:number, booboo:string) {
+        super(sharedValue, booboo);     
+      }
+    }`;
+    let view = `
+    <template>
+      <span>\${sharedValue}</span>
+      <span>\${extendedValue}</span>
+      <span>\${booboo}</span>
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, new AureliaReflection());
+    let linter = new Linter([rule]);
+    reflection.add("./path/base.ts", base);
+    reflection.add("./path/foo.ts", viewmodel);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toBe("cannot find 'booboo' in type 'ExtendedItem'");
+        done();
+      });
+  });
+
 
   /*it("rejects more than one class in view-model file", (done) => {
     let viewmodel = `
