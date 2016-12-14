@@ -436,7 +436,7 @@ export class BindingRule extends ASTBuilder {
           }
           */
           memberType = this.reflection.resolveClassElementType(member);
-        } else {                    
+        } else {
           [member, memberType] = this.findMemberInCtorDecls(classDecl, memberName);
         }
         if (!member) {
@@ -501,15 +501,35 @@ export class BindingRule extends ASTBuilder {
     return new ASTContext({ type: memberType, typeDecl: memberTypeDecl, typeValue: memberIsArray ? [] : null });
   }
 
-  private findMemberInCtorDecls(classDecl, memberName): [ts.ParameterDeclaration, ts.TypeNode] {
-    let members = classDecl.members;
-    const constr = <ts.ConstructorDeclaration>members.find(ce => ce.kind == ts.SyntaxKind.Constructor);
-    if (constr) {
-      const param: ts.ParameterDeclaration = constr.parameters.find(parameter => parameter.name.getText() === memberName);
-      if (param && param.flags) {
-        return [param, param.type];
+  private findMemberInCtorDecls(classDecl: ts.ClassDeclaration, memberName: string): [ts.ParameterDeclaration, ts.TypeNode] {
+    do {
+      let members = classDecl.members;
+      const constr = <ts.ConstructorDeclaration>members.find(ce => ce.kind == ts.SyntaxKind.Constructor);
+      if (constr) {
+        const param: ts.ParameterDeclaration = constr.parameters.find(parameter => parameter.name.getText() === memberName);
+        if (param && param.flags) {
+          return [param, param.type];
+        }
       }
-    }
+
+      let currentClass = classDecl;
+
+      classDecl = null;
+
+      if (currentClass.heritageClauses != null && currentClass.heritageClauses.length > 0) {
+        let extend = currentClass.heritageClauses.find(x => x.token == ts.SyntaxKind.ExtendsKeyword);
+        if (extend) {
+          let extendType = extend.types[0];
+
+          let memberTypeDecl: ts.Declaration = this.reflection.getDeclForType((<ts.SourceFile>currentClass.parent), extendType.getText());
+
+          if (memberTypeDecl != null && memberTypeDecl.kind == ts.SyntaxKind.ClassDeclaration) {
+            classDecl = <ts.ClassDeclaration>memberTypeDecl;
+          }
+        }
+      }
+    } while (classDecl != null);
+
     return [null, null];
   }
 
