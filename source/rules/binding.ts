@@ -436,19 +436,8 @@ export class BindingRule extends ASTBuilder {
           }
           */
           memberType = this.reflection.resolveClassElementType(member);
-        } else {
-          const constr = <ts.ConstructorDeclaration>members.find(ce => ce.kind == ts.SyntaxKind.Constructor);
-          if (constr) {
-            const param: ts.ParameterDeclaration = constr.parameters.find(parameter => parameter.name.getText() === memberName);
-            if (param && param.flags) {
-              // Constructor parameters that have public/protected/private modifier, are class members.
-              // Looks like there is no need to inspect `param.modifiers`, because
-              // 1) access restriction is checked bellow
-              // 2) to my understanding, access modifiers are the only flags that can be used on constructor parameters
-              member = param;
-              memberType = param.type;
-            }
-          }
+        } else {                    
+          [member, memberType] = this.findMemberInCtorDecls(classDecl, memberName);
         }
         if (!member) {
           // "dynamic" members could be defined using index signature: `[x: string]: number;`
@@ -510,6 +499,18 @@ export class BindingRule extends ASTBuilder {
     //replace the generic references with the arguments.
 
     return new ASTContext({ type: memberType, typeDecl: memberTypeDecl, typeValue: memberIsArray ? [] : null });
+  }
+
+  private findMemberInCtorDecls(classDecl, memberName): [ts.ParameterDeclaration, ts.TypeNode] {
+    let members = classDecl.members;
+    const constr = <ts.ConstructorDeclaration>members.find(ce => ce.kind == ts.SyntaxKind.Constructor);
+    if (constr) {
+      const param: ts.ParameterDeclaration = constr.parameters.find(parameter => parameter.name.getText() === memberName);
+      if (param && param.flags) {
+        return [param, param.type];
+      }
+    }
+    return [null, null];
   }
 
   private checkDecorators(node: ASTNode, member, context: ASTContext, loc: FileLoc) {
