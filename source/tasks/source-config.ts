@@ -7,7 +7,7 @@ import { Options } from '../options';
 import { ASTNode, ASTElementNode } from '../ast';
 import { ASTGenHook } from './parser/hooks/ast-generator';
 import { SelfCloseHook } from './parser/hooks/self-close';
-import { Reflection } from '../reflection/reflection';
+import { Reflection } from '../reflection';
 import { Resource, ResourceKind } from '../resource';
 import { ResourceCollection } from '../resource-collection';
 

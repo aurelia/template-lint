@@ -4,7 +4,7 @@ import { Project } from './project';
 import { Options } from './options';
 import { ResourceCollection} from './resource-collection';
 
-import { Reflection } from './reflection/reflection';
+import { Reflection } from './reflection';
 
 import { HtmlParseTask } from './tasks/html-parse';
 import { HtmlRequireTask } from './tasks/html-require';

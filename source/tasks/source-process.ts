@@ -6,7 +6,7 @@ import { Options } from '../options';
 import { ASTNode, ASTElementNode } from '../ast';
 import { ASTGenHook } from './parser/hooks/ast-generator';
 import { SelfCloseHook } from './parser/hooks/self-close';
-import { Reflection } from '../reflection/reflection';
+import { Reflection } from '../reflection';
 
 /** Process a source file and add it to the Compiler Host */
 export class SourceProcessTask implements FileTask {

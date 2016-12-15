@@ -5,11 +5,12 @@ import { FileKind } from './file-kind';
 import { FileLocation } from './file-location';
 import { FileImport } from './file-import';
 import { Resource } from './resource';
-import * as ts from 'typescript';
-import { Path } from './utils/safe-path';
 export { FileImport } from './file-import';
 export { FileKind } from './file-kind';
 export { FileLocation } from './file-location';
+import { Path } from './utils/safe-path';
+import * as ts from 'typescript';
+
 
 export class File implements IFile {
   public content: string;

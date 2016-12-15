@@ -9,7 +9,7 @@ import { ResourceCollection } from '../../source/resource-collection';
 import { SourceProcessTask } from '../../source/tasks/source-process';
 import { SourceConfigTask } from '../../source/tasks/source-config';
 
-import { Reflection } from '../../source/reflection/reflection';
+import { Reflection } from '../../source/reflection';
 
 import * as ts from 'typescript';
 

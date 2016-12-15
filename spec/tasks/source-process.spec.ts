@@ -5,7 +5,7 @@ import { Issue, IssueSeverity } from '../../source/issue';
 import { IssueSortTask } from '../../source/tasks/issue-sort';
 
 import { SourceProcessTask } from '../../source/tasks/source-process';
-import { Reflection } from '../../source/reflection/reflection';
+import { Reflection } from '../../source/reflection';
 
 import * as ts from 'typescript';
 
@@ -122,8 +122,6 @@ describe("Task: Source Processing", () => {
         let task = new SourceProcessTask(opts, ref);
 
         await task.process(file, async (_) => undefined);
-
-        expect(ref.typeChecker).not.toBeNull();
 
         expect(ref.host.getSourceFile(filePath, ts.ScriptTarget.Latest)).toBeDefined();
 

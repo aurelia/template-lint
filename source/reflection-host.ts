@@ -1,4 +1,4 @@
-import {Path} from '../utils/safe-path';
+import { Path } from './utils/safe-path';
 import * as ts from "typescript";
 import * as glob from "glob";
 import * as fs from "fs";

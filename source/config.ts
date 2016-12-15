@@ -1,6 +1,8 @@
 import { Fetch, FetchOptions } from './fetch';
-import { File } from './file';
+import { File, FileKind } from './file';
 import { Options } from './options';
+import { Reflection } from './reflection';
+import { defaultResolveViewModel } from './conventions';
 
 export class Config {
   debug = true;
@@ -16,4 +18,6 @@ export class Config {
   loaders = new Map<string, (File) => Promise<File>>();
 
   options = new Options();
+
+  resolveViewModel = defaultResolveViewModel;
 }

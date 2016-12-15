@@ -7,7 +7,7 @@ import { IssueSortTask } from '../../source/tasks/issue-sort';
 
 import { SourceProcessTask } from '../../source/tasks/source-process';
 import { SourceResourcesTask } from '../../source/tasks/source-resources';
-import { Reflection } from '../../source/reflection/reflection';
+import { Reflection } from '../../source/reflection';
 import { Resource, ResourceKind } from '../../source/resource';
 
 import * as ts from 'typescript';
