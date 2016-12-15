@@ -12,9 +12,10 @@ export async function defaultResolveViewModel(view: File, fetch: Fetch, reflecti
 
   /* 
   "some-thing.html" -> "some-thing.[ts|js]"    
-    If "some-thing.[ts|js]" has class SomeThingCustomElement, return it
+         If "some-thing.[ts|js]" has any class SomeThingCustomElement, return it
+    Else If "some-thing.[ts|js]" has any class "SomeThing" + @customElement() decorator, return it
     Else If "some-thing.[ts|js]" first export is class "SomeThing", return it
-    Else If "some-thing.[ts|js]" first export is class "Anything", return it
+    Else If "some-thing.[ts|js]" first export is class "Anything", return it (Router case only)
     Else return undefined
   */
 
