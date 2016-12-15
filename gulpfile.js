@@ -8,12 +8,13 @@ var sourcemap = require('gulp-sourcemaps');
 var rimraf = require('gulp-rimraf');
 var replace = require('gulp-replace');
 var tslint = require('gulp-tslint');
-var typescriptFormatter = require('gulp-typescript-formatter');
+var formatter = require('typescript-formatter');
 var shell = require('gulp-shell');
 
 var path = require('path');
 var merge = require('merge2');
 var runsequence = require('run-sequence');
+var through = require('through2');
 
 var paths = {
   source: "source/",
@@ -66,9 +67,29 @@ gulp.task('lint:typescript', function () {
     .pipe(tslint.report());
 });
 
+
+function gulpTypescriptFormatter(options) {
+  return through.obj(function(file, enc, cb) {
+    if (file.isNull()) {
+      // return empty file
+      return cb(null, file);
+    }
+
+    if (file.isBuffer()) {
+      var fileContentPromise = formatter.processString(file.path, String(file.contents), options);
+
+      fileContentPromise.then(function(result) {
+        file.contents = new Buffer(result.dest);
+
+        cb(null, file);
+      });
+    }
+  });
+}
+
 function format(sourcePattern, targetDir) {
   return gulp.src(sourcePattern)
-    .pipe(typescriptFormatter({
+    .pipe(gulpTypescriptFormatter({
       baseDir: '.',
       tslint: true, // use tslint.json file ?
       editorconfig: true, // use .editorconfig file ?
