@@ -3,12 +3,23 @@ import { File, FileKind } from './file';
 import { Reflection } from './reflection';
 import { Path } from './utils/safe-path';
 
-export async function defaultResolveViewModel(view: File, fetch: Fetch, reflection: Reflection): Promise<File | undefined> {
+export async function defaultResolveViewModel(view: File, fetch: Fetch): Promise<File | undefined> {
   if (view.kind != FileKind.Html)
     return undefined;
 
   if (view.path == null)
     return undefined;
+
+  let sourcePath = Path.join(Path.dirname(view.path), Path.basename(view.path, Path.extname(view.path)));
+
+  let sourceFile = await fetch(sourcePath);
+
+  if (sourceFile == null || !sourceFile.isSourceFile())
+    return undefined;
+
+  let source = sourceFile.source;
+  let exports = Reflection.getExportedClasses(source);  
+  
 
   /* 
   "some-thing.html" -> "some-thing.[ts|js]"    

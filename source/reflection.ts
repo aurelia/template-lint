@@ -5,7 +5,7 @@ import * as ts from 'typescript';
 export class Reflection {
   private options = ts.getDefaultCompilerOptions();
   private _host = new ReflectionHost(this.options);
-  private _program= ts.createProgram([], this.options, this._host);
+  private _program = ts.createProgram([], this.options, this._host);
 
   get host(): ts.CompilerHost {
     return this._host;
@@ -32,4 +32,12 @@ export class Reflection {
   getSourceFile(fileName: string) {
     return this._host.getSourceFile(fileName, ts.ScriptTarget.Latest);
   }
+  
+  static getExportedClasses(source: ts.SourceFile) {
+    return source.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration && this.isNodeExported(x)).map(x => <ts.ClassDeclaration>x);
+  }
+
+  static isNodeExported(node: ts.Node): boolean {
+    return ((node.flags & ts.NodeFlags.Export) !== 0) && (node.parent != null && node.parent.kind === ts.SyntaxKind.SourceFile);
+  }  
 }

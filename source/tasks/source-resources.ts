@@ -26,9 +26,9 @@ export class SourceResourcesTask implements FileTask {
 
   private processResources(file: ISourceFile) {
     const source = file.source;
-    const exportedClasses = this.getExportedClasses(source);
+    const exportedClasses = Reflection.getExportedClasses(source);
 
-    for (var decl of this.getExportedClasses(source)) {
+    for (var decl of Reflection.getExportedClasses(source)) {
       this.processResource(file, decl);
     }
   }
@@ -134,20 +134,7 @@ export class SourceResourcesTask implements FileTask {
     return node.kind == ts.SyntaxKind.CallExpression;
   }
 
-  private getDecoratorNode(node: ts.ClassDeclaration, decorator: string): ts.Decorator | undefined {
-    if (node.decorators == null)
-      return undefined;
-
-    console.log(node.decorators[0].expression);
-  }
-
-  private getExportedClasses(source: ts.SourceFile) {
-    return source.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration && this.isNodeExported(x)).map(x => <ts.ClassDeclaration>x);
-  }
-
-  private isNodeExported(node: ts.Node): boolean {
-    return ((node.flags & ts.NodeFlags.Export) !== 0) && (node.parent != null && node.parent.kind === ts.SyntaxKind.SourceFile);
-  }
+  
 
   private reportUnknownMetaCall(method: string, file: IFile, start: number, end: number) {
     file.issues.push({
