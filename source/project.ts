@@ -54,12 +54,16 @@ export class Project extends EventEmitter {
    * wrap the native fetch 
    */
   private wrapFetchWithCache(fetch?: Fetch): Fetch {
-    
+
     var cache = this.results;
 
     var _projectFetch = async (path: string, opts?: FetchOptions) => {
       if (fetch) {
         const file = await fetch(path);
+
+        if (file == undefined)
+          return undefined;
+          
         const filePath = file.path;
 
         if (filePath && cache[filePath]) {

@@ -40,7 +40,7 @@ export class SourceResourcesTask implements FileTask {
     for (var decorator of decorators) {
       var exp = decorator.expression;
 
-      if (this.isCallExpression(exp)) {
+      if (Reflection.isCallExpression(exp)) {
         let callStr = exp.expression.getText();
         let args = exp.arguments;
 
@@ -130,9 +130,7 @@ export class SourceResourcesTask implements FileTask {
     file.resources.push(new Resource(name, kind, decl));
   }
 
-  private isCallExpression(node: ts.Node): node is ts.CallExpression {
-    return node.kind == ts.SyntaxKind.CallExpression;
-  }
+  
 
   
 

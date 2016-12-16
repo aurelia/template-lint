@@ -18,7 +18,7 @@ export async function defaultResolveViewModel(view: File, fetch: Fetch): Promise
     return undefined;
 
   let source = sourceFile.source;
-  let exports = Reflection.getExportedClasses(source);  
+  let exports = Reflection.getExportedClasses(source);
   
 
   /* 
