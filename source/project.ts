@@ -25,6 +25,10 @@ export class Project extends EventEmitter {
     return this.results.values;
   }
 
+  get fetch() {
+    return this.wrapFetchWithCache();
+  }
+
   process(file: File, fetch?: Fetch): Promise<File> {
     var _fetch = this.wrapFetchWithCache(fetch);
 
@@ -63,7 +67,7 @@ export class Project extends EventEmitter {
 
         if (file == undefined)
           return undefined;
-          
+
         const filePath = file.path;
 
         if (filePath && cache[filePath]) {
