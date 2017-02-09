@@ -10,6 +10,7 @@ export class Config {
   useRuleStructure = true;              // error on mismatched tags (unclosed)
   useRuleId = true;                     // error on bad id attributes
   useRuleValidChildren = true;          // error on use of invalid child elements 
+  useRuleRequiredAttributes = true;      // error on missing attrs on tags
 
   useRuleAureliaRequire = true;         // error on bad require tag usage (aurelia-flavor)
   useRuleAureliaSlot = true;            // error on bad slot usage (aurelia-flavor)
@@ -38,6 +39,18 @@ export class Config {
       msg: "button type invalid"
     }
   ];
+
+  /**
+   * Required Attributes Rules
+   * tag: applies the rule to matching element tags
+   * attr: must have an attribute that matches the reg-ex.
+   * msg: the error to report if the rule fails
+   */
+  requiredAttribute: Array<{ tag: RegExp, attr: RegExp, msg: string }> = [{
+    tag: /^button$/,
+    attr: /^type$/,
+    msg: "buttons without a type have irregular behavour"
+  }];
 
 
   /**

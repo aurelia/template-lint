@@ -15,6 +15,7 @@ import { RequireRule } from './rules/require';
 import { SlotRule } from './rules/slot';
 import { TemplateRule } from './rules/template';
 import { BindingRule } from './rules/binding';
+import { RequiredAttributeRule } from './rules/required-attr';
 
 import { Reflection } from './reflection';
 import { AureliaReflection } from './aurelia-reflection';
@@ -59,6 +60,8 @@ export class AureliaLinter {
       rules.push(new IdAttributeRule(this.config.idAttributeOpts));
     if (this.config.useRuleValidChildren)
       rules.push(new ValidChildRule(this.config.validChildOpts));
+    if (this.config.useRuleRequiredAttributes)
+      rules.push(new RequiredAttributeRule(this.config.requiredAttribute));
 
     if (this.config.useRuleAureliaRequire)
       rules.push(new RequireRule());
