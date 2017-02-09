@@ -422,10 +422,15 @@ export class BindingRule extends ASTBuilder {
         let members = this.resolveClassMembers(classDecl);
 
         member = members
-          .filter(x =>
+          .filter(x => 
             x.kind == ts.SyntaxKind.PropertyDeclaration ||
             x.kind == ts.SyntaxKind.MethodDeclaration ||
             x.kind == ts.SyntaxKind.GetAccessor)
+          .sort((a, b) => {
+            let sa = (a.flags & ts.NodeFlags.Static);
+            let sb = (b.flags & ts.NodeFlags.Static);
+            return sa - sb;
+          })
           .find(x => (<any>x.name).text == memberName);
 
         if (member) {

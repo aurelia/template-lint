@@ -1589,6 +1589,32 @@ describe("Static-Type Binding Tests", () => {
   });
 
 
+  // #159
+  it("Choose instance members over static members", (done) => {
+    let viewmodel = `
+    export class Foo {    
+      private static bar:number;
+      bar: number;
+    }`;
+    let view = `
+    <template>      
+      \${bar}
+      <input text=\"\${bar}\"></input>
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, new AureliaReflection(), {
+    });
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(0);      
+        done();
+      });
+  });
+  
+
+
   /*it("rejects more than one class in view-model file", (done) => {
     let viewmodel = `
     export class ChooChoo{
