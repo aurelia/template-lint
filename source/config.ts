@@ -151,7 +151,10 @@ export class Config {
   * sourceFileGlob: glob pattern used to load source files (ts)
   * typingsFileGlob: glob pattern used to load typescript definition files. 
   */
-  reflectionOpts = {
+  reflectionOpts: {
+    sourceFileGlob: string | string[],
+    typingsFileGlob: string | string[]
+  } = {
     sourceFileGlob: "source/**/*.ts",
     typingsFileGlob: "typings/**/*.d.ts",
   };

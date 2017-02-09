@@ -93,10 +93,10 @@ export class AureliaLinter {
       parserBuilder
     );
 
-    this.init = this.reflection.addGlob(this.config.reflectionOpts.sourceFileGlob)
+    this.init = this.processSourceGlobs(this.config.reflectionOpts.sourceFileGlob)
       .then(() => {
         if (this.config.reflectionOpts.typingsFileGlob != null)
-          return this.reflection.addTypingsGlob(this.config.reflectionOpts.typingsFileGlob);
+          return this.processTypingsGlobs(this.config.reflectionOpts.typingsFileGlob);
         else return Promise.resolve();
       });
   }
@@ -110,6 +110,24 @@ export class AureliaLinter {
     }
     else {
       return this.linter.lint(html, path);
+    }
+  }
+
+  private processSourceGlobs(globs: string | string[]): Promise<any> {
+    if (typeof (globs) == "string") {
+      return this.reflection.addGlob(globs);
+    }
+    else {
+      return Promise.all(globs.map(x => this.reflection.addGlob(x)));
+    }
+  }
+
+  private processTypingsGlobs(globs: string | string[]): Promise<any> {
+    if (typeof (globs) == "string") {
+      return this.reflection.addTypingsGlob(globs);
+    }
+    else {
+      return Promise.all(globs.map(x => this.reflection.addTypingsGlob(x)));
     }
   }
 }
