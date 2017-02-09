@@ -37,6 +37,7 @@ export class BindingRule extends ASTBuilder {
 
   public localProvidors = ["ref", "repeat.for", "if.bind", "with.bind"];
   public restrictedAccess = ["private", "protected"];
+  public localOverride?= new Map<string, Array<{ name: string, value: any }>>();
 
   constructor(
     private reflection: Reflection,
@@ -47,6 +48,7 @@ export class BindingRule extends ASTBuilder {
       reportUnresolvedViewModel?: boolean,
       reportExceptions?: boolean,
       localProvidors?: string[],
+      localOverride?: Map<string, Array<{ name: string, typeValue: any }>>
       restrictedAccess?: string[]
     }) {
 
@@ -111,6 +113,10 @@ export class BindingRule extends ASTBuilder {
 
       return ai < bi ? -1 : 1;
     });
+
+    if (this.localOverride.has(node.tag)) {
+      node.locals.push(...this.localOverride.get(node.tag).map(x => new ASTContext(x)));
+    }
 
     for (let i = 0, ii = attrs.length; i < ii; ++i) {
       let attr = attrs[i];
@@ -422,7 +428,7 @@ export class BindingRule extends ASTBuilder {
         let members = this.resolveClassMembers(classDecl);
 
         member = members
-          .filter(x => 
+          .filter(x =>
             x.kind == ts.SyntaxKind.PropertyDeclaration ||
             x.kind == ts.SyntaxKind.MethodDeclaration ||
             x.kind == ts.SyntaxKind.GetAccessor)

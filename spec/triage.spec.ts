@@ -282,5 +282,36 @@ describe("Triage", () => {
         expect(issues.length).toBe(0);
         done();
       });
-  });  
+  });
+
+  // #156
+  it("it will silently ignore elements with local overrides", (done) => {
+    let viewmodel = `
+    export class Foo {  
+      valid
+
+    }`;
+    let view = `
+    <template>
+      <datagrid>
+        \${valid}        
+        \${row.is.ignored}
+        \${invalid}
+      </datagrid>
+    </template>`;
+    let reflection = new Reflection();
+    let overrides = new Map();
+    overrides.set("datagrid", [{ name: "row", typeValue: {}}]);
+    let rule = new BindingRule(reflection, new AureliaReflection(), {
+      localOverride: overrides
+    });
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toBe("cannot find 'invalid' in type 'Foo'");
+        done();
+      });
+  });
 });

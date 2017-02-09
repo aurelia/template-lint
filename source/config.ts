@@ -136,6 +136,9 @@ export class Config {
     localProvidors: [
       "repeat.for", "if.bind", "with.bind"
     ],
+    localOverride: new Map([
+      ["my-tag", [{ name: "stubornLocal", typeValue: {} }]]
+    ]),
     restrictedAccess: ["private", "protected"],
     reportUnresolvedViewModel: false
   };
