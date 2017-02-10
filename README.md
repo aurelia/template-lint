@@ -76,6 +76,7 @@ export class Config {
     useRuleSelfClose = true;              // error on self-closed tags
     useRuleStructure = true;              // error on mismatched tags (unclosed)
     useRuleValidChildren = true;          // error on use of invalid child elements 
+    useRuleRequiredAttributes = true;      // error on missing attrs on tags
  
     useRuleAureliaRequire = true;         // error on bad require tag usage (aurelia-flavor)
     useRuleAureliaSlot = true;            // error on bad slot usage (aurelia-flavor)
@@ -111,6 +112,17 @@ export class Config {
         }
     ]
 
+   /**
+    * Required Attributes Rules
+    * tag: applies the rule to matching element tags
+    * attr: must have an attribute that matches the reg-ex.
+    * msg: the error to report if the rule fails
+    */
+    requiredAttribute: Array<{ tag: RegExp, attr: RegExp, msg: string }> = [{
+      tag: /^button$/,
+      attr: /^type$/,
+      msg: "buttons without a type have irregular behavour"
+    }];
 
     /**
      * Obsolete Tag Rules     
@@ -191,6 +203,9 @@ export class Config {
         localProvidors: [
             "repeat.for", "if.bind", "with.bind"
         ],
+        localOverride: new Map([
+            ["my-tag", [{ name: "stubornLocal", typeValue: {} }]]
+        ]),
         restrictedAccess: ["private", "protected"],
         reportUnresolvedViewModel: false
     }
@@ -219,10 +234,13 @@ export class Config {
     * sourceFileGlob: glob pattern used to load source files (ts)
     * typingsFileGlob: glob pattern used to load typescript definition files. 
     */
-    reflectionOpts = {
-        sourceFileGlob: "source/**/*.ts",
-        typingsFileGlob: "typings/**/*.d.ts",
-    }
+    reflectionOpts: {
+      sourceFileGlob: string | string[],
+      typingsFileGlob: string | string[]
+    } = {
+      sourceFileGlob: "source/**/*.ts",
+      typingsFileGlob: "typings/**/*.d.ts",
+    };
 
     /**
      * report exceptions as issues, where applicable 
