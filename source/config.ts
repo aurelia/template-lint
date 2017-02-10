@@ -46,11 +46,11 @@ export class Config {
    * attr: must have an attribute that matches the reg-ex.
    * msg: the error to report if the rule fails
    */
-  requiredAttribute: Array<{ tag: RegExp, attr: RegExp, msg: string }> = [{
+  requiredAttribute: Array<{ tag: RegExp, attr: RegExp, msg: string }> = [/*{
     tag: /^button$/,
     attr: /^type$/,
     msg: "buttons without a type have irregular behavour"
-  }];
+  }*/];
 
 
   /**
