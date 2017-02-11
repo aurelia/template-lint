@@ -5,13 +5,13 @@
       "name": "Launch Tests",
       "type": "node2",
       "request": "launch",
-      "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+      "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
       "stopOnEntry": false,
       "args": [
-        "test-no-compile"
+        ".tmp/test/**/*.js"
       ],
       "cwd": "${workspaceRoot}",
-      "preLaunchTask": "compile:tests",
+      "preLaunchTask": "compile:debug",
       "internalConsoleOptions": "openOnSessionStart",
       "runtimeExecutable": null,
       "runtimeArgs": [
@@ -20,37 +20,11 @@
       "env": {
         "NODE_ENV": "development"
       },
-      "externalConsole": false,
       "sourceMaps": true,
       "outFiles": [
-        "${workspaceRoot}/src/**/*.js",
-        "${workspaceRoot}/test/**/*.js"
+        "${workspaceRoot}/.tmp/**/*.js"
       ]
       //"outDir": "${workspaceRoot}/spec" 
-    },
-    {
-      "name": "Launch Example",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceRoot}/example.js",
-      "stopOnEntry": false,
-      "args": [
-        "test-no-compile"
-      ],
-      "cwd": "${workspaceRoot}",
-      "preLaunchTask": "compile:tests",
-      "internalConsoleOptions": "openOnSessionStart",
-      "runtimeExecutable": null,
-      "runtimeArgs": [
-        "--nolazy"
-      ],
-      "env": {
-        "NODE_ENV": "development"
-      },
-      "externalConsole": false,
-      "sourceMaps": true,
-      "outDir": "${workspaceRoot}/dist"
-      //"outDir": "${workspaceRoot}/spec" 
-    }   
+    }
   ]
 }

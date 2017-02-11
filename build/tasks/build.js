@@ -4,11 +4,13 @@ const sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('compile:debug', function () {
 
-  let tsProject = ts.createProject('tsconfig.json');
+  let tsProject = ts.createProject('tsconfig.json', {
+            declaration: false
+        });
 
-  return gulp.src('src/**/*.ts', { base: './' })
+  return gulp.src(['src/**/*.ts', 'test/**/*.ts'], { base: './' } )
     .pipe(sourcemaps.init())
     .pipe(tsProject())
-    .pipe(sourcemaps.write())
+    .pipe(sourcemaps.write('.', {sourceRoot: '..'}))
     .pipe(gulp.dest('./.tmp'));
 });
