@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "Launch Tests",
-      "type": "node",
+      "type": "node2",
       "request": "launch",
       "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
       "stopOnEntry": false,
@@ -22,7 +22,10 @@
       },
       "externalConsole": false,
       "sourceMaps": true,
-      "outDir": "${workspaceRoot}/dist"
+      "outFiles": [
+        "${workspaceRoot}/src/**/*.js",
+        "${workspaceRoot}/test/**/*.js"
+      ]
       //"outDir": "${workspaceRoot}/spec" 
     },
     {

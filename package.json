@@ -16,38 +16,36 @@
     }
   ],
   "license": "(Apache-2.0)",
-  "version": "0.9.21",
+  "version": "0.10.0",
   "keywords": [
+    "aurelia",
     "template",
     "html",
-    "lint",
-    "sanity",
-    "aurelia",
-    "angular2",
-    "web-component"
+    "lint"
   ],
-  "main": "./dist/index.js",
-  "typings": "./dist/index.d.ts",
+  "main": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
   "devDependencies": {
     "@types/glob": "^5.0.29",
-    "@types/jasmine": "^2.2.32",
     "@types/minimatch": "^2.0.28",
+    "@types/mocha": "^2.2.38",
+    "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "gulp-jasmine": "^2.3.0",
     "gulp-plumber": "^1.1.0",
     "gulp-replace": "^0.5.4",
     "gulp-rimraf": "^0.2.0",
     "gulp-shell": "^0.5.2",
-    "gulp-sourcemaps": "^1.6.0",
-    "gulp-tsfmt": "^1.0.2",
+    "gulp-sourcemaps": "^1.11.1",
     "gulp-tslint": "^6.0.2",
     "gulp-typescript": "^3.1.3",
-    "gulp-typescript-formatter": "^0.1.3",
     "merge2": "^1.0.2",
+    "mocha": "^3.2.0",
+    "require-dir": "^0.3.1",
     "run-sequence": "^1.2.1",
+    "stream-to-string": "^1.1.0",
     "through2": "^2.0.3",
-    "tslint": "^3.14.0",
-    "typescript-formatter": "^3.1.0"
+    "tslint": "^3.14.0"
   },
   "scripts": {
     "test": "gulp test"
@@ -63,7 +61,8 @@
     "aurelia-templating-binding": "^1.0.0",
     "glob": "7.0.x",
     "parse5": "2.2.x",
-    "template-lint": "0.8.x",
-    "typescript": "2.0.x"
+    "rowan": "^0.2.1",
+    "tslib": "^1.5.0",
+    "typescript": "^2.1.5"
   }
 }

@@ -5,3 +5,4 @@ spec/**/*.js
 /dist
 .idea/
 *.iml
+.tmp
