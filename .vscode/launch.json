@@ -7,8 +7,11 @@
       "request": "launch",
       "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
       "stopOnEntry": false,
-      "args": [
-        ".tmp/test/**/*.js"
+      "args": [        
+        "--require",
+        "source-map-support/register",
+        "--no-timeouts",
+        "spec/"    
       ],
       "cwd": "${workspaceRoot}",
       "preLaunchTask": "compile:debug",

@@ -6,5 +6,6 @@ describe("Linter", () => {
   it("", () => {
     let a = 10;
     let host = new ReflectionHost(ts.getDefaultCompilerOptions());
+    throw Error("here");
   });
 });

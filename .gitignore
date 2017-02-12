@@ -1,8 +1,8 @@
 **/node_modules
-**/jspm_packages
-**/*.map
-spec/**/*.js
-/dist
 .idea/
-*.iml
 .tmp
+*.log
+
+**/*.map
+/src/**/*.js
+/spec/**/*.js

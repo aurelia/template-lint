@@ -43,12 +43,13 @@
     "mocha": "^3.2.0",
     "require-dir": "^0.3.1",
     "run-sequence": "^1.2.1",
+    "source-map-support": "^0.4.11",
     "stream-to-string": "^1.1.0",
     "through2": "^2.0.3",
     "tslint": "^3.14.0"
   },
   "scripts": {
-    "test": "gulp test"
+    "test": "mocha --require source-map-support/register spec/**/*.spec.js"
   },
   "dependencies": {
     "@types/node": "^6.0.37",
