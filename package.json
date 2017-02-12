@@ -24,7 +24,7 @@
     "lint"
   ],
   "main": "./lib/index.js",
-  "typings": "./lib/index.d.ts",
+  "typings": "./lib/index.d.ts",  
   "devDependencies": {
     "@types/glob": "^5.0.29",
     "@types/minimatch": "^2.0.28",
@@ -41,15 +41,17 @@
     "gulp-typescript": "^3.1.3",
     "merge2": "^1.0.2",
     "mocha": "^3.2.0",
+    "nyc": "^10.1.2",
     "require-dir": "^0.3.1",
     "run-sequence": "^1.2.1",
     "source-map-support": "^0.4.11",
     "stream-to-string": "^1.1.0",
     "through2": "^2.0.3",
+    "ts-node": "^2.1.0",
     "tslint": "^3.14.0"
   },
   "scripts": {
-    "test": "mocha --require source-map-support/register spec/**/*.spec.js"
+    "test": "nyc node_modules/mocha/bin/_mocha --require source-map-support/register --compilers ts:ts-node/register spec/*.ts"
   },
   "dependencies": {
     "@types/node": "^6.0.37",
@@ -65,5 +67,27 @@
     "rowan": "^0.2.1",
     "tslib": "^1.5.0",
     "typescript": "^2.1.5"
-  }
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "node_modules/"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html",
+      "lcov"
+    ],
+    "sourceMap": true,
+    "instrument": true
+}
 }

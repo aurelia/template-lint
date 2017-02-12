@@ -1,7 +1,9 @@
 **/node_modules
 .idea/
 .tmp
+.nyc_output
 *.log
+coverage/
 
 **/*.map
 /src/**/*.js
