@@ -14,7 +14,7 @@
         "spec/"    
       ],
       "cwd": "${workspaceRoot}",
-      "preLaunchTask": "compile:debug",
+      "preLaunchTask": "debug:compile",
       "internalConsoleOptions": "openOnSessionStart",
       "runtimeExecutable": null,
       "runtimeArgs": [
@@ -23,11 +23,7 @@
       "env": {
         "NODE_ENV": "development"
       },
-      "sourceMaps": true,
-      "outFiles": [
-        "${workspaceRoot}/.tmp/**/*.js"
-      ]
-      //"outDir": "${workspaceRoot}/spec" 
+      "sourceMaps": true
     }
   ]
 }

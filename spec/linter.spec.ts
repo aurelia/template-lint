@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import {ReflectionHost} from '../src/reflection-host';
+import {ReflectionHost} from '../src/reflection';
 import * as ts from 'typescript';
 
 describe("Linter", () => {

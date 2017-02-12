@@ -7,8 +7,6 @@ import { Parser } from '../parser';
 
 export class ObsoleteHook extends ParserHook {
 
-  constructor(private opts: Options) { super(); }
-
   protected hook() {
     this.parser.on('startTag', (elmt, attrs, selfClosing, loc) => {
 
@@ -43,7 +41,7 @@ export class ObsoleteHook extends ParserHook {
   finalise() { }
 
   private checkElement(name: string, location: ContentLocation) {
-    const obsoletes = this.opts["obsolete-elements"];
+    const obsoletes = this.context.options["obsolete-elements"];
     const obsoleteIndex = obsoletes.findIndex((x) => x.elmt == name);
 
     if (obsoleteIndex >= 0) {
@@ -54,7 +52,7 @@ export class ObsoleteHook extends ParserHook {
   }
 
   private checkAttribute(name: string, elmt: string, location: ContentLocation) {
-    const obsoletes = this.opts["obsolete-attributes"];
+    const obsoletes = this.context.options["obsolete-attributes"];
     const obsoleteIndex = obsoletes.findIndex((x) => x.attr == name);
 
     if (obsoleteIndex >= 0) {

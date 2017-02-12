@@ -10,20 +10,19 @@ import * as ts from 'typescript';
 export class Config {
   cwd = process.cwd();
   basepath = "./";
-  source = "./source/**/*.ts";
-  markup = "./source/**/*.html";
-  typings = "./typings/**/*.d.ts"; 
-  
+  source: string | string[] = ["./source/**/*.ts", "./src/**/*.ts"];
+  markup: string | string[] = ["./source/**/*.html", "./src/**/*.html"];
+
   /** default Options */
-  options = new Options(); 
+  options = new Options();
 
   /** method used to resolve view -> viewModel*/
   resolveViewModel = aureliaViewModelConvention;
 }
 
 export async function aureliaViewModelConvention(ctx: ContentContext) {
-  const fetch = ctx.fetch;  
-  let view = ctx.content;  
+  const fetch = ctx.fetch;
+  let view = ctx.content;
 
   if (view.kind != ContentKind.Html)
     return undefined;

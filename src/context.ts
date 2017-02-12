@@ -10,9 +10,9 @@ export interface ContentContext {
   content: Content;
   /* reported issues */
   issues: Array<Issue>;
-  /* options to use during processing of this context */
+  /* options to use during processing */
   options: Options;
-  /* fetch a seperate file*/
+  /* fetch a seperate context*/
   fetch: Fetch;   
   /*globally registed resources*/
   globals: Resource[];

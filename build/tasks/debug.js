@@ -3,12 +3,12 @@ const ts = require('gulp-typescript');
 const sourcemaps = require('gulp-sourcemaps');
 const rimraf = require('gulp-rimraf');
 
-gulp.task('clean:debug', function () {
+gulp.task('debug:clean', function () {
   return gulp.src(['src/**/*.js', 'src/**/*.map', 'spec/**/*.js', 'spec/**/*.map'], { read: false })
     .pipe(rimraf());
 });
 
-gulp.task('compile:debug', ["clean:debug"], function () {
+gulp.task('debug:compile', ["debug:clean"], function () {
 
   let tsProject = ts.createProject('tsconfig.json', {
     declaration: false

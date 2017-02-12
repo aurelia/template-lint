@@ -10,12 +10,9 @@ import { Parser } from '../parser';
  * Hook to ensure non-void elements do not self-close
  */
 export class SelfCloseHook extends ParserHook {
-  constructor(private opts: Options) {
-    super();
-  }
 
   protected hook() {
-    if (this.opts["report-html-self-close"] == false)
+    if (this.context.options["report-html-self-close"] == false)
       return;
 
     this.parser.on('startTag', (name, attrs, selfClosing, loc) => {

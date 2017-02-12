@@ -69,7 +69,7 @@ export class HtmlRequireTask {
 
   private reportDuplicate(ctx: ContentContext, loc: ContentLocation) {
     ctx.issues.push({
-      message: "duplicate require ",
+      message: "duplicate require",
       severity: IssueSeverity.Info,
       location: loc
     });

@@ -8,10 +8,7 @@ import { Parser } from '../parser';
 export class ASTGenHook extends ParserHook {
   public root: ASTNode | null = null;
 
-  constructor(private opts: Options) { super(); }
-
   protected hook() {
-
     var current: ASTNode | null = this.root = new ASTNode();
 
     this.parser.on("startTag", (tag, attrs, selfClosing, loc) => {
