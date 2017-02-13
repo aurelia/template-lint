@@ -1,6 +1,5 @@
 const gulp = require('gulp');
 const rimraf = require('gulp-rimraf');
-
 const paths = require('../paths');
 
 gulp.task('clean:output', function () {
@@ -18,4 +17,9 @@ gulp.task('clean:test', function () {
     .pipe(rimraf());
 });
 
-gulp.task('clean', ['clean:tests', 'clean:source', 'clean:output'], function () {});
+gulp.task('clean:cover', function () {
+  return gulp.src(["coverage/", ".nyc_output"], { read: false })
+    .pipe(rimraf());
+});
+
+gulp.task('clean', ['clean:test', 'clean:source', 'clean:output', 'clean:cover'], function () {});

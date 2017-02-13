@@ -13,13 +13,12 @@ export type Content = NodeJS.ReadableStream & {
 }
 
 export namespace Content {
-  export function fromString(snippet: string, kind: ContentKind): Content
-  export function fromString(file: string, path: string): Content
-  export function fromString(data: string, opt: ContentKind | string): Content {
-    const stream = (Object.assign(new Readable(), { kind: ContentKind.Unknown }));
 
-    stream.push(data);
-    stream.push(null);
+  export function fromStream(data: NodeJS.ReadableStream, kind: ContentKind): Content
+  export function fromStream(data: NodeJS.ReadableStream, path: string): Content
+  export function fromStream(data: NodeJS.ReadableStream, opt: ContentKind | string): Content
+  export function fromStream(data: NodeJS.ReadableStream, opt: ContentKind | string): Content {
+    const stream = (Object.assign(data, { kind: ContentKind.Unknown }));
 
     const content: Content = stream;
 
@@ -40,6 +39,17 @@ export namespace Content {
     }
 
     return content;
+  }
+
+  export function fromString(snippet: string, kind: ContentKind): Content
+  export function fromString(file: string, path: string): Content
+  export function fromString(data: string, opt: ContentKind | string): Content {
+    const stream = new Readable();
+
+    stream.push(data);
+    stream.push(null);
+
+    return Content.fromStream(stream, opt);
   }
 
   export function isSourceContent(file: Content): file is SourceFile {

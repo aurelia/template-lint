@@ -24,8 +24,9 @@
     "lint"
   ],
   "main": "./lib/index.js",
-  "typings": "./lib/index.d.ts",  
+  "typings": "./lib/index.d.ts",
   "devDependencies": {
+    "@types/chai": "^3.4.34",
     "@types/glob": "^5.0.29",
     "@types/minimatch": "^2.0.28",
     "@types/mocha": "^2.2.38",
@@ -89,5 +90,5 @@
     ],
     "sourceMap": true,
     "instrument": true
-}
+  }
 }
