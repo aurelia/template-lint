@@ -5,7 +5,7 @@ import { Content, ContentKind } from '../src/content';
 
 export function examples() {
   describe("Examples", () => {
-    it("process content from string", async () => {
+    it("should report self-closing element", async () => {
 
       let html = `
       <template>

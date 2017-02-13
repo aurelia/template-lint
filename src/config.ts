@@ -24,9 +24,14 @@ import { ObsoleteHook } from './tasks/parser/hooks/obsolete';
 
 /** project and setup configuration */
 export class Config {
+  /* working directory */
   cwd = __dirname;
+
+  /* basepath */
   basepath = "./";
-  srcExt = "ts";
+
+  /* extension for source files */
+  srcExt: "ts" | "js" = "ts";
 
   /** default Options */
   options = new Options();

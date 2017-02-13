@@ -4,7 +4,6 @@ import * as ts from 'typescript';
 
 export function triage() {
   describe("Triage", () => {
-    it("", () => {
-    });
+
   });
 };
