@@ -1608,11 +1608,86 @@ describe("Static-Type Binding Tests", () => {
     reflection.add("./path/foo.ts", viewmodel);
     linter.lint(view, "./path/foo.html")
       .then((issues) => {
-        expect(issues.length).toBe(0);      
+        expect(issues.length).toBe(0);
         done();
       });
   });
-  
+
+  // #167
+  it("Support inheritence (different files)", (done) => {
+
+    let viewmodel = `
+    import {Bar} from './bar';
+    export class Foo extends Bar {
+       myProp = "Lorem Ipsum";
+    }`;
+
+    let base = `
+    export class Bar {
+      toggled = false;
+
+      toggle() {
+        this.toggled = !this.toggled;
+      }
+    }`;
+
+    let view = `
+    <template>
+      <button click.trigger="toggle()">Toggle me</button>
+      <p if.bind="toggled">\${myProp}</p>
+      \${invalid}
+    </template>`;
+
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, new AureliaReflection(), {
+    });
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    reflection.add("./path/bar.ts", base);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toBe("cannot find 'invalid' in type 'Foo'");
+        done();
+      });
+  });
+
+  // #167
+  it("Support inheritence (same file)", (done) => {
+
+    let viewmodel = `
+    export class Foo extends Bar {
+       myProp = "Lorem Ipsum";
+    }
+    
+    export class Bar {
+      toggled = false;
+
+      toggle() {
+        this.toggled = !this.toggled;
+      }
+    }`;    
+
+    let view = `
+    <template>
+      <button click.trigger="toggle()">Toggle me</button>
+      <p if.bind="toggled">\${myProp}</p>
+      \${invalid}
+    </template>`;
+
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, new AureliaReflection(), {
+    });
+    let linter = new Linter([rule]);
+    reflection.add("./path/foo.ts", viewmodel);
+    linter.lint(view, "./path/foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toBe("cannot find 'invalid' in type 'Foo'");
+        done();
+      });
+  });
+
 
 
   /*it("rejects more than one class in view-model file", (done) => {
