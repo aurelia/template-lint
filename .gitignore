@@ -5,3 +5,5 @@ spec/**/*.js
 /dist
 .idea/
 *.iml
+coverage/
+.nyc_output
