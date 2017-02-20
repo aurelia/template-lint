@@ -7,7 +7,7 @@ import { Options } from '../options';
 import { ASTNode, ASTElementNode } from '../ast';
 import { ASTGenHook } from './parser/hooks/ast-generator';
 import { SelfCloseHook } from './parser/hooks/self-close';
-import { Reflection } from '../reflection';
+import { SourceReflection } from '../source-reflection';
 import { Resource, ResourceKind } from '../resource';
 import { CaseConvert } from '../utils/case-convert';
 
@@ -26,9 +26,9 @@ export class SourceResourcesTask {
 
   private processResources(ctx: ContentContext & { content: SourceFile }) {
     const source = ctx.content.source;
-    const exportedClasses = Reflection.getExportedClasses(source);
+    const exportedClasses = SourceReflection.getExportedClasses(source);
 
-    for (var decl of Reflection.getExportedClasses(source)) {
+    for (var decl of SourceReflection.getExportedClasses(source)) {
       this.processResource(ctx, decl);
     }
   }
@@ -40,7 +40,7 @@ export class SourceResourcesTask {
     for (var decorator of decorators) {
       var exp = decorator.expression;
 
-      if (Reflection.isCallExpression(exp)) {
+      if (SourceReflection.isCallExpression(exp)) {
         let callStr = exp.expression.getText();
         let args = exp.arguments;
 

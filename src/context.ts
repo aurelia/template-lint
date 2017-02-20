@@ -13,7 +13,5 @@ export interface ContentContext {
   /* options to use during processing */
   options: Options;
   /* fetch a seperate context*/
-  fetch: Fetch;   
-  /*globally registed resources*/
-  globals: Resource[];
+  fetch: Fetch;
 }

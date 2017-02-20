@@ -3,7 +3,7 @@ import * as ts from 'typescript';
 import * as glob from "glob";
 import * as fs from "fs";
 
-export class Reflection {
+export class SourceReflection {
   private options = ts.getDefaultCompilerOptions();
   private _host = new ReflectionHost(this.options);
   private _program = ts.createProgram([], this.options, this._host);

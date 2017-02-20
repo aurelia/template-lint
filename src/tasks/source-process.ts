@@ -6,12 +6,12 @@ import { Options } from '../options';
 import { ASTNode, ASTElementNode } from '../ast';
 import { ASTGenHook } from './parser/hooks/ast-generator';
 import { SelfCloseHook } from './parser/hooks/self-close';
-import { Reflection } from '../reflection';
+import { SourceReflection } from '../source-reflection';
 import * as toString from 'stream-to-string';
 
 /** Process a source file and add it to the Compiler Host */
 export class SourceProcessTask {
-  constructor(private host: Reflection) {
+  constructor(private host: SourceReflection) {
   }
 
   async process(ctx: ContentContext): Promise<boolean> {

@@ -14,7 +14,7 @@ export class Linter {
   private _cache = new Map<string, ContentContext>();
   private _cacheFetch: Fetch;
   private _processQueue: Content[] = [];
-  private _globals = [];
+  
 
 
   constructor(private _config: Config = new Config()) {
@@ -62,7 +62,6 @@ export class Linter {
       issues: [],
       options: this._config.options,
       fetch: fetch,
-      globals: this._globals
     };
   }
 }

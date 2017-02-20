@@ -2,7 +2,7 @@ import { Fetch, FetchOptions } from './fetch';
 import { Content, ContentKind, SourceFile } from './content';
 import { Options } from './options';
 import { Path, CaseConvert } from './utils';
-import { Reflection } from './reflection';
+import { SourceReflection } from './source-reflection';
 import { ContentContext } from './context';
 import { Rowan, IProcessor } from 'rowan';
 import * as ts from 'typescript';
@@ -42,8 +42,16 @@ export class Config {
   /* fetch a file from the file system*/
   fetch: Fetch = defaultFetch(this);
 
+  /* ensure the path is absolute and normalised */
+  normalisePath = (path: string) => {
+    if (Path.isAbsolute(path))
+      return Path.normalize(path);
+
+    return Path.normalize(Path.join(this.cwd, this.basepath, path));
+  }
+
   /* typescript reflection host and helpers */
-  reflection = new Reflection();
+  reflection = new SourceReflection();
 
   /* html parser hooks */
   hooks = [new ASTGenHook(), new SelfCloseHook(), new ObsoleteHook()];
@@ -73,7 +81,7 @@ function defaultResolveViewModel() {
       return undefined;
 
     let source = sourceFile.source;
-    let exports = Reflection.getExportedClasses(source);
+    let exports = SourceReflection.getExportedClasses(source);
 
     if (exports == null || exports.length == 0)
       return undefined;
@@ -92,7 +100,7 @@ function defaultResolveViewModel() {
     // If "some-thing.[ts|js]" has any class "SomeThing" + @customElement() decorator, return it
 
     candidate = exports.find(x => {
-      let decos = Reflection.getClassDecorators(x);
+      let decos = SourceReflection.getClassDecorators(x);
       if (decos == undefined)
         return false;
 
@@ -122,7 +130,7 @@ function defaultResolveViewModel() {
   };
 }
 
-function defaultProcessor(reflection: Reflection, hooks: ParserHook[]): IProcessor<ContentContext> {
+function defaultProcessor(reflection: SourceReflection, hooks: ParserHook[]): IProcessor<ContentContext> {
   let html = new Rowan<ContentContext>();
   let source = new Rowan<ContentContext>();
   let app = new Rowan<ContentContext>();
