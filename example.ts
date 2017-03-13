@@ -1,15 +1,18 @@
-const {Linter, Content, ContentKind} = require('./src/index.ts');
+import { Linter, Content, ContentKind } from "./src/index";
 
-let html = `
+async function main(): Promise<void> {
+
+  let html = `
       <template>
         <div/>
       </template>
       `;
 
-let linter = new Linter();
+  let linter = new Linter();
 
-linter.process(Content.fromString(html, ContentKind.Html))
-  .then((r) => {
-    let issues = r.issues;
-  });
+  let result = await linter.process(Content.fromString(html, ContentKind.Html));
 
+  console.log(result);
+}
+
+main();

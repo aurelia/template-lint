@@ -1,12 +1,8 @@
 
-import { Content, ContentKind, ContentLocation, SourceFile } from '../content';
+import { Content, SourceFile } from '../content';
 import { ContentContext } from '../context';
-import { Fetch } from '../fetch';
-import { Issue, IssueSeverity } from '../issue';
+import { IssueSeverity } from '../issue';
 import { Options } from '../options';
-import { ASTNode, ASTElementNode } from '../ast';
-import { ASTGenHook } from './parser/hooks/ast-generator';
-import { SelfCloseHook } from './parser/hooks/self-close';
 import { SourceReflection } from '../source-reflection';
 import { Resource, ResourceKind } from '../resource';
 import { CaseConvert } from '../utils/case-convert';
@@ -17,28 +13,27 @@ import * as ts from 'typescript';
 export class SourceResourcesTask {
   constructor(private opts: Options) { }
 
-  async process(ctx: ContentContext) {
+  async process(ctx: ContentContext): Promise<boolean | undefined> {
     if (Content.isSourceContent(ctx.content)) {
       this.processResources(<ContentContext & { content: SourceFile }>ctx);
     }
     return false;
   }
 
-  private processResources(ctx: ContentContext & { content: SourceFile }) {
+  private processResources(ctx: ContentContext & { content: SourceFile }): void {
     const source = ctx.content.source;
-    const exportedClasses = SourceReflection.getExportedClasses(source);
 
-    for (var decl of SourceReflection.getExportedClasses(source)) {
+    for (const decl of SourceReflection.getExportedClasses(source)) {
       this.processResource(ctx, decl);
     }
   }
 
-  private processResource(ctx: ContentContext & { content: SourceFile }, decl: ts.ClassDeclaration) {
+  private processResource(ctx: ContentContext & { content: SourceFile }, decl: ts.ClassDeclaration): void {
     let decorators = decl.decorators || [];
     let explicitMeta = false;
 
-    for (var decorator of decorators) {
-      var exp = decorator.expression;
+    for (const decorator of decorators) {
+      const exp = decorator.expression;
 
       if (SourceReflection.isCallExpression(exp)) {
         let callStr = exp.expression.getText();
@@ -80,7 +75,7 @@ export class SourceResourcesTask {
 
         explicitMeta = true;
 
-        if (args.length != 1 || args[0].kind != ts.SyntaxKind.StringLiteral) {
+        if (args.length !== 1 || args[0].kind !== ts.SyntaxKind.StringLiteral) {
           this.reportUnknownMetaCall(metaCall, ctx, decorator.getStart(), decorator.getEnd());
           continue;
         }
@@ -91,13 +86,13 @@ export class SourceResourcesTask {
       }
     }
 
-    if (explicitMeta)
+    if (explicitMeta) {
       return;
+    }
 
     const className = decl.name!.getText().trim();
     let strippedName: string;
 
-    let metaCall: string;
     let resourceKind: ResourceKind;
 
     const CustomElement = "CustomElement";
@@ -118,19 +113,21 @@ export class SourceResourcesTask {
       strippedName = className.substring(0, className.length - BindingBehaviour.length);
       resourceKind = ResourceKind.BindingBehaviour;
     }
-    else return;
+    else {
+      return;
+    }
 
     let convertedName = CaseConvert.camelToKebabCase(strippedName);
 
     this.registerResource({ name: convertedName, kind: resourceKind, decl: decl }, ctx);
   }
 
-  private registerResource(resource: Resource, ctx: ContentContext & { content: SourceFile }) {
+  private registerResource(resource: Resource, ctx: ContentContext & { content: SourceFile }): void {
     ctx.content.resources = ctx.content.resources || [];
     ctx.content.resources.push(resource);
   }
 
-  private reportUnknownMetaCall(method: string, ctx: ContentContext, start: number, end: number) {
+  private reportUnknownMetaCall(method: string, ctx: ContentContext, start: number, end: number): void {
     ctx.issues.push({
       message: `unknown argument case for ${method} decorator`,
       severity: IssueSeverity.Debug,
@@ -138,7 +135,7 @@ export class SourceResourcesTask {
     });
   }
 
-  private reportMultipleMetaDecorator(method: string, ctx: ContentContext, start: number, end: number) {
+  private reportMultipleMetaDecorator(method: string, ctx: ContentContext, start: number, end: number): void {
     ctx.issues.push({
       message: `more than one aurelia meta decorator`,
       severity: IssueSeverity.Error,

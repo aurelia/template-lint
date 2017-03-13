@@ -1,2 +1,2 @@
-import _path = require('path');
-export var Path = _path.posix;
+import { posix } from 'path';
+export var Path = posix;

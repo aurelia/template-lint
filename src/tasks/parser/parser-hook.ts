@@ -12,29 +12,28 @@ export abstract class ParserHook {
   /**
   * Initialise and hook into the parser. 
   */
-  public init(parser: Parser, context: ContentContext) {
-    if (!parser) throw Error("parser is null");
-    if (!context) throw Error("context is null");
+  public init(parser: Parser, context: ContentContext): void {
+    if (!parser) { throw Error("parser is null"); }
+    if (!context) { throw Error("context is null"); }
     this.parser = parser;
     this.context = context;
     this.hook();
   }
 
-
   /**
   * hook into the parser events
   */
-  protected abstract hook();
+  protected abstract hook(): void;
 
   /**
   * Called when parsing is complete. 
   */
-  public abstract finalise();
+  public abstract finalise(): void;
 
   /**
   * Save an issue that will be added to the file . 
   */
-  protected reportIssue(issue: Issue) {
+  protected reportIssue(issue: Issue): void {
     this.context.issues = this.context.issues || [];
     if (issue) {
       this.context.issues.push(issue);

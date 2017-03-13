@@ -1,42 +1,42 @@
 {
   "rules": {
     "use-isnan": true,
+    "curly": true,    
     "linebreak-style": [
       true,
       "LF"
     ],
     "class-name": true,
-    "comment-format": [
-      false,
-      "check-space"
-    ],
     "indent": [
       true,
       "spaces"
     ],
+    "no-unused-variable": true,
+    "no-unused-new": false,
+    "no-consecutive-blank-lines": [true],
+    "no-require-imports": true,
     "no-duplicate-variable": true,
     "no-eval": true,
     "no-internal-module": true,
-    "no-trailing-whitespace": false,
+    "no-trailing-whitespace": true,
     "no-unsafe-finally": true,
-    "no-var-keyword": false,
+    "no-var-keyword": true,
     "one-line": [
       false,
       "check-open-brace",
       "check-whitespace"
-    ],
-    "quotemark": [
-      false,
-      "double"
     ],
     "semicolon": [
       true,
       "always"
     ],
     "triple-equals": [
-      false,
-      "allow-null-check"
+      true
+    ],    
+    "no-inferrable-types": [
+      true
     ],
+    "typedef": [true, "call-signature", "parameter"],    
     "typedef-whitespace": [
       true,
       {
@@ -58,6 +58,10 @@
       "check-operator",
       "check-separator",
       "check-type"
-    ]
+    ],
+    "one-variable-per-declaration": [
+      true,
+      "ignore-for-loop"
+    ]    
   }
 }

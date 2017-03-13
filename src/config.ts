@@ -1,5 +1,5 @@
-import { Fetch, FetchOptions } from './fetch';
-import { Content, ContentKind, SourceFile } from './content';
+import { Resolve } from './resolve';
+import { Content, ContentKind } from './content';
 import { Options } from './options';
 import { Path, CaseConvert } from './utils';
 import { SourceReflection } from './source-reflection';
@@ -21,6 +21,7 @@ import { ASTGenHook } from './tasks/parser/hooks/ast-generator';
 import { SelfCloseHook } from './tasks/parser/hooks/self-close';
 import { ObsoleteHook } from './tasks/parser/hooks/obsolete';
 
+import { Handler } from 'rowan';
 
 /** project and setup configuration */
 export class Config {
@@ -40,12 +41,13 @@ export class Config {
   resolveViewModel = defaultResolveViewModel();
 
   /* fetch a file from the file system*/
-  fetch: Fetch = defaultFetch(this);
+  fetch: Resolve = defaultFetch(this);
 
   /* ensure the path is absolute and normalised */
   normalisePath = (path: string) => {
-    if (Path.isAbsolute(path))
+    if (Path.isAbsolute(path)) {
       return Path.normalize(path);
+    }
 
     return Path.normalize(Path.join(this.cwd, this.basepath, path));
   }
@@ -60,16 +62,18 @@ export class Config {
   processor = defaultProcessor(this.reflection, this.hooks);
 }
 
-function defaultResolveViewModel() {
-  return async function (ctx: ContentContext) {
-    const fetch = ctx.fetch;
+function defaultResolveViewModel(): Handler<ContentContext> {
+  return async function (ctx: ContentContext): Promise<{ file?: Content, decl?: ts.ClassDeclaration } | undefined> {
+    const fetch = ctx.resolve;
     let view = ctx.content;
 
-    if (view.kind != ContentKind.Html)
+    if (view.kind !== ContentKind.Html) {
       return undefined;
+    }
 
-    if (view.path == null)
+    if (view.path === undefined) {
       return undefined;
+    }
 
     let baseName = Path.basename(view.path, Path.extname(view.path));
     let viewName = CaseConvert.camelToPascalCase(CaseConvert.kebabToCamelCase(baseName));
@@ -77,15 +81,16 @@ function defaultResolveViewModel() {
     let sourcePath = Path.join(Path.dirname(view.path), baseName);
     let sourceFile = await fetch(sourcePath);
 
-    if (sourceFile == undefined || !Content.isSourceContent(sourceFile))
+    if (sourceFile === undefined || !Content.isSourceContent(sourceFile)) {
       return undefined;
+    }
 
     let source = sourceFile.source;
     let exports = SourceReflection.getExportedClasses(source);
 
-    if (exports == null || exports.length == 0)
+    if (exports === undefined || exports.length === 0) {
       return undefined;
-
+    }
 
     let candidate: ts.ClassDeclaration | undefined = undefined;
 
@@ -93,32 +98,34 @@ function defaultResolveViewModel() {
 
     candidate = exports.find(x => x.getText().endsWith("CustomElement"));
 
-    if (candidate != undefined) {
+    if (candidate !== undefined) {
       return { file: sourceFile, decl: candidate };
     }
 
     // If "some-thing.[ts|js]" has any class "SomeThing" + @customElement() decorator, return it
 
     candidate = exports.find(x => {
-      let decos = SourceReflection.getClassDecorators(x);
-      if (decos == undefined)
+      let decos = SourceReflection.getClassCallDecorators(x);
+      if (decos === undefined) {
         return false;
+      }
 
-      let decoCustom = decos.filter(y => y.call == "customElement");
+      let decoCustom = decos.filter(y => y.call === "customElement");
 
-      return decoCustom != undefined;
+      return decoCustom !== undefined;
     });
 
-    if (candidate != undefined) {
+    if (candidate !== undefined) {
       return { file: sourceFile, decl: candidate };
     }
 
     // If "some-thing.[ts|js]" first export is class "SomeThing", return it
 
-    if (exports[0].getText() == viewName)
+    if (exports[0].getText() === viewName) {
       candidate = exports[0];
+    }
 
-    if (candidate != undefined) {
+    if (candidate !== undefined) {
       return { file: sourceFile, decl: candidate };
     }
 
@@ -151,7 +158,7 @@ function defaultProcessor(reflection: SourceReflection, hooks: ParserHook[]): IP
 
 import * as fs from 'fs';
 
-function defaultFetch(config: Config): Fetch {
+function defaultFetch(config: Config): Resolve {
   let srcExt = config.srcExt;
 
   return async (uri, _) => {
@@ -171,7 +178,7 @@ function defaultFetch(config: Config): Fetch {
         }
       }
     } catch (_) {
-      if (Path.extname(fullPath) != "") {
+      if (Path.extname(fullPath) !== "") {
         return undefined;
       }
 
@@ -186,14 +193,16 @@ function defaultFetch(config: Config): Fetch {
 
     let kind: ContentKind;
 
-    if (fullPath.endsWith(".ts") || fullPath.endsWith(".js"))
+    if (fullPath.endsWith(".ts") || fullPath.endsWith(".js")) {
       kind = ContentKind.Source;
-    else if (fullPath.endsWith(".html"))
+    } else if (fullPath.endsWith(".html")) {
       kind = ContentKind.Html;
-    else
+    } else {
       kind = ContentKind.Unknown;
+    }
 
-    return Object.assign(fs.createReadStream(fullPath),
-      { kind: kind, path: Path.relative(config.cwd, fullPath) });
+    return Object.assign(fs.createReadStream(fullPath), {
+      kind: kind, path: Path.relative(config.cwd, fullPath)
+    });
   };
 }

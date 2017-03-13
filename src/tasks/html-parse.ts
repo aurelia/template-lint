@@ -1,15 +1,13 @@
-import { Content } from '../content';
 import { ContentContext } from '../context';
-import { Options } from '../options';
 import { Parser } from './parser/parser';
 import { ParserHook } from './parser/parser-hook';
-
+import { Handler } from 'rowan';
 
 /**
- * Parse HTML Process
+ * Parse-HTML Process
  */
-export function htmlParse(...hooks: ParserHook[]) {
-  return async function(ctx: ContentContext) {;
-    await Parser.process(ctx, hooks);
+export function htmlParse(...hooks: ParserHook[]): Handler<ContentContext> {
+  return function (ctx: ContentContext): Promise<void> {
+    return Parser.process(ctx, hooks);
   };
 }

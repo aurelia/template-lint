@@ -1,9 +1,7 @@
 import { ContentKind } from './content-kind';
-import { ContentLocation } from './content-location';
 import { ContentImport } from './content-import';
 import { Resource } from '../resource';
 import { Readable } from 'stream';
-import { Issue } from '../issue';
 import { Path } from '../utils';
 
 export type Content = NodeJS.ReadableStream & {
@@ -22,13 +20,12 @@ export namespace Content {
 
     const content: Content = stream;
 
-    if (typeof (opt) == "string") {
+    if (typeof (opt) === "string") {
       const path = Path.normalize(opt).replace(/\\/g, "/");
 
       if (path.endsWith("html")) {
         content.kind = ContentKind.Html;
-      }
-      else if (path.endsWith("js") || path.endsWith("ts")) {
+      } else if (path.endsWith("js") || path.endsWith("ts")) {
         content.kind = ContentKind.Source;
       }
 
@@ -47,7 +44,7 @@ export namespace Content {
     const stream = new Readable();
 
     stream.push(data);
-    stream.push(null);
+    stream.push(undefined);
 
     return Content.fromStream(stream, opt);
   }

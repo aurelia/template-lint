@@ -1,13 +1,7 @@
-import { SAXParser, StartTagLocationInfo } from 'parse5';
-import * as parse5 from 'parse5';
-
+import { SAXParser } from 'parse5';
 import { ParserState } from './parser-state';
 import { ParserHook } from './parser-hook';
-
 import { ContentContext } from '../../context';
-import { Content, ContentKind } from '../../content';
-import { Issue } from '../../issue';
-import { Readable, Stream } from 'stream';
 
 export class Parser extends SAXParser {
   private constructor(public state: ParserState) {
@@ -23,7 +17,7 @@ export class Parser extends SAXParser {
     return this.state.isScope(name);
   }
 
-  public init(hooks: ParserHook[], context: ContentContext) {
+  public init(hooks: ParserHook[], context: ContentContext): void {
     this.state.initPreHooks(this);
 
     hooks.forEach((hook) => {
@@ -33,24 +27,23 @@ export class Parser extends SAXParser {
     this.state.initPostHooks(this);
   }
 
-  public finalise() {
+  public finalise(): void {
     this.state.finalise();
   }
 
   public static async process(context: ContentContext, hooks: ParserHook[]): Promise<void> {
 
-    if (!context)
+    if (!context) {
       throw Error("file is null");
+    }
 
-    var parserState = new ParserState();
-    var parser = new Parser(parserState);
+    const parserState = new ParserState();
+    const parser = new Parser(parserState);
 
     hooks = hooks || [];
     parser.init(hooks, context);
 
-    var stream: Readable = new Readable();
-
-    var completed = new Promise<void>(function (resolve, reject) {
+    const completed = new Promise<void>((resolve, reject) => {
       parser.on("end", () => {
         parser.finalise();
         resolve();
@@ -64,11 +57,11 @@ export class Parser extends SAXParser {
 
     await completed;
 
-    for (var hook of hooks) {
+    for (const hook of hooks) {
       hook.finalise();
     }
 
-    for (var issue of parserState.issues) {
+    for (const issue of parserState.issues) {
       context.issues.push(issue);
     }
   }

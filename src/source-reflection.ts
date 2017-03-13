@@ -1,52 +1,52 @@
 import { Path } from './utils';
 import * as ts from 'typescript';
-import * as glob from "glob";
+//import * as glob from "glob";
 import * as fs from "fs";
 
 export class SourceReflection {
-  private options = ts.getDefaultCompilerOptions();
-  private _host = new ReflectionHost(this.options);
-  private _program = ts.createProgram([], this.options, this._host);
+  private _options: ts.CompilerOptions = ts.getDefaultCompilerOptions();
+  private _host: ReflectionHost = new ReflectionHost(this._options);
+  private _program: ts.Program = ts.createProgram([], this._options, this._host);
 
   get host(): ts.CompilerHost {
     return this._host;
   }
 
-  get program() {
+  get program(): ts.Program {
     return this._program;
   }
 
-  add(filePath: string, fileContent: string) {
+  add(filePath: string, fileContent: string): ts.SourceFile | undefined {
     let source = this._host.add(filePath, fileContent);
-    this._program = ts.createProgram(this.getFileNames(), this.options, this._host, this._program);
+    this._program = ts.createProgram(this.getFileNames(), this._options, this._host, this._program);
     return source;
   }
 
-  getFileNames() {
+  getFileNames(): string[] {
     return this._host.getFileNames();
   }
 
-  getSourceByPath(filePath: string) {
+  getSourceByPath(filePath: string): ts.SourceFile | undefined {
     return this._host.getSourceByPath(filePath);
   }
 
-  getSourceFile(fileName: string) {
+  getSourceFile(fileName: string): ts.SourceFile | undefined {
     return this._host.getSourceFile(fileName, ts.ScriptTarget.Latest);
   }
 
-  static getExportedClasses(source: ts.SourceFile) {
-    return source.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration && this.isNodeExported(x)).map(x => <ts.ClassDeclaration>x);
+  static getExportedClasses(source: ts.SourceFile): ts.ClassDeclaration[] {
+    return source.statements.filter(x => x.kind === ts.SyntaxKind.ClassDeclaration && this.isNodeExported(x)).map(x => <ts.ClassDeclaration>x);
   }
 
-  static getClassDecorators(decl: ts.ClassDeclaration) {
-    if (decl.decorators == null)
+  static getClassCallDecorators(decl: ts.ClassDeclaration): Array<{ call: string, args: ts.Expression[] }> | undefined {
+    if (decl.decorators === undefined) {
       return undefined;
-      
-    let decorators = new Array<{ call: string, args: Array<ts.Expression> }>();
-    let explicitMeta = false;
+    }
 
-    for (var decorator of decl.decorators) {
-      var exp = decorator.expression;
+    let decorators = new Array<{ call: string, args: Array<ts.Expression> }>();
+
+    for (const decorator of decl.decorators) {
+      const exp = decorator.expression;
 
       if (this.isCallExpression(exp)) {
         let callStr = exp.expression.getText();
@@ -59,27 +59,27 @@ export class SourceReflection {
   }
 
   static isNodeExported(node: ts.Node): boolean {
-    return ((node.flags & ts.NodeFlags.ExportContext) !== 0) && (node.parent != null && node.parent.kind === ts.SyntaxKind.SourceFile);
+    return ((node.flags & ts.NodeFlags.ExportContext) !== 0) && (node.parent !== undefined && node.parent.kind === ts.SyntaxKind.SourceFile);
   }
 
   static isCallExpression(node: ts.Node): node is ts.CallExpression {
-    return node.kind == ts.SyntaxKind.CallExpression;
-  }  
+    return node.kind === ts.SyntaxKind.CallExpression;
+  }
 }
 
 export class ReflectionHost implements ts.CompilerHost {
-  private files = new Map<string, { content: string, source: ts.SourceFile, rev: number }>();
+  private files: Map<string, { content: string, source: ts.SourceFile, rev: number }> = new Map();
 
   constructor(public options: ts.CompilerOptions) {
-    var defLibPath = ts.getDefaultLibFilePath(this.options);
-    var defLib = fs.readFileSync(defLibPath, "utf8");
-    var defLibName = Path.basename(defLibPath);
+    const defLibPath = ts.getDefaultLibFilePath(this.options);
+    const defLib = fs.readFileSync(defLibPath, "utf8");
+    const defLibName = Path.basename(defLibPath);
 
     this.add(defLibName, defLib);
   }
 
   getFileNames(): string[] {
-    let names = Array<string>();
+    const names = Array<string>();
 
     this.files.forEach((_, k) => {
       names.push(k);
@@ -90,23 +90,27 @@ export class ReflectionHost implements ts.CompilerHost {
 
   getSourceByPath(filePath: string): ts.SourceFile | undefined {
     filePath = Path.normalize(filePath);
-    if (this.files.has(filePath))
+    if (this.files.has(filePath)) {
       return;
+    }
 
-    var entry = this.files.get(filePath);
+    const entry = this.files.get(filePath);
 
-    if (!entry)
+    if (!entry) {
       return;
+    }
 
     return entry.source;
   }
 
-  add(filePath: string, fileContent: string) {
+  add(filePath: string, fileContent: string): ts.SourceFile {
     filePath = Path.normalize(filePath);
-    if (this.files.has(filePath))
-      return;
 
-    let fileSource = ts.createSourceFile(filePath, fileContent, ts.ScriptTarget.Latest, true);
+    if (this.files.has(filePath)) {
+      return this.files.get(filePath)!.source;
+    }
+
+    const fileSource = ts.createSourceFile(filePath, fileContent, ts.ScriptTarget.Latest, true);
 
     this.files.set(filePath, { content: fileContent, source: fileSource, rev: 1 });
 
@@ -117,7 +121,7 @@ export class ReflectionHost implements ts.CompilerHost {
   readFile = (fileName: string) => {
     //console.log("readFile", fileName);
 
-    return this.files.get(Path.normalize(fileName)) !.content;
+    return this.files.get(Path.normalize(fileName))!.content;
   }
   //trace?(s: string): void;
   //directoryExists?(directoryName: string): boolean;

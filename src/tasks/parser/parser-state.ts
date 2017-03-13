@@ -12,50 +12,53 @@ export class ParserState {
   public issues: Issue[];
 
   public scope: string;
-  public nextScope: string | null;
-  public nextNode: ParserStateNode | null;
+  public nextScope?: string;
+  public nextNode?: ParserStateNode;
 
   constructor(scopes?: string[], voids?: string[]) {
-    if (scopes == null)
+    if (scopes === undefined) {
       scopes = ['html', 'body', 'template', 'svg', 'math'];
+    }
 
-    if (voids == null)
+    if (voids === undefined) {
       voids = ['area', 'base', 'br', 'col', 'embed', 'hr',
         'img', 'input', 'keygen', 'link', 'meta',
         'param', 'source', 'track', 'wbr'];
+    }
 
     this.scopes = scopes;
     this.voids = voids;
   }
 
-  initPreHooks(parser: SAXParser) {
+  initPreHooks(parser: SAXParser): void {
     this.stack = [];
     this.issues = [];
 
-    var stack = this.stack;
+    const stack = this.stack;
 
     parser.on("startTag", (name, attrs, selfClosing, location) => {
-      this.nextScope = null;
-      this.nextNode = null;
+      delete this.nextScope;
+      delete this.nextNode;
 
       if (stack.length > 0 && stack[stack.length - 1].isVoid) {
         this.popStack();
       }
 
-      let isVoid = this.isVoid(name);
+      const isVoid = this.isVoid(name);
 
       if (!selfClosing) {
-        let currentScope = this.scope;
         let nextScope = "";
 
-        if (stack.length > 0)
+        if (stack.length > 0) {
           nextScope = stack[stack.length - 1].scope;
+        }
 
-        if (this.isScope(name))
+        if (this.isScope(name)) {
           nextScope = name;
+        }
 
         this.nextScope = nextScope;
-        if (location == null) throw new Error("location is " + location);
+        if (location === undefined) { throw new Error("location is " + location); }
         this.nextNode = new ParserStateNode(this.nextScope, name, attrs, isVoid, location);
       }
     });
@@ -67,8 +70,8 @@ export class ParserState {
       }
 
       if (this.isVoid(name)) {
-        if (loc == null) throw new Error("loc is " + loc);
-        let issue: Issue = {
+        if (loc === undefined) { throw new Error("loc is " + loc); }
+        const issue: Issue = {
           message: "void elements should not have a closing tag",
           severity: IssueSeverity.Error,
           location: {
@@ -80,8 +83,8 @@ export class ParserState {
         };
         this.issues.push(issue);
       }
-      else if (stack.length <= 0 || stack[stack.length - 1].name != name) {
-        if (loc == null) throw new Error("loc is " + loc);
+      else if (stack.length <= 0 || stack[stack.length - 1].name !== name) {
+        if (loc === undefined) { throw new Error("loc is " + loc); }
         let issue: Issue = {
           message: "mismatched close tag",
           severity: IssueSeverity.Error,
@@ -100,26 +103,27 @@ export class ParserState {
     });
   }
 
-  initPostHooks(parser: SAXParser) {
-    var self = this;
-
+  initPostHooks(parser: SAXParser): void {
     parser.on("startTag", () => {
-      if (self.nextScope !== null)
-        self.scope = self.nextScope;
-      self.nextScope = null;
+      if (this.nextScope !== undefined) {
+        this.scope = this.nextScope;
+      }
 
-      if (self.nextNode != null)
-        self.stack.push(self.nextNode);
-      self.nextNode = null;
+      delete this.nextScope;
+
+      if (this.nextNode !== undefined) {
+        this.stack.push(this.nextNode);
+      }
+      delete this.nextNode;
     });
   }
 
-  finalise() {
-    let stack = this.stack;
+  finalise(): void {
+    const stack = this.stack;
 
     if (stack.length > 0) {
-      let element = stack[stack.length - 1];
-      let issue: Issue = {
+      const element = stack[stack.length - 1];
+      const issue: Issue = {
         message: "suspected unclosed element detected",
         severity: IssueSeverity.Error,
         location: {
@@ -141,8 +145,8 @@ export class ParserState {
     return this.scopes.indexOf(name) >= 0;
   }
 
-  private popStack() {
-    var stack = this.stack;
+  private popStack(): void {
+    const stack = this.stack;
 
     stack.pop();
     if (stack.length > 0) {
@@ -153,7 +157,6 @@ export class ParserState {
     }
   }
 }
-
 
 /**
  *  Node in parser traversal stack

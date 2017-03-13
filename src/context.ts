@@ -1,8 +1,7 @@
 import { Content } from './content';
 import { Issue } from './issue';
-import { Fetch } from './fetch';
+import { Resolve } from './resolve';
 import { Options } from './options';
-import { Resource } from './resource';
 
 /* processing context for a file or snippet */
 export interface ContentContext {
@@ -13,5 +12,5 @@ export interface ContentContext {
   /* options to use during processing */
   options: Options;
   /* fetch a seperate context*/
-  fetch: Fetch;
+  resolve: Resolve;
 }

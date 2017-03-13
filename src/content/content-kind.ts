@@ -3,4 +3,3 @@ export enum ContentKind {
   Html,
   Source
 };
-

@@ -1,4 +1,4 @@
-import { TypeNode, Declaration } from 'typescript';
+import { Declaration, TypeNode  } from 'typescript';
 
 export interface ASTContext {
   name: string;

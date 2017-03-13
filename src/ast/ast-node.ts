@@ -1,11 +1,10 @@
 import { ContentLocation } from '../content';
 import { ASTContext } from './ast-context';
-import { ASTElementAttribute } from './ast-element-attribute';
 
 export class ASTNode {
-  public context: ASTContext | null = null;
+  public context?: ASTContext;
   public locals: ASTContext[] = [];
-  public parent: ASTNode | null = null;
+  public parent?: ASTNode;
   public children: ASTNode[] = [];
   public location: ContentLocation;
 
@@ -16,17 +15,11 @@ export class ASTNode {
     children?: ASTNode[],
     location: ContentLocation,
   }) {
-    if (opt) {
-      this.context = opt.context || null;
-      this.locals = opt.locals || [];
-      this.parent = opt.parent || null;
-      this.children = opt.children || [];
-      this.location = opt.location;
-    }
+    Object.assign(this, opt);
   }
 
-  addChild(node: ASTNode) {
-    if (this.children.indexOf(node) == -1) {
+  addChild(node: ASTNode): void {
+    if (this.children.indexOf(node) === -1) {
       this.children.push(node);
       node.parent = this;
     }
@@ -34,21 +27,22 @@ export class ASTNode {
 
   public static inheritLocals(node: ASTNode, ancestor?: number): ASTContext[] {
     let locals: ASTContext[] = [];
-    let tmpNode: ASTNode | null = node;
+    let tmpNode: ASTNode | undefined = node;
 
     if (ancestor) {
-      while (tmpNode != null && ancestor >= 0) {
+      while (tmpNode !== undefined && ancestor >= 0) {
         tmpNode = tmpNode.parent;
         ancestor -= 1;
       }
     }
 
-    while (tmpNode != null) {
+    while (tmpNode !== undefined) {
       tmpNode.locals.forEach(x => {
-        let index = locals.findIndex(y => y.name == x.name);
+        let index = locals.findIndex(y => y.name === x.name);
 
-        if (index == -1)
+        if (index === -1) {
           locals.push(x);
+        }
       });
 
       tmpNode = tmpNode.parent;
@@ -57,37 +51,41 @@ export class ASTNode {
     return locals;
   }
 
-  public static inheritContext(node: ASTNode, ancestor?: number): ASTContext | null {
-    let tmpNode: ASTNode | null = node;
+  public static inheritContext(node: ASTNode, ancestor?: number): ASTContext | undefined {
+    let tmpNode: ASTNode | undefined = node;
     if (ancestor) {
-      while (tmpNode != null && ancestor >= 0) {
+      while (tmpNode !== undefined && ancestor >= 0) {
         tmpNode = tmpNode.parent;
         ancestor -= 1;
       }
     }
 
-    while (tmpNode != null) {
-      if (tmpNode.context != null)
+    while (tmpNode !== undefined) {
+      if (tmpNode.context !== undefined) {
         return tmpNode.context;
+      }
       tmpNode = tmpNode.parent;
     }
-    return null;
+    return undefined;
   }
 
-  static async descend(node: ASTNode, visit: (ASTNode) => Promise<boolean>): Promise<boolean> {
+  static async descend(node: ASTNode, visit: (node: ASTNode) => Promise<boolean>): Promise<boolean> {
     for (let child of node.children) {
-      if (await visit(child) == false)
+      if (await visit(child) === false) {
         break;
-      if (await ASTNode.descend(child, visit) == false)
+      }
+      if (await ASTNode.descend(child, visit) === false) {
         break;
+      }
     }
     return true;
   }
 
-  static async ascend(node: ASTNode, visit: (ASTNode) => Promise<boolean>): Promise<void> {
+  static async ascend(node: ASTNode, visit: (node: ASTNode) => Promise<boolean>): Promise<void> {
     if (node.parent) {
-      if (await visit(node.parent) == false)
+      if (await visit(node.parent) === false) {
         return;
+      }
       await ASTNode.ascend(node.parent, visit);
     }
   }

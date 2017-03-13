@@ -26,25 +26,16 @@
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "devDependencies": {
-    "@types/chai": "^3.4.34",
+    "@types/chai": "^3.4.35",
     "@types/glob": "^5.0.29",
     "@types/minimatch": "^2.0.28",
-    "@types/mocha": "^2.2.38",
+    "@types/mocha": "^2.2.39",
+    "@types/node": "^6.0.37",
+    "@types/parse5": "0.0.30",
     "chai": "^3.5.0",
-    "gulp": "^3.9.1",
-    "gulp-jasmine": "^2.3.0",
-    "gulp-plumber": "^1.1.0",
-    "gulp-replace": "^0.5.4",
-    "gulp-rimraf": "^0.2.0",
-    "gulp-shell": "^0.5.2",
-    "gulp-sourcemaps": "^1.11.1",
-    "gulp-tslint": "^6.0.2",
-    "gulp-typescript": "^3.1.3",
-    "merge2": "^1.0.2",
+    "cross-env": "^3.2.3",     
     "mocha": "^3.2.0",
     "nyc": "^10.1.2",
-    "require-dir": "^0.3.1",
-    "run-sequence": "^1.2.1",
     "source-map-support": "^0.4.11",
     "stream-to-string": "^1.1.0",
     "through2": "^2.0.3",
@@ -52,11 +43,13 @@
     "tslint": "^3.14.0"
   },
   "scripts": {
-    "test": "nyc node_modules/mocha/bin/_mocha --require source-map-support/register --compilers ts:ts-node/register spec/*.ts"
+    "lint": "cross-env tslint --project tsconfig.json --config tslint.json",
+    "clean": "cross-env rimraf .tmp .nyc_output coverage dist",
+    "build": "cross-env tsc --project tsconfig.build.json --rootDir src/ --outDir dist/ --sourceMap",
+    "debug": "npm run clean && cross-env tsc --project tsconfig.json --outDir ./.tmp/ ",
+    "test": "nyc node_modules/mocha/bin/_mocha --require source-map-support/register --compilers ts:ts-node/register test/*.ts"
   },
   "dependencies": {
-    "@types/node": "^6.0.37",
-    "@types/parse5": "0.0.30",
     "aurelia-binding": "^1.0.0",
     "aurelia-dependency-injection": "^1.0.0",
     "aurelia-pal-nodejs": "^1.0.0-alpha.4",
@@ -67,7 +60,7 @@
     "parse5": "2.2.x",
     "rowan": "^0.2.1",
     "tslib": "^1.5.0",
-    "typescript": "^2.1.5"
+    "typescript": "^2.2.0"
   },
   "nyc": {
     "include": [
@@ -77,8 +70,7 @@
       "node_modules/"
     ],
     "extension": [
-      ".ts",
-      ".tsx"
+      ".ts"
     ],
     "require": [
       "ts-node/register"

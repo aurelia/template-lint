@@ -1,9 +1,8 @@
 import { Content } from './content';
 import { ContentContext } from './context';
-import { Options } from './options';
-import { Issue, IssueSeverity } from './issue';
+import { Issue } from './issue';
 import { Config } from './config';
-import { Fetch, FetchOptions } from './fetch';
+import { Resolve, ResolveOptions } from './resolve';
 
 export type Result = {
   content: Content,
@@ -12,10 +11,7 @@ export type Result = {
 
 export class Linter {
   private _cache = new Map<string, ContentContext>();
-  private _cacheFetch: Fetch;
-  private _processQueue: Content[] = [];
-  
-
+  private _cacheFetch: Resolve;
 
   constructor(private _config: Config = new Config()) {
     this._cacheFetch = this.wrapFetch(_config.fetch);
@@ -30,18 +26,19 @@ export class Linter {
   /**
    * wrap the config fetch 
    */
-  private wrapFetch(fetch?: Fetch): Fetch {
-    return async (path: string, opts?: FetchOptions) => {
+  private wrapFetch(fetch?: Resolve): Resolve {
+    return async (path: string, opts?: ResolveOptions) => {
 
       if (this._cache.has(path)) {
         return this._cache.get(path);
       }
 
-      if (fetch != undefined) {
+      if (fetch !== undefined) {
         const content = await fetch(path);
 
-        if (content == undefined)
+        if (content === undefined) {
           return undefined;
+        }
 
         let ctx = this.createContext(content, fetch);
 
@@ -56,12 +53,12 @@ export class Linter {
     };
   }
 
-  private createContext(content: Content, fetch: Fetch): ContentContext {
+  private createContext(content: Content, fetch: Resolve): ContentContext {
     return {
       content: content,
       issues: [],
       options: this._config.options,
-      fetch: fetch,
+      resolve: fetch,
     };
   }
 }

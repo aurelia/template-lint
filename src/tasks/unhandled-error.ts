@@ -1,20 +1,18 @@
 import { ContentContext } from '../context';
-import { Content } from '../content';
-import { Options } from '../options';
 import { IssueSeverity } from '../issue';
-
+import { ErrorHandler } from 'rowan';
 
 /**
  *  Report unhandled errors
  */
-export function unhandledError() {
-  return async function (ctx: ContentContext, err: any) {
+export function unhandledError(): ErrorHandler<ContentContext> {
+  return async function (ctx: ContentContext, err: any): Promise<boolean | undefined> {
     if (ctx.options.debug) {
       ctx.issues.push({
         message: "unhandled exception during processing",
         detail: err,
         severity: IssueSeverity.Fatal
-      });      
+      });
     }
     return true;
   };

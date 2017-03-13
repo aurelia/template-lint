@@ -8,8 +8,4 @@ export class ASTElementNode extends ASTNode {
   public attrs: ASTElementAttribute[];
   public typeValue: HTMLElement;
   public typeDecl: ClassDeclaration;
-
-  constructor() {
-    super();
-  }
 }

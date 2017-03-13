@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Tests",
+      "name": "Debug Tests",
       "type": "node2",
       "request": "launch",
       "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
@@ -11,10 +11,10 @@
         "--require",
         "source-map-support/register",
         "--no-timeouts",
-        "spec/"    
+        ".tmp/test/"    
       ],
       "cwd": "${workspaceRoot}",
-      "preLaunchTask": "debug:compile",
+      "preLaunchTask": "debug",
       "internalConsoleOptions": "openOnSessionStart",
       "runtimeExecutable": null,
       "runtimeArgs": [
@@ -23,7 +23,10 @@
       "env": {
         "NODE_ENV": "development"
       },
-      "sourceMaps": true
+      "sourceMaps": true,
+      "outFiles": [
+        "./.tmp/**/*.js"        
+      ]      
     }
   ]
 }

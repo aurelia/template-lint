@@ -2,14 +2,14 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "sourceMap": true,
     "noEmitOnError": true,
     "newLine": "LF",
-    "declaration": true,
     "strictNullChecks": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "importHelpers": true,
+    "sourceMap": true,
+  
     "lib": [
       "es2015",
       "dom"
