@@ -33,7 +33,7 @@
     "@types/node": "^6.0.37",
     "@types/parse5": "0.0.30",
     "chai": "^3.5.0",
-    "cross-env": "^3.2.3",     
+    "cross-env": "^3.2.3",
     "mocha": "^3.2.0",
     "nyc": "^10.1.2",
     "source-map-support": "^0.4.11",
@@ -63,11 +63,10 @@
     "typescript": "^2.2.0"
   },
   "nyc": {
-    "include": [
-      "src/**/*.ts"
-    ],
     "exclude": [
-      "node_modules/"
+      "node_modules/",
+      "test/",
+      "example.ts"
     ],
     "extension": [
       ".ts"
