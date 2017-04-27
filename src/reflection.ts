@@ -1,9 +1,8 @@
 import { Path } from './utils';
 import * as ts from 'typescript';
-//import * as glob from "glob";
 import * as fs from "fs";
 
-export class SourceReflection {
+export class Reflection {
   private _options: ts.CompilerOptions = ts.getDefaultCompilerOptions();
   private _host: ReflectionHost = new ReflectionHost(this._options);
   private _program: ts.Program = ts.createProgram([], this._options, this._host);

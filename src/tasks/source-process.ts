@@ -1,11 +1,11 @@
 import { ContentContext } from '../context';
 import { ContentKind } from '../content';
-import { SourceReflection } from '../source-reflection';
+import { Reflection } from '../reflection';
 import * as toString from 'stream-to-string';
 
 /** Process a source file and add it to the Compiler Host */
 export class SourceProcessTask {
-  constructor(private host: SourceReflection) {
+  constructor(private host: Reflection) {
   }
 
   async process(ctx: ContentContext): Promise<boolean> {

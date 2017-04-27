@@ -3,7 +3,7 @@ import { Content, SourceFile } from '../content';
 import { ContentContext } from '../context';
 import { IssueSeverity } from '../issue';
 import { Options } from '../options';
-import { SourceReflection } from '../source-reflection';
+import { Reflection } from '../reflection';
 import { Resource, ResourceKind } from '../resource';
 import { CaseConvert } from '../utils/case-convert';
 
@@ -23,7 +23,7 @@ export class SourceResourcesTask {
   private processResources(ctx: ContentContext & { content: SourceFile }): void {
     const source = ctx.content.source;
 
-    for (const decl of SourceReflection.getExportedClasses(source)) {
+    for (const decl of Reflection.getExportedClasses(source)) {
       this.processResource(ctx, decl);
     }
   }
@@ -35,7 +35,7 @@ export class SourceResourcesTask {
     for (const decorator of decorators) {
       const exp = decorator.expression;
 
-      if (SourceReflection.isCallExpression(exp)) {
+      if (Reflection.isCallExpression(exp)) {
         let callStr = exp.expression.getText();
         let args = exp.arguments;
 

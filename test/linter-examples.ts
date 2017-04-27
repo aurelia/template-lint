@@ -18,22 +18,7 @@ export function examples(): void {
       let issues = result.issues;
 
       expect(issues.length).equals(1);
-    });
-
-    it("should report unknown ", async () => {
-
-      let html = `
-      <template>
-        <div/>
-      </template>
-      `;
-
-      let linter = new Linter();
-
-      let result = await linter.process(Content.fromString(html, ContentKind.Html));
-      let issues = result.issues;
-
-      expect(issues.length).equals(1);
+      expect(issues[0].message).contains("self-closing");
     });
   });
 };

@@ -13,9 +13,9 @@ export class Options {
   "report-html-require-not-found" = false;
   "report-html-require-view-when-viewmodel-exists" = true;
 
-  "obsolete-elements" = new Array<ObsoleteElement>(
+  "obsolete-elements" = [
     { elmt: 'content', msg: 'use slot instead' }
-  );
-  "obsolete-attributes" = new Array<ObsoleteAttribute>(
-  );
+  ] as ObsoleteElement[];
+
+  "obsolete-attributes" = [] as ObsoleteAttribute[];
 }

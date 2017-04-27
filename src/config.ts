@@ -2,7 +2,7 @@ import { Resolve } from './resolve';
 import { Content, ContentKind } from './content';
 import { Options } from './options';
 import { Path, CaseConvert } from './utils';
-import { SourceReflection } from './source-reflection';
+import { Reflection } from './reflection';
 import { ContentContext } from './context';
 import { Rowan, IProcessor } from 'rowan';
 import * as ts from 'typescript';
@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 /* task middleware */
 
 import { issueSort } from './tasks/issue-sort';
-import { unhandledError } from './tasks/unhandled-error';
+import { unhandledError} from './tasks/unhandled-error';
 import { htmlParse } from './tasks/html-parse';
 import { SourceProcessTask } from './tasks/source-process';
 
@@ -43,17 +43,8 @@ export class Config {
   /* fetch a file from the file system*/
   fetch: Resolve = defaultFetch(this);
 
-  /* ensure the path is absolute and normalised */
-  normalisePath = (path: string) => {
-    if (Path.isAbsolute(path)) {
-      return Path.normalize(path);
-    }
-
-    return Path.normalize(Path.join(this.cwd, this.basepath, path));
-  }
-
   /* typescript reflection host and helpers */
-  reflection = new SourceReflection();
+  reflection = new Reflection();
 
   /* html parser hooks */
   hooks = [new ASTGenHook(), new SelfCloseHook(), new ObsoleteHook()];
@@ -61,6 +52,27 @@ export class Config {
   /* content processor */
   processor = defaultProcessor(this.reflection, this.hooks);
 }
+
+function defaultProcessor(reflection: Reflection, hooks: ParserHook[]): IProcessor<ContentContext> {
+  let html = new Rowan<ContentContext>();
+  let source = new Rowan<ContentContext>();
+  let app = new Rowan<ContentContext>();
+
+  html.use((ctx) => Content.isHtmlContent(ctx.content));
+  html.use(htmlParse(...hooks));
+
+  source.use((ctx) => Content.isSourceContent(ctx.content));
+  source.use(new SourceProcessTask(reflection));
+
+  app.use(html);
+  app.use(source);
+  app.use(issueSort());
+  app.use(unhandledError());
+
+  return app;
+}
+
+
 
 function defaultResolveViewModel(): Handler<ContentContext> {
   return async function (ctx: ContentContext): Promise<{ file?: Content, decl?: ts.ClassDeclaration } | undefined> {
@@ -86,7 +98,7 @@ function defaultResolveViewModel(): Handler<ContentContext> {
     }
 
     let source = sourceFile.source;
-    let exports = SourceReflection.getExportedClasses(source);
+    let exports = Reflection.getExportedClasses(source);
 
     if (exports === undefined || exports.length === 0) {
       return undefined;
@@ -105,7 +117,7 @@ function defaultResolveViewModel(): Handler<ContentContext> {
     // If "some-thing.[ts|js]" has any class "SomeThing" + @customElement() decorator, return it
 
     candidate = exports.find(x => {
-      let decos = SourceReflection.getClassCallDecorators(x);
+      let decos = Reflection.getClassCallDecorators(x);
       if (decos === undefined) {
         return false;
       }
@@ -135,25 +147,6 @@ function defaultResolveViewModel(): Handler<ContentContext> {
 
     return { file: sourceFile, decl: candidate };
   };
-}
-
-function defaultProcessor(reflection: SourceReflection, hooks: ParserHook[]): IProcessor<ContentContext> {
-  let html = new Rowan<ContentContext>();
-  let source = new Rowan<ContentContext>();
-  let app = new Rowan<ContentContext>();
-
-  html.use((ctx) => Content.isHtmlContent(ctx.content));
-  html.use(htmlParse(...hooks));
-
-  source.use((ctx) => Content.isSourceContent(ctx.content));
-  source.use(new SourceProcessTask(reflection));
-
-  app.use(html);
-  app.use(source);
-  app.use(issueSort());
-  app.use(unhandledError());
-
-  return app;
 }
 
 import * as fs from 'fs';

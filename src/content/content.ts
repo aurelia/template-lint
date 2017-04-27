@@ -44,7 +44,7 @@ export namespace Content {
     const stream = new Readable();
 
     stream.push(data);
-    stream.push(undefined);
+    stream.push(null);
 
     return Content.fromStream(stream, opt);
   }

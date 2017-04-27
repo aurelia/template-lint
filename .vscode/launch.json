@@ -3,7 +3,12 @@
   "configurations": [
     {
       "name": "Debug Tests",
-      "type": "node2",
+      "type": "node",
+      "protocol":"inspector",
+      "skipFiles": [
+        "node_modules/rowan/**/*",
+        "node_modules/tslib"
+      ],
       "request": "launch",
       "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
       "stopOnEntry": false,
