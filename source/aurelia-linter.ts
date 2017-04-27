@@ -86,7 +86,7 @@ export class AureliaLinter {
           }));
 
     if (this.config.customRules)
-      rules.concat(config.customRules);
+      rules = rules.concat(config.customRules);
 
     var parserBuilder = new ParserBuilder()
       .withVoids(this.config.parserOpts.voids)
