@@ -30,7 +30,7 @@
   "typings": "./dist/index.d.ts",
   "devDependencies": {
     "@types/glob": "^5.0.29",
-    "@types/jasmine": "^2.2.32",
+    "@types/jasmine": "2.2.32",
     "@types/minimatch": "^2.0.28",
     "gulp": "^3.9.1",
     "gulp-jasmine": "^2.3.0",
