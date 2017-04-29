@@ -1,5 +1,4 @@
-import { Content } from './content';
-import { ContentContext } from './context';
+import { ContentContext, Content } from './content';
 
-export type ResolveOptions = { origin?: ContentContext, process?: boolean };
+export type ResolveOptions = { process?: boolean, origin?: ContentContext };
 export type Resolve = ((moduleName: string, opts?: ResolveOptions) => Promise<Content | undefined>);

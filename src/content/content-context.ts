@@ -1,7 +1,7 @@
 import { Content } from './content';
-import { Issue } from './issue';
-import { Resolve } from './resolve';
-import { Options } from './options';
+import { Issue } from '../issue';
+import { Resolve } from '../resolve';
+import { Options } from '../options';
 
 /* processing context for a file or snippet */
 export interface ContentContext {

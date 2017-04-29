@@ -1,6 +1,5 @@
 
-import { Content, SourceFile } from '../content';
-import { ContentContext } from '../context';
+import { Content, ContentContext, SourceFile } from '../content';
 import { IssueSeverity } from '../issue';
 import { Options } from '../options';
 import { Reflection } from '../reflection';

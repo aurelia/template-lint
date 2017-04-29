@@ -1,7 +1,7 @@
 import { SAXParser } from 'parse5';
 import { ParserState } from './parser-state';
 import { ParserHook } from './parser-hook';
-import { ContentContext } from '../../context';
+import { ContentContext } from '../../content';
 
 export class Parser extends SAXParser {
   private constructor(public state: ParserState) {

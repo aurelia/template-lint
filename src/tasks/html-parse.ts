@@ -1,4 +1,4 @@
-import { ContentContext } from '../context';
+import { ContentContext } from '../content';
 import { Parser } from './parser/parser';
 import { ParserHook } from './parser/parser-hook';
 import { Handler } from 'rowan';

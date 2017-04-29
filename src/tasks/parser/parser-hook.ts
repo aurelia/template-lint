@@ -1,6 +1,6 @@
 import { Parser } from './parser';
 import { Issue } from '../../issue';
-import { ContentContext } from '../../context';
+import { ContentContext } from '../../content';
 
 /**
 * Parser Hook

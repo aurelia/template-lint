@@ -1,5 +1,4 @@
-import { ContentContext } from '../context';
-import { ContentKind } from '../content';
+import { ContentKind, ContentContext } from '../content';
 import { Reflection } from '../reflection';
 import * as toString from 'stream-to-string';
 

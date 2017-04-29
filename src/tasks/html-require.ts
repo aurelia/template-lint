@@ -1,8 +1,7 @@
-import { Content, ContentLocation } from '../content';
+import { Content, ContentLocation, ContentContext } from '../content';
 import { IssueSeverity } from '../issue';
 import { ASTNode, ASTElementNode } from '../ast';
 import { Path } from '../utils/safe-path';
-import { ContentContext } from '../context';
 
 /**
  * Check require elements and gather imported file

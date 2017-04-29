@@ -1,5 +1,4 @@
-import { ContentContext } from '../context';
-import { Content, ContentKind, ContentLocation } from '../content';
+import { Content, ContentKind, ContentLocation, ContentContext } from '../content';
 import { IssueSeverity } from '../issue';
 
 /**

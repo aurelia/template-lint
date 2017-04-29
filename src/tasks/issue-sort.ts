@@ -1,4 +1,4 @@
-import { ContentContext } from '../context';
+import { ContentContext } from '../content';
 import { Handler } from 'rowan';
 
 /**

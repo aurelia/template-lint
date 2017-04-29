@@ -1,5 +1,4 @@
-import { ContentContext } from '../context';
-import { Content } from '../content';
+import { Content, ContentContext } from '../content';
 import { Resolve } from '../resolve';
 import { Resource } from '../resource';
 
