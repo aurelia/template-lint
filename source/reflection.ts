@@ -166,7 +166,9 @@ export class Reflection {
 
   getDeclForTypeFromImports(source: ts.SourceFile, typeName: string): ts.DeclarationStatement {
     if (!source || !typeName) return null;
-
+    
+    typeName = typeName.split("<")[0]; //remove Generic types variable part when read imports declarations
+    
     let imports = source.statements.filter(x => x.kind == ts.SyntaxKind.ImportDeclaration);
     let map: { [id: string]: ts.SourceFile } = {};
     let symbolImportDecl = imports.find(x => {
