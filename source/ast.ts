@@ -52,6 +52,9 @@ export class ASTBuilder extends Rule {
     });
 
     parser.on("endTag", (tag, attrs, selfClosing, loc) => {
+      if (current.parent === null) {
+        return;
+      }
       current = current.parent;
     });
 
