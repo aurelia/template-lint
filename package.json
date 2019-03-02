@@ -64,6 +64,6 @@
     "glob": "7.0.x",
     "parse5": "2.2.x",
     "template-lint": "0.8.x",
-    "typescript": "2.0.x"
+    "typescript": "^2.0.0"
   }
 }
