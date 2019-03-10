@@ -419,7 +419,7 @@ export class BindingRule extends ASTBuilder {
 
     let decl = context.typeDecl;
     let memberType: ts.TypeNode;
-    let member = null;
+    let member: ts.ParameterDeclaration | ts.ClassElement | ts.TypeElement = null;
 
     switch (decl.kind) {
       case ts.SyntaxKind.ClassDeclaration: {
@@ -432,11 +432,7 @@ export class BindingRule extends ASTBuilder {
             x.kind == ts.SyntaxKind.PropertyDeclaration ||
             x.kind == ts.SyntaxKind.MethodDeclaration ||
             x.kind == ts.SyntaxKind.GetAccessor)
-          .sort((a, b) => {
-            let sa = (a.flags & ts.NodeFlags.Static);
-            let sb = (b.flags & ts.NodeFlags.Static);
-            return sa - sb;
-          })
+          .sort((a, b) => hasModifier(a, ts.ModifierFlags.Static) - hasModifier(b, ts.ModifierFlags.Static))
           .find(x => (<any>x.name).text == memberName);
 
         if (member) {
@@ -488,8 +484,8 @@ export class BindingRule extends ASTBuilder {
       return null;
 
     if (this.restrictedAccess.length > 0) {
-      const isPrivate = member.flags & ts.NodeFlags.Private;
-      const isProtected = member.flags & ts.NodeFlags.Protected;
+      const isPrivate = hasModifier(member, ts.ModifierFlags.Private);
+      const isProtected = hasModifier(member, ts.ModifierFlags.Protected);
 
       const restrictPrivate = this.restrictedAccess.indexOf("private") != -1;
       const restrictProtected = this.restrictedAccess.indexOf("protected") != -1;
@@ -502,7 +498,7 @@ export class BindingRule extends ASTBuilder {
     }
     let memberTypeName = this.reflection.resolveTypeName(memberType);
     let memberTypeDecl: ts.Declaration = this.reflection.getDeclForType((<ts.SourceFile>decl.parent), memberTypeName);
-    let memberIsArray = member.type.kind == ts.SyntaxKind.ArrayType || memberType.getText().startsWith("Array");
+    let memberIsArray = ('type' in member && member.type.kind == ts.SyntaxKind.ArrayType) || memberType.getText().startsWith("Array");
 
     //TODO:
     //let typeArgs = <args:ts.TypeReference[]> member.type.typeArguments;
@@ -577,7 +573,10 @@ export class BindingRule extends ASTBuilder {
 
         if (typeDecl != null) {
           let baseMembers = this.resolveClassMembers(<ts.ClassDeclaration>typeDecl);
-          members = <ts.NodeArray<ts.ClassElement>>members.concat(baseMembers);
+          // #NodeArrayCast
+          // This cast is safe because ts.createNodeArray simply creates an array and downcasts it to a read-only thing after adding some properties.
+          // We want to keep those properties (so we use push instead of concat) and save the overhead of letting TS re-create the array with those props.
+          (<NodeArray<ts.ClassElement> & ts.ClassElement[]>members).push(...baseMembers);
         }
       }
     }
@@ -597,7 +596,8 @@ export class BindingRule extends ASTBuilder {
 
         if (typeDecl != null) {
           let baseMembers = this.resolveInterfaceMembers(<ts.InterfaceDeclaration>typeDecl);
-          members = <ts.NodeArray<ts.TypeElement>>members.concat(baseMembers);
+          // See #NodeArrayCast for explanation
+          (<NodeArray<ts.TypeElement> & ts.TypeElement[]>members).push(...baseMembers);
         }
       }
     }
@@ -649,7 +649,7 @@ export class BindingRule extends ASTBuilder {
     this.reportIssue(issue);
   }
 
-  private reportUnresolvedAccessMemberIssue(member: string, decl: ts.Declaration, loc: FileLoc) {
+  private reportUnresolvedAccessMemberIssue(member: string, decl: ts.NamedDeclaration, loc: FileLoc) {
     let msg = `cannot find '${member}' in type '${decl.name.getText()}'`;
     let issue = new Issue({
       message: msg,
@@ -661,7 +661,7 @@ export class BindingRule extends ASTBuilder {
     this.reportIssue(issue);
   }
 
-  private reportPrivateAccessMemberIssue(member: string, decl: ts.Declaration, loc: FileLoc, accessModifier: string) {
+  private reportPrivateAccessMemberIssue(member: string, decl: ts.NamedDeclaration, loc: FileLoc, accessModifier: string) {
     let msg = `field '${member}' in type '${decl.name.getText()}' has ${accessModifier} access modifier`;
     let issue = new Issue({
       message: msg,
@@ -673,4 +673,9 @@ export class BindingRule extends ASTBuilder {
     this.reportIssue(issue);
   }
 
+}
+
+function hasModifier(node: ts.ParameterDeclaration | ts.ClassElement | ts.TypeElement, mod: ts.ModifierFlags): 0 | 1 {
+  if (node.modifiers === undefined) return 0;
+  return node.modifiers.some(m => (m.flags & mod) === mod) ? 1 : 0;
 }
