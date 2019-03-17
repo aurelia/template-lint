@@ -121,13 +121,13 @@ export class FileLoc {
 export class ASTContext {
   name: string = null;
   type: ts.TypeNode = null;
-  typeDecl: ts.Declaration = null;
+  typeDecl: ts.NamedDeclaration = null;
   typeValue: Object = null;
 
   constructor(init?: {
     name?: string,
     type?: ts.TypeNode,
-    typeDecl?: ts.Declaration,
+    typeDecl?: ts.NamedDeclaration,
     typeValue?: Object
   }) {
     if (init)
