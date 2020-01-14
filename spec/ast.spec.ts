@@ -1,9 +1,8 @@
+import { Linter } from 'template-lint';
 
-import { Linter, Rule } from 'template-lint';
-import { BindingRule } from '../source/rules/binding';
-import { Reflection } from '../source/reflection';
-import { ASTNode, ASTContext, ASTBuilder, ASTElementNode } from '../source/ast';
 import * as ts from 'typescript';
+
+import { ASTNode, ASTContext, ASTBuilder, ASTElementNode } from '../source/ast';
 
 describe("Abstract Syntax Tree", () => {
   it("inheritLocals returns all unique locals from self and parents", () => {

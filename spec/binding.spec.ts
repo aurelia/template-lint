@@ -1,9 +1,9 @@
 
-import { Linter, Rule } from 'template-lint';
-import { BindingRule } from '../source/rules/binding';
-import { Reflection } from '../source/reflection';
+import { Linter } from 'template-lint';
+
 import { AureliaReflection } from '../source/aurelia-reflection';
-import { ASTNode } from '../source/ast';
+import { Reflection } from '../source/reflection';
+import { BindingRule } from '../source/rules/binding';
 
 describe("Static-Type Binding Tests", () => {
 
