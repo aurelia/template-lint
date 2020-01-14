@@ -1,5 +1,5 @@
+import { Linter } from 'template-lint';
 
-import { Linter, Rule } from 'template-lint';
 import { RequiredAttributeRule } from '../source/rules/required-attr';
 
 describe("Required Attribute Rule", () => {

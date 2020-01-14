@@ -2,16 +2,23 @@
 
 import "aurelia-polyfills";
 
-import { TemplatingBindingLanguage, InterpolationBindingExpression } from "aurelia-templating-binding";
-import { ViewResources, BindingLanguage, BehaviorInstruction } from "aurelia-templating";
-import { AccessMember, AccessScope, AccessKeyed, Expression, NameExpression, ValueConverter, ListenerExpression } from "aurelia-binding";
-import { Container } from "aurelia-dependency-injection";
+import { BehaviorInstruction } from "aurelia-templating";
+
+import { NameExpression, ListenerExpression } from "aurelia-binding";
+
 import * as ts from "typescript";
+
 import * as Path from "path";
 
-import { Rule, Parser, ParserState, Issue, IssueSeverity } from "template-lint";
-import { Reflection } from "../reflection";
-import { AureliaReflection } from '../aurelia-reflection';
+import { Parser, Issue, IssueSeverity } from "template-lint";
+
+import Node = ts.Node;
+
+import NodeArray = ts.NodeArray;
+
+import Decorator = ts.Decorator;
+
+import Identifier = ts.Identifier;
 
 import {
   ASTBuilder,
@@ -22,10 +29,8 @@ import {
   ASTContext,
   FileLoc
 } from "../ast";
-import Node = ts.Node;
-import NodeArray = ts.NodeArray;
-import Decorator = ts.Decorator;
-import Identifier = ts.Identifier;
+import { AureliaReflection } from '../aurelia-reflection';
+import { Reflection } from "../reflection";
 
 /**
  *  Rule to ensure static type usage is valid

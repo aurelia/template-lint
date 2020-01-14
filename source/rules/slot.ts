@@ -1,8 +1,9 @@
 
 "use strict";
 
-import { Rule, Parser, Issue, IssueSeverity } from 'template-lint';
-import { Attribute, StartTagLocationInfo } from 'parse5';
+import { Rule, Parser, Issue } from 'template-lint';
+
+import { StartTagLocationInfo } from 'parse5';
 
 /**
  *  Rule to ensure root element is the template element

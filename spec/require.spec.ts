@@ -1,5 +1,5 @@
+import { Linter } from 'template-lint';
 
-import { Linter, Rule } from 'template-lint';
 import { RequireRule } from '../source/rules/require';
 
 describe("Require Rule", () => {
@@ -10,6 +10,14 @@ describe("Require Rule", () => {
 
   it("will pass require elements with a from attribute", (done) => {
     linter.lint('<template><require from="something"></require></template>')
+      .then((issues) => {
+        expect(issues.length).toBe(0);
+        done();
+      });
+  });
+
+  it("will pass require elements with a from.bind attribute", (done) => {
+    linter.lint('<template><require from.bind="something"></require></template>')
       .then((issues) => {
         expect(issues.length).toBe(0);
         done();

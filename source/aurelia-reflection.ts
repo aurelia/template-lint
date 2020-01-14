@@ -1,7 +1,7 @@
-
-
 import { TemplatingBindingLanguage, InterpolationBindingExpression } from "aurelia-templating-binding";
-import { ViewResources, BindingLanguage, BehaviorInstruction } from "aurelia-templating";
+
+import { ViewResources } from "aurelia-templating";
+
 import { Container } from "aurelia-dependency-injection";
 
 export class AureliaReflection {

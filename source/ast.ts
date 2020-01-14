@@ -1,18 +1,9 @@
-import { TemplatingBindingLanguage, InterpolationBindingExpression } from 'aurelia-templating-binding';
-import { AccessMember, AccessScope, AccessKeyed, NameExpression, ValueConverter } from 'aurelia-binding';
-import { Container } from 'aurelia-dependency-injection';
-import { Rule, Parser, ParserState, Issue, IssueSeverity } from 'template-lint';
+import { InterpolationBindingExpression } from 'aurelia-templating-binding';
+
+import { Rule, Parser, Issue, IssueSeverity } from 'template-lint';
+
 import ts = require('typescript');
 
-
-import {
-  ViewResources,
-  BindingLanguage,
-  BehaviorInstruction,
-  HtmlBehaviorResource,
-  ViewFactory
-}
-  from 'aurelia-templating';
 import { ASTAttribute as P5ASTAttribute } from "parse5";
 
 import { AureliaReflection } from './aurelia-reflection';
@@ -51,7 +42,7 @@ export class ASTBuilder extends Rule {
         current = next;
     });
 
-    parser.on("endTag", (tag, attrs, selfClosing, loc) => {
+    parser.on("endTag", () => {
       if (current.parent === null) {
         return;
       }

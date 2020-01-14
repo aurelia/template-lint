@@ -1,5 +1,4 @@
-import { Linter, Rule, Issue, IssueSeverity } from 'template-lint';
-
+import { Linter, Issue } from 'template-lint';
 import { ParserBuilder } from 'template-lint';
 import { SelfCloseRule } from 'template-lint';
 import { StructureRule } from 'template-lint';
@@ -10,18 +9,17 @@ import { AttributeValueRule } from 'template-lint';
 import { ValidChildRule } from 'template-lint';
 import { ConflictingAttributesRule, ConflictingAttributes } from 'template-lint';
 
+import { initialize } from 'aurelia-pal-nodejs';
 
-import { RequireRule } from './rules/require';
-import { SlotRule } from './rules/slot';
-import { TemplateRule } from './rules/template';
-import { BindingRule } from './rules/binding';
-import { RequiredAttributeRule } from './rules/required-attr';
-
-import { Reflection } from './reflection';
 import { AureliaReflection } from './aurelia-reflection';
 import { Config } from './config';
+import { Reflection } from './reflection';
 
-import { initialize } from 'aurelia-pal-nodejs';
+import { BindingRule } from './rules/binding';
+import { RequireRule } from './rules/require';
+import { RequiredAttributeRule } from './rules/required-attr';
+import { SlotRule } from './rules/slot';
+import { TemplateRule } from './rules/template';
 
 initialize();
 

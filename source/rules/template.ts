@@ -1,7 +1,7 @@
 
 "use strict";
 
-import { Rule, Parser, Issue, IssueSeverity } from 'template-lint';
+import { Rule, Parser, Issue } from 'template-lint';
 
 /**
  *  Rule to ensure root element is the template element

@@ -1,5 +1,5 @@
+import { Linter } from 'template-lint';
 
-import { Linter, Rule } from 'template-lint';
 import { SlotRule } from '../source/rules/slot';
 
 describe("Slot Rule", () => {

@@ -346,7 +346,7 @@ Rules used by default:
   * *don't allow two, or more, slots to have the same name;*
   * *don't allow more than one default slot;*  
 * **Require**
-  * *ensure require elments have a 'from' attribute*
+  * *ensure require elments have the 'from' or 'from.bind' attribute*
 * **ConflictingAttributes**
   * *ensure element doesn't have attribute combination marked as conflicting.* 
   * *i.e. template controller attributes (`if.bind` and `repeat.for` on the same element)*

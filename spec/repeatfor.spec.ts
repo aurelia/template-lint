@@ -1,5 +1,5 @@
+import { Linter } from 'template-lint';
 
-import { Linter, Rule } from 'template-lint';
 import { ASTBuilder } from '../source/ast';
 
 describe("RepeatFor Testing", () => {

@@ -1,9 +1,8 @@
+import { Linter } from 'template-lint';
 
-import { Linter, Rule } from 'template-lint';
-import { BindingRule } from '../source/rules/binding';
-import { Reflection } from '../source/reflection';
 import { AureliaReflection } from '../source/aurelia-reflection';
-import { ASTNode } from '../source/ast';
+import { Reflection } from '../source/reflection';
+import { BindingRule } from '../source/rules/binding';
 
 /* Triage - Make sure stuff doesn't blow-up for the time-being. */
 describe("Triage", () => {
