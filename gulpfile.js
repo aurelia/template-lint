@@ -23,7 +23,7 @@ var paths = {
 }
 
 gulp.task('clean:typescript', function () {
-  return gulp.src([paths.output], { read: false })
+  return gulp.src([paths.output], { read: false, allowEmpty: true })
     .pipe(rimraf());
 });
 
@@ -32,10 +32,9 @@ gulp.task('clean:tests', function () {
     .pipe(rimraf());
 });
 
-gulp.task('clean', ['clean:tests', 'clean:typescript'], function () {
-});
+gulp.task('clean', gulp.series('clean:tests', 'clean:typescript'));
 
-gulp.task('compile:typescript', ['clean:typescript'], function () {
+gulp.task('compile:typescript', gulp.series('clean:typescript', function () {
   var project = ts.createProject('tsconfig.json', {
     typescript: require('typescript')
   });
@@ -56,7 +55,7 @@ gulp.task('compile:typescript', ['clean:typescript'], function () {
       }))
       .pipe(gulp.dest(paths.output))
   ]);
-});
+}));
 
 gulp.task('lint:typescript', function () {
   return gulp.src([paths.source + '**/*.ts', paths.spec + '**/*.ts'])
@@ -106,9 +105,9 @@ gulp.task('format:tests', function () {
   return format(paths.spec + '**/*.ts', paths.spec);
 });
 
-gulp.task('format', ['format:sources', 'format:tests'], function () { });
+gulp.task('format', gulp.series('format:sources', 'format:tests'), function () { });
 
-gulp.task('compile:tests', ['compile:typescript', 'clean:tests'], function () {
+gulp.task('compile:tests', gulp.series('compile:typescript', 'clean:tests', function () {
   var project = ts.createProject('tsconfig.json', {
     typescript: require('typescript')
   });
@@ -127,7 +126,7 @@ gulp.task('compile:tests', ['compile:typescript', 'clean:tests'], function () {
     }))
     .pipe(replace(/(require\('\..\/source\/)/g, 'require(\'..\/dist\/'))
     .pipe(gulp.dest(paths.spec));
-});
+}));
 
 gulp.task('test:jasmine', function (done) {
   return gulp.src('spec/*.js')
@@ -149,10 +148,9 @@ gulp.task('test-no-compile', function (done) {
   });
 });
 
-gulp.task('watch', ['test'], function () {
-  gulp.watch(paths.source + '**/*.ts', ['test', 'lint:typescript']);
-  gulp.watch(paths.spec + '**/*spec.ts', ['test', 'lint:typescript']);
-});
+gulp.task('watch', gulp.series('test', function () {
+  gulp.watch(paths.source + '**/*.ts', gulp.series('test', 'lint:typescript'));
+  gulp.watch(paths.spec + '**/*spec.ts', gulp.series('test', 'lint:typescript'));
+}));
 
-gulp.task('default', ['test'], function () {
-});
+gulp.task('default', gulp.series('test'));

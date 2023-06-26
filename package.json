@@ -32,7 +32,7 @@
     "@types/glob": "^5.0.29",
     "@types/jasmine": "2.2.32",
     "@types/minimatch": "^2.0.28",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-jasmine": "^2.3.0",
     "gulp-plumber": "^1.1.0",
     "gulp-replace": "^0.5.4",
