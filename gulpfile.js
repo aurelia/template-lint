@@ -13,7 +13,7 @@ var shell = require('gulp-shell');
 
 var path = require('path');
 var merge = require('merge2');
-var runsequence = require('run-sequence');
+var runsequence = require('gulp4-run-sequence');
 var through = require('through2');
 
 var paths = {
