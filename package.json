@@ -1,10 +1,10 @@
 {
-  "name": "aurelia-template-lint",
+  "name": "@egs-cm/aurelia-template-lint",
   "description": "sanity check of Aurelia-flavor templates",
   "author": "Meirion Hughes <crakinshot@yahoo.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MeirionHughes/aurelia-template-lint"
+    "url": "git@github.com:egs-cm/template-lint.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -16,7 +16,7 @@
     }
   ],
   "license": "(Apache-2.0)",
-  "version": "0.10.0",
+  "version": "0.10.2",
   "keywords": [
     "template",
     "html",
