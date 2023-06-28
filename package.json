@@ -50,6 +50,7 @@
     "typescript-formatter": "^3.1.0"
   },
   "scripts": {
+    "build": "gulp compile:typescript",
     "test": "gulp test"
   },
   "dependencies": {
