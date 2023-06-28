@@ -306,7 +306,12 @@ export class BindingRule extends ASTBuilder {
     }
 
     let classes = viewModelSource.statements.filter(
-      x => x.kind == ts.SyntaxKind.ClassDeclaration
+      x =>
+        x.kind == ts.SyntaxKind.ClassDeclaration &&
+        x.modifiers !== undefined &&
+        x.modifiers.some(
+          modifier => modifier.kind === ts.SyntaxKind.ExportKeyword
+        )
     ) as ts.ClassDeclaration[];
 
     if (classes == null || classes.length == 0) {
