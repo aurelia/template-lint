@@ -288,7 +288,7 @@ export class BindingRule extends ASTBuilder {
     let viewModelFile = Path.join(viewFileInfo.dir, `${viewFileInfo.name}`);
     let viewName = this.toSymbol(viewFileInfo.name);
 
-    let viewModelSource = this.reflection.pathToSource[viewModelFile];
+    let viewModelSource = this.reflection.pathToSource[viewModelFile] as ts.SourceFile;
 
     if (!viewModelSource) {
       if (this.reportUnresolvedViewModel) {
@@ -305,7 +305,14 @@ export class BindingRule extends ASTBuilder {
       return null;
     }
 
-    let classes = <ts.ClassDeclaration[]>viewModelSource.statements.filter(x => x.kind == ts.SyntaxKind.ClassDeclaration);
+    let classes = viewModelSource.statements.filter(
+      x =>
+        x.kind == ts.SyntaxKind.ClassDeclaration &&
+        x.modifiers !== undefined &&
+        x.modifiers.some(
+          modifier => modifier.kind === ts.SyntaxKind.ExportKeyword
+        )
+    ) as ts.ClassDeclaration[];
 
     if (classes == null || classes.length == 0) {
       if (this.reportUnresolvedViewModel) {

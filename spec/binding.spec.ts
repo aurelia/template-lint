@@ -1688,6 +1688,27 @@ describe("Static-Type Binding Tests", () => {
       });
   });
 
+  it("will reject access in unexported class", (done) => {
+    let viewmodel = `
+    class Foo{
+      invalid:string;
+    }
+    export class Bar{}`;
+    let view = `
+    <template>
+      <input type="text" value.bind="invalid">
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, new AureliaReflection());
+    let linter = new Linter([rule]);
+    reflection.add("./foo.ts", viewmodel);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        expect(issues.length).toBe(1);
+        expect(issues[0].message).toBe("cannot find 'invalid' in type 'Bar'");
+        done();
+      });
+  });
 
 
   /*it("rejects more than one class in view-model file", (done) => {
