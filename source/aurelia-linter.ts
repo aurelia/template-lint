@@ -97,6 +97,7 @@ export class AureliaLinter {
       parserBuilder
     );
 
+    this.reflection.addPathMappings(this.config.reflectionOpts.pathMappings);
     this.init = this.processSourceGlobs(this.config.reflectionOpts.sourceFileGlob)
       .then(() => {
         if (this.config.reflectionOpts.typingsFileGlob != null)
