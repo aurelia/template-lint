@@ -9,6 +9,7 @@ import * as fs from "fs";
 export class Reflection {
   public sourceFiles: ts.SourceFile[] = [];
   public pathToSource = {};
+  private pathMappings: [RegExp, string][] = [];
 
   addGlob(pattern?: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -52,6 +53,13 @@ export class Reflection {
         reject(err);
       }
     });
+  }
+
+  public addPathMappings(pathMappings: [string, string][]): void {
+    this.pathMappings = pathMappings.map(
+      ([pattern, replacement]) =>
+        [new RegExp(pattern), replacement] as [RegExp, string]
+    );
   }
 
   add(path: string, source: string) {
@@ -195,7 +203,7 @@ export class Reflection {
     if (!symbolImportDecl)
       return null;
 
-    let importModule = (<any>symbolImportDecl).moduleSpecifier.text;
+    let importModule = (<any>symbolImportDecl).moduleSpecifier.text as string;
     let isRelative = importModule.startsWith(".");
     let inportSourceModule = importModule;
 
@@ -203,6 +211,11 @@ export class Reflection {
       let base = Path.parse(source.fileName).dir;
       inportSourceModule = Path.normalize(Path.join(base, `${importModule}`));
     }
+    inportSourceModule = this.pathMappings.reduce(
+      (currentModule, [pattern, replacement]) =>
+        currentModule.replace(pattern, replacement),
+      inportSourceModule
+    );
 
     let inportSourceFile = this.pathToSource[inportSourceModule];
 

@@ -1170,6 +1170,42 @@ describe("Static-Type Binding Tests", () => {
       });
   });
 
+  it("supports inheritance of classes imported via path mapping", (done) => {
+    let base = `
+    export class Base{
+      base:string;
+    }`;
+
+    let viewmodel = `
+    import {Base} from '@base/base'
+    class Value extends Base{
+    }
+    export class Foo{
+      value:Value;
+    }`;
+
+    let view = `
+    <template>
+      \${value.base}
+      \${valu}
+    </template>`;
+    let reflection = new Reflection();
+    let rule = new BindingRule(reflection, new AureliaReflection());
+    let linter = new Linter([rule]);
+    reflection.addPathMappings([["^@base/", ""]]);
+    reflection.add("./foo.ts", viewmodel);
+    reflection.add("./base.ts", base);
+    linter.lint(view, "./foo.html")
+      .then((issues) => {
+        try {
+          expect(issues.length).toBe(1);
+          expect(issues[0].message).toBe("cannot find 'valu' in type 'Foo'");
+        }
+        catch (err) { fail(err); }
+        finally { done(); }
+      });
+  });
+
   //#66
   it("supports classes declared in same-file", (done) => {
     let item = `
