@@ -171,7 +171,7 @@ export class Config {
   reflectionOpts: {
     sourceFileGlob: string | string[],
     typingsFileGlob: string | string[],
-    pathMappings: [string, string][],
+    pathMappings: [RegExp, string][],
   } = {
     sourceFileGlob: "source/**/*.ts",
     typingsFileGlob: "typings/**/*.d.ts",

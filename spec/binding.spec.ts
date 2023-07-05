@@ -1192,7 +1192,7 @@ describe("Static-Type Binding Tests", () => {
     let reflection = new Reflection();
     let rule = new BindingRule(reflection, new AureliaReflection());
     let linter = new Linter([rule]);
-    reflection.addPathMappings([["^@base/", ""]]);
+    reflection.addPathMappings([[/^@base\//, ""]]);
     reflection.add("./foo.ts", viewmodel);
     reflection.add("./base.ts", base);
     linter.lint(view, "./foo.html")

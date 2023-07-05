@@ -55,11 +55,8 @@ export class Reflection {
     });
   }
 
-  public addPathMappings(pathMappings: [string, string][]): void {
-    this.pathMappings = pathMappings.map(
-      ([pattern, replacement]) =>
-        [new RegExp(pattern), replacement] as [RegExp, string]
-    );
+  public addPathMappings(pathMappings: [RegExp, string][]): void {
+    this.pathMappings = pathMappings;
   }
 
   add(path: string, source: string) {
