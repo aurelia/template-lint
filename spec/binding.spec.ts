@@ -1372,7 +1372,7 @@ describe("Static-Type Binding Tests", () => {
       });
   });
   // #117
-  it("supports svg element namespace", async (done) => {
+  it("supports svg element namespace", async () => {
 
     var view = `
     <svg if.bind="!userContext.imageUri" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" style="width:20px;height:20px;">
@@ -1395,7 +1395,6 @@ describe("Static-Type Binding Tests", () => {
     catch (err) {
       fail(err);
     }
-    finally { done(); }
   });
 
   //#119

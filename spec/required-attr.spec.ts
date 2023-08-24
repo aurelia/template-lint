@@ -9,7 +9,7 @@ describe("Required Attribute Rule", () => {
     ])
   ]);
 
-  it("should complain when tag with missing attribute ", async (done) => {
+  it("should complain when tag with missing attribute ", async () => {
     try {
       let issues = await linter.lint('<template><button></button></template>');
       expect(issues.length).toBe(1);
@@ -17,16 +17,14 @@ describe("Required Attribute Rule", () => {
     } catch (err) {
       fail(err);
     }
-    done();
   });
 
-  it("should not complain for tags without rules", async (done) => {
+  it("should not complain for tags without rules", async () => {
     try {
       let issues = await linter.lint('<template><div></div></template>');
       expect(issues.length).toBe(0);
     } catch (err) {
       fail(err);
     }
-    done();
   });
 });
